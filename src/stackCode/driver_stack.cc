@@ -19,8 +19,6 @@
 
 #include<iostream>
 
-using namespace sim;
-
 int main(int argc, char* argv[])
 {
     std::cout << "Stack Simulator Started\n" << std::endl;

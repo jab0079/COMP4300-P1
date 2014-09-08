@@ -23,4 +23,7 @@
 # Project-Specific
 bin/*
 obj/*
-*.~
+*.*~
+core*
+*~
+*.kdev*

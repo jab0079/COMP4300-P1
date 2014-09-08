@@ -16,27 +16,27 @@ OBJECTS_UTILS=$(patsubst $(SOURCE_UTILS_DIR)%.cc,%.o,$(SOURCES_UTILS))
 
 all: utils stackSim accumSim
 
-stackSim: $(OBJECTS_STACK)
-	$(CC) -o $(EXE_STACK) $(OBJECTS_STACK)
+stackSim: $(OBJECTS_STACK) utils
 	@mv *.o ../$(OBJECT_DIR)
+	$(CC) -o $(EXE_STACK) ../$(OBJECT_DIR)/$(OBJECTS_STACK) ../$(OBJECT_DIR)/$(OBJECTS_UTILS)
 	@mv $(EXE_STACK) ../$(BIN_DIR)
 	
 $(OBJECTS_STACK):
-	$(CC) -I../$(INCLUDE_DIR) -c $(SOURCES_STACK)
+	$(CC) $(CFLAGS) -I../$(INCLUDE_DIR) -c $(SOURCES_STACK)
 
-accumSim: $(OBJECTS_ACCUM)
-	$(CC) -o $(EXE_ACCUM) $(OBJECTS_ACCUM)
+accumSim: $(OBJECTS_ACCUM) utils
 	@mv *.o ../$(OBJECT_DIR)
+	$(CC) -o $(EXE_ACCUM) ../$(OBJECT_DIR)/$(OBJECTS_ACCUM) ../$(OBJECT_DIR)/$(OBJECTS_UTILS)
 	@mv $(EXE_ACCUM) ../$(BIN_DIR)
 
 $(OBJECTS_ACCUM):
-	$(CC) -I../$(INCLUDE_DIR) -c $(SOURCES_ACCUM)
+	$(CC) $(CFLAGS) -I../$(INCLUDE_DIR) -c $(SOURCES_ACCUM)
 	
 utils: $(OBJECTS_UTILS)
 	@mv *.o ../$(OBJECT_DIR)
 
 $(OBJECTS_UTILS):
-	$(CC) -I../$(INCLUDE_DIR) -c $(SOURCES_UTILS)
+	$(CC) $(CFLAGS) -I../$(INCLUDE_DIR) -c $(SOURCES_UTILS)
 	
 	
 clean:
