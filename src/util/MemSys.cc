@@ -18,8 +18,23 @@
  * 
  * 
  */
-
 #include "MemSys.hh"
+
+#define BLOCK 4096
+
+//Segment Sizes...(in bytes)
+const unsigned int MemSys::UserTextSegmentSize = BLOCK;
+const unsigned int MemSys::UserDataSegmentSize = BLOCK;
+const unsigned int MemSys::KernelTextSegmentSize = BLOCK;
+const unsigned int MemSys::KernelDataSegmentSize = BLOCK;
+const unsigned int MemSys::StackSegmentSize = BLOCK;
+
+//Segment Address Bases...
+const addr MemSys::BaseUserTextSegmentAddress = 0x00100000;
+const addr MemSys::BaseUserDataSegmentAddress = 0x00200000;
+const addr MemSys::BaseKernelTextSegmentAddress = 0x00300000;
+const addr MemSys::BaseKernelDataSegmentAddress = 0x00400000;
+const addr MemSys::BaseStackSegmentAddress = 0x00500000;
 
 MemSys::MemSys()
 {
@@ -30,26 +45,28 @@ MemSys::MemSys()
     m_kerneldata_top = BaseKernelDataSegmentAddress;
     m_stack_top = BaseStackSegmentAddress;
     
-    //For testing purposes...
-    for (int i = 0; i < 100; i++)
-    {
-        //arbitrary capital letters
-        m_usertext_seg[i] = 65 + (i%(90-65));
-        m_usertext_top += 1;
-    }
+    m_usertext_seg = (char*)calloc(UserTextSegmentSize,sizeof(char));
+    m_userdata_seg = (char*)calloc(UserDataSegmentSize,sizeof(char));
+    m_kerneltext_seg = (char*)calloc(KernelTextSegmentSize,sizeof(char));
+    m_kerneldata_seg = (char*)calloc(KernelDataSegmentSize,sizeof(char));
+    m_stack_seg = (char*)calloc(StackSegmentSize,sizeof(char));
 }
 
 MemSys::~MemSys()
 {
-    
+    free(m_usertext_seg);
+    free(m_userdata_seg);
+    free(m_kerneltext_seg);
+    free(m_kerneldata_seg);
+    free(m_stack_seg);
 }
 
 void* MemSys::read(const addr& address, const unsigned int& size) const
 {
     //get the base address to determine which segment to access
-    addr base = (address & 0xF0000000);
+    addr base = (address & 0x00F00000);
     
-    unsigned int start = address & 0x0FFFFFFF; //needed for indexing into arrays
+    unsigned int start = address & 0x000FFFFF; //needed for indexing into arrays
     
     switch (base)
     {
@@ -118,8 +135,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
 bool MemSys::write(const addr& address, const void* data, const unsigned int& size)
 {
     //get the base address to determine which segment to access
-    addr base = (address & 0xF0000000);
-    unsigned int start = address & 0x0FFFFFFF; //needed for indexing into arrays
+    addr base = (address & 0x00F00000);
+    unsigned int start = address & 0x000FFFFF; //needed for indexing into arrays
     
     switch (base)
     {
@@ -174,27 +191,27 @@ void MemSys::outputSegment(const Segment& segment) const
         case (USER_TEXT):
             std::cout << "---------- User Text Segment ----------" << std::endl;
             seg = m_usertext_seg;
-            size = m_usertext_top & 0x0FFFFFFF;
+            size = m_usertext_top & 0x000FFFFF;
             break;
         case (USER_DATA):
             std::cout << "---------- User Data Segment ----------" << std::endl;
             seg = m_userdata_seg;
-            size = m_userdata_top & 0x0FFFFFFF;
+            size = m_userdata_top & 0x000FFFFF;
             break;
         case (KERNEL_TEXT):
             std::cout << "---------- Kernel Text Segment ----------" << std::endl;
             seg = m_kerneltext_seg;
-            size = m_kerneltext_top & 0x0FFFFFFF;
+            size = m_kerneltext_top & 0x000FFFFF;
             break;
         case (KERNEL_DATA):
             std::cout << "---------- Kernel Data Segment ----------" << std::endl;
             seg = m_kerneldata_seg;
-            size = m_kerneldata_top & 0x0FFFFFFF;
+            size = m_kerneldata_top & 0x000FFFFF;
             break;
         case (STACK):
             std::cout << "---------- Stack Segment ----------" << std::endl;
             seg = m_stack_seg;
-            size = m_stack_top & 0x0FFFFFFF;
+            size = m_stack_top & 0x000FFFFF;
             break;
     }
     
@@ -202,7 +219,7 @@ void MemSys::outputSegment(const Segment& segment) const
     {
         for (int i = 0; i < size; i++)
         {
-            std::cout << seg[i] << " ";
+            std::cout << (int)seg[i] << " ";
             if (i%35==0 && i!=0)
                 std::cout << std::endl;
         }

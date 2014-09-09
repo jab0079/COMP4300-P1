@@ -20,40 +20,64 @@
 #include<iostream>
 
 #include "MemSys.hh"
+#include "Accumulator.hh"
+#include "Utilities.hh"
 
 int main(int argc, char* argv[])
 {
     std::cout << std::endl;
-    std::cout << "Accumulator Simulator Started...\n" << std::endl;
+    std::cout << "Accumulator Simulation Started..." << std::endl;
     
+    //Create memory system
     MemSys* memory = new MemSys();
     
-    //-----------------------------------------------------
-    //Testing Reads
-    addr test_addr = MemSys::BaseUserTextSegmentAddress;
-    int num = 20;
-    char* test_ret = (char *)memory->read(test_addr, num);
+    //Load program into memory
+    //..for now we will hand generate this
+    //until the loader is implemented
     
-    for (int i = 0; i < num; i++)
-        std::cout << test_ret[i] << std::endl;;
+    //Load data into memory
+    u_int32_t X = 3;
+    u_int32_t A = 7;
+    u_int32_t B = 5;
+    u_int32_t C = 4;
+    memory->write(MemSys::BaseUserDataSegmentAddress, &X, sizeof(u_int32_t));
+    memory->write(MemSys::BaseUserDataSegmentAddress+4, &A, sizeof(u_int32_t));
+    memory->write(MemSys::BaseUserDataSegmentAddress+8, &B, sizeof(u_int32_t));
+    memory->write(MemSys::BaseUserDataSegmentAddress+12, &C, sizeof(u_int32_t));
+//     memory->outputSegment(USER_DATA);
     
-    free(test_ret);
-    memory->write(test_addr, "Z", 1);
-    memory->outputSegment(USER_TEXT);
-    //-----------------------------------------------------
+    inst instruction = 0;
+    //Load instructions into memory
+    instruction = 0x00000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
+    memory->write(MemSys::BaseUserTextSegmentAddress, &instruction, sizeof(inst));
+    instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress); //MULT X
+    memory->write(MemSys::BaseUserTextSegmentAddress+4, &instruction, sizeof(inst));
+    instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+4); //MULT A
+    memory->write(MemSys::BaseUserTextSegmentAddress+8, &instruction, sizeof(inst));
+    instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
+    memory->write(MemSys::BaseUserTextSegmentAddress+12, &instruction, sizeof(inst));
+    instruction = 0x00000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
+    memory->write(MemSys::BaseUserTextSegmentAddress+16, &instruction, sizeof(inst));
+    instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+8); //MULT B
+    memory->write(MemSys::BaseUserTextSegmentAddress+20, &instruction, sizeof(inst));
+    instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+16); //ADD C+4
+    memory->write(MemSys::BaseUserTextSegmentAddress+24, &instruction, sizeof(inst));
+    instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+12); //ADD C
+    memory->write(MemSys::BaseUserTextSegmentAddress+28, &instruction, sizeof(inst));
+    instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
+    memory->write(MemSys::BaseUserTextSegmentAddress+32, &instruction, sizeof(inst));
+        memory->outputSegment(USER_TEXT);
+
+    //Create simulator with memory system
+    Simulator* acc = new Accumulator(memory);
     
-    //-----------------------------------------------------
-    //Testing Writes
-    addr test_addr_2 = MemSys::BaseUserDataSegmentAddress;
-    char* test_write = "This is a test string";
-    int num_2 = 21;
-    memory->write(test_addr_2, test_write, num_2);
-    memory->outputSegment(USER_DATA);
-    //-----------------------------------------------------
+    //Run the simulator
+    acc->run();
     
-    delete memory;
+    SAFE_DELETE(acc); //see Utilities.hh
+    SAFE_DELETE(memory);
     
-    std::cout << "...Accumulator Simulator Ended\n" << std::endl;
+    std::cout << "...Accumulator Simulation Ended\n" << std::endl;
     
     return 0;
 }

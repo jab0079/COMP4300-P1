@@ -27,9 +27,8 @@
 #include<stdlib.h> //for calloc
 #include<string.h> //for strncpy
 
-#define BLOCK 4096
-
-typedef unsigned int addr;
+typedef u_int32_t addr;
+typedef u_int32_t inst;
 
 enum Segment
 {
@@ -59,18 +58,18 @@ class MemSys
         
         // Public Constants ---------------------------------------------------
         //Segment Sizes...(in bytes)
-        static const unsigned int UserTextSegmentSize = BLOCK;
-        static const unsigned int UserDataSegmentSize = BLOCK;
-        static const unsigned int KernelTextSegmentSize = BLOCK;
-        static const unsigned int KernelDataSegmentSize = BLOCK;
-        static const unsigned int StackSegmentSize = BLOCK;
+        static const unsigned int UserTextSegmentSize;
+        static const unsigned int UserDataSegmentSize;
+        static const unsigned int KernelTextSegmentSize;
+        static const unsigned int KernelDataSegmentSize;
+        static const unsigned int StackSegmentSize;
         
         //Segment Address Bases...
-        static const addr BaseUserTextSegmentAddress = 0x10000000;
-        static const addr BaseUserDataSegmentAddress = 0x20000000;
-        static const addr BaseKernelTextSegmentAddress = 0x30000000;
-        static const addr BaseKernelDataSegmentAddress = 0x40000000;
-        static const addr BaseStackSegmentAddress = 0x50000000;
+        static const addr BaseUserTextSegmentAddress;
+        static const addr BaseUserDataSegmentAddress;
+        static const addr BaseKernelTextSegmentAddress;
+        static const addr BaseKernelDataSegmentAddress;
+        static const addr BaseStackSegmentAddress;
         
     protected:
         //Protected Members ---------------------------------------------------
@@ -85,11 +84,11 @@ class MemSys
 //         MemSys();
         
         //Private Members -----------------------------------------------------
-        char m_usertext_seg[UserTextSegmentSize];
-        char m_userdata_seg[UserDataSegmentSize];
-        char m_kerneltext_seg[KernelTextSegmentSize];
-        char m_kerneldata_seg[KernelDataSegmentSize];
-        char m_stack_seg[StackSegmentSize];
+        char* m_usertext_seg;
+        char* m_userdata_seg;
+        char* m_kerneltext_seg;
+        char* m_kerneldata_seg;
+        char* m_stack_seg;
 
     
 };

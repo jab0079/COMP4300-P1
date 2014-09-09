@@ -17,4 +17,20 @@
  */
 #include "Accumulator.hh"
 
-Accumulator::Accumulator() {}
+Accumulator::Accumulator(MemSys* mem) 
+: Simulator(mem)
+{
+}
+
+Accumulator::~Accumulator()
+{}
+
+void Accumulator::run()
+{
+    std::cout << "\tStarting Accumulator..." << std::endl;
+    
+    inst curr_inst = (inst)m_memory->read(m_pc,sizeof(inst)); 
+    
+    std::cout << "\tEnding Accumulator..." << std::endl;
+}
+
