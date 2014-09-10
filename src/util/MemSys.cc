@@ -76,8 +76,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
-                char* ret = (char*)calloc(size,sizeof(char)); 
-                strncpy(ret, (const char *)m_usertext_seg+start, size);
+                void* ret = calloc(size,sizeof(char)); 
+                memcpy(ret, m_usertext_seg+start, size);
                 return ret;
             }
             break;
@@ -87,8 +87,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
-                char* ret = (char*)calloc(size,sizeof(char)); 
-                strncpy(ret, (const char *)m_userdata_seg+start, size);
+                void* ret = calloc(size,sizeof(char)); 
+                memcpy(ret, m_userdata_seg+start, size);
                 return ret;
             }
             break;
@@ -98,8 +98,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
-                char* ret = (char*)calloc(size,sizeof(char)); 
-                strncpy(ret, (const char *)m_kerneltext_seg+start, size);
+                void* ret = calloc(size,sizeof(char)); 
+                memcpy(ret, m_kerneltext_seg+start, size);
                 return ret;
             }
             break;
@@ -109,8 +109,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
-                char* ret = (char*)calloc(size,sizeof(char)); 
-                strncpy(ret, (const char *)m_kerneldata_seg+start, size);
+                void* ret = calloc(size,sizeof(char)); 
+                memcpy(ret, m_kerneldata_seg+start, size);
                 return ret;
             }
             break;
@@ -121,7 +121,7 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
             
             { //need block so ret is not visible to other cases
                 char* ret = (char*)calloc(size,sizeof(char)); 
-                strncpy(ret, (const char *)m_stack_seg+start, size);
+                memcpy(ret, (const char *)m_stack_seg+start, size);
                 return ret;
             }
             break;
@@ -137,43 +137,47 @@ bool MemSys::write(const addr& address, const void* data, const unsigned int& si
     //get the base address to determine which segment to access
     addr base = (address & 0x00F00000);
     unsigned int start = address & 0x000FFFFF; //needed for indexing into arrays
-    
     switch (base)
     {
         case (BaseUserTextSegmentAddress):
             if (size > UserTextSegmentSize 
                 || address + size > BaseUserTextSegmentAddress+UserTextSegmentSize)
                 return false; //Should fail more gracefully...throw error?
-            strncpy(m_usertext_seg+start, (const char *)data, size);
-            m_usertext_top += address + size;
+            memcpy(m_usertext_seg+start, data, size);
+            if (address + size > m_usertext_top)
+                m_usertext_top = address + size;
             return true;
         case (BaseUserDataSegmentAddress):
             if (size > UserDataSegmentSize 
                 || address + size > BaseUserDataSegmentAddress+UserDataSegmentSize)
                 return false; //Should fail more gracefully...throw error?
-            strncpy(m_userdata_seg+start, (const char *)data, size);
-            m_userdata_top = address + size;
+            memcpy(m_userdata_seg+start, data, size);
+            if (address + size > m_userdata_top)
+                m_userdata_top = address + size;
             return true;
         case (BaseKernelTextSegmentAddress):
             if (size > KernelTextSegmentSize 
                 || address + size > BaseKernelTextSegmentAddress+KernelTextSegmentSize)
                 return false; //Should fail more gracefully...throw error?
-            strncpy(m_kerneltext_seg+start, (const char *)data, size);
-            m_kerneltext_top = address + size;
+            memcpy(m_kerneltext_seg+start, data, size);
+            if (address + size > m_kerneltext_top)
+                m_kerneltext_top = address + size;
             return true;
         case (BaseKernelDataSegmentAddress):
             if (size > KernelDataSegmentSize 
                 || address + size > BaseKernelDataSegmentAddress+KernelDataSegmentSize)
                 return false; //Should fail more gracefully...throw error?
-            strncpy(m_kerneldata_seg+start, (const char *)data, size);
-            m_kerneldata_top = address + size;
+            memcpy(m_kerneldata_seg+start, data, size);
+            if (address + size > m_kerneldata_top)
+                m_kerneldata_top = address + size;
             return true;
         case (BaseStackSegmentAddress):
             if (size > StackSegmentSize 
                 || address + size > BaseStackSegmentAddress+StackSegmentSize)
                 return false; //Should fail more gracefully...throw error?
-            strncpy(m_stack_seg+start, (const char *)data, size);
-            m_stack_top = address + size;
+            memcpy(m_stack_seg+start, data, size);
+            if (address + size > m_stack_top)
+                m_stack_top = address + size;
             return true;
         default:
             //Should we throw an error? Or just return null?
@@ -189,27 +193,27 @@ void MemSys::outputSegment(const Segment& segment) const
     switch (segment)
     {
         case (USER_TEXT):
-            std::cout << "---------- User Text Segment ----------" << std::endl;
+            std::cout << "---------- User Text Segment --------------" << std::endl;
             seg = m_usertext_seg;
             size = m_usertext_top & 0x000FFFFF;
             break;
         case (USER_DATA):
-            std::cout << "---------- User Data Segment ----------" << std::endl;
+            std::cout << "---------- User Data Segment --------------" << std::endl;
             seg = m_userdata_seg;
             size = m_userdata_top & 0x000FFFFF;
             break;
         case (KERNEL_TEXT):
-            std::cout << "---------- Kernel Text Segment ----------" << std::endl;
+            std::cout << "---------- Kernel Text Segment ------------" << std::endl;
             seg = m_kerneltext_seg;
             size = m_kerneltext_top & 0x000FFFFF;
             break;
         case (KERNEL_DATA):
-            std::cout << "---------- Kernel Data Segment ----------" << std::endl;
+            std::cout << "---------- Kernel Data Segment ------------" << std::endl;
             seg = m_kerneldata_seg;
             size = m_kerneldata_top & 0x000FFFFF;
             break;
         case (STACK):
-            std::cout << "---------- Stack Segment ----------" << std::endl;
+            std::cout << "---------- Stack Segment ------------------" << std::endl;
             seg = m_stack_seg;
             size = m_stack_top & 0x000FFFFF;
             break;
@@ -217,14 +221,22 @@ void MemSys::outputSegment(const Segment& segment) const
     
     if (seg)
     {
+        int counter = 0;
+        int row = 0;
         for (int i = 0; i < size; i++)
         {
-            std::cout << (int)seg[i] << " ";
-            if (i%35==0 && i!=0)
+            std::cout << (u_int32_t)seg[i] << " ";
+            counter++;
+            if (counter == 4)
+            {
+                std::cout << "\t\t" << *((u_int32_t *)(seg+(row*4)));
                 std::cout << std::endl;
+                counter = 0;
+                row++;
+            }
         }
     }
-    std::cout << std::endl << "------------------------------" << std::endl;
+    std::cout << std::endl << "-------------------------------------------" << std::endl;
 }
 
 

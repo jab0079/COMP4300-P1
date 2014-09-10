@@ -44,11 +44,11 @@ int main(int argc, char* argv[])
     memory->write(MemSys::BaseUserDataSegmentAddress+4, &A, sizeof(u_int32_t));
     memory->write(MemSys::BaseUserDataSegmentAddress+8, &B, sizeof(u_int32_t));
     memory->write(MemSys::BaseUserDataSegmentAddress+12, &C, sizeof(u_int32_t));
-//     memory->outputSegment(USER_DATA);
+    memory->outputSegment(USER_DATA);
     
     inst instruction = 0;
     //Load instructions into memory
-    instruction = 0x00000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
+    instruction = (inst)(0x00000000 | (MemSys::BaseUserDataSegmentAddress)); //LOAD X
     memory->write(MemSys::BaseUserTextSegmentAddress, &instruction, sizeof(inst));
     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress); //MULT X
     memory->write(MemSys::BaseUserTextSegmentAddress+4, &instruction, sizeof(inst));
