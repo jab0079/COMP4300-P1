@@ -12,6 +12,8 @@
  *          executable.
  * 
  *      Change Log:
+ *          9/9/14 - Added memory system and test data for instructions
+ *                      and the actual simulator object.
  *          9/5/14 - Initial creation detailing description.
  * 
  * 
