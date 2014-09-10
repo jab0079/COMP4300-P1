@@ -1,19 +1,19 @@
 # Accumulator Hand Compiled Source
 
 .data
-X:	.word 3
-A:	.word 7
-B:	.word 5
-C:	.word 4
+0x00200000:3  #X
+0x00200004:7  #A
+0x00200008:5  #B
+0x002000012:4 #C
 
 .text
-  LOAD X    # Load X into accumulator's register
-  MULT X    # Multiply by X (X^2)
-  MULT A    # Multiply register by A (AX^2)
-  STO 4(C)   # Store AX^2 in address after C
-  LOAD X    # Load X back into register
-  MULT B    # Multiply register by B (BX)
-  ADD 4(C)   # Add (AX^2) to register
-            # Register now contains AX^2+BX.
-  ADD C     # AX^2+BX+C
-  STO 4(C)   # Store output
+  LOAD 0x00200000   # Load X into accumulator's register
+  MULT 0x00200000   # Multiply by X (X^2)
+  MULT 0x00200004   # Multiply register by A (AX^2)
+  STO 0x002000016   # Store AX^2 in address after C
+  LOAD 0x00200000   # Load X back into register
+  MULT 0x00200008   # Multiply register by B (BX)
+  ADD 0x002000016   # Add (AX^2) to register
+                    # Register now contains AX^2+BX.
+  ADD 0x002000012   # AX^2+BX+C
+  STO 0x002000016   # Store output
