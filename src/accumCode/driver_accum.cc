@@ -50,24 +50,54 @@ int main(int argc, char* argv[])
     
     inst instruction = 0;
     //Load instructions into memory
-    instruction = (inst)(0x00000000 | (MemSys::BaseUserDataSegmentAddress)); //LOAD X
+//     instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
+    instruction = (Accumulator::ACC_INST_LOAD << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress);
     memory->write(MemSys::BaseUserTextSegmentAddress, &instruction, sizeof(inst));
-    instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress); //MULT X
+    
+//     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress); //MULT X
+    instruction = (Accumulator::ACC_INST_MULT << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress);
     memory->write(MemSys::BaseUserTextSegmentAddress+4, &instruction, sizeof(inst));
-    instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+4); //MULT A
+    
+//     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+4); //MULT A
+    instruction = (Accumulator::ACC_INST_MULT << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress+4);
     memory->write(MemSys::BaseUserTextSegmentAddress+8, &instruction, sizeof(inst));
-    instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
+    
+//     instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
+    instruction = (Accumulator::ACC_INST_STO << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress+16);    
     memory->write(MemSys::BaseUserTextSegmentAddress+12, &instruction, sizeof(inst));
-    instruction = 0x00000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
+    
+//     instruction = 0x00000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
+    instruction = (Accumulator::ACC_INST_LOAD << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress);  
     memory->write(MemSys::BaseUserTextSegmentAddress+16, &instruction, sizeof(inst));
-    instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+8); //MULT B
+    
+//     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+8); //MULT B
+    instruction = (Accumulator::ACC_INST_LOAD << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress+8);
     memory->write(MemSys::BaseUserTextSegmentAddress+20, &instruction, sizeof(inst));
-    instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+16); //ADD C+4
+    
+//     instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+16); //ADD C+4
+    instruction = (Accumulator::ACC_INST_ADD << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress+16);
     memory->write(MemSys::BaseUserTextSegmentAddress+24, &instruction, sizeof(inst));
-    instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+12); //ADD C
+    
+//     instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+12); //ADD C
+    instruction = (Accumulator::ACC_INST_ADD << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress+12);
     memory->write(MemSys::BaseUserTextSegmentAddress+28, &instruction, sizeof(inst));
-    instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
+    
+//     instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
+    instruction = (Accumulator::ACC_INST_STO << 24) //shift left 24 bits
+            | (MemSys::BaseUserDataSegmentAddress+16);
     memory->write(MemSys::BaseUserTextSegmentAddress+32, &instruction, sizeof(inst));
+    
+    instruction = (Accumulator::ACC_INST_END << 24); //shift left 24 bits //END
+    memory->write(MemSys::BaseUserTextSegmentAddress+36, &instruction, sizeof(inst));
+    
         memory->outputSegment(USER_TEXT);
 
     //Create simulator with memory system

@@ -13,6 +13,7 @@
  *          This class defines the interface for the Accumulator Simulator
  * 
  *      Change Log:
+ *          9/10/14 - Added instruction set static members
  *          9/9/14 - Initial creation
  * 
  * 
@@ -33,6 +34,8 @@ class Accumulator : public Simulator
         
         virtual void run();
         
+        //INSTRUCTION SET------------------------------------------------------
+        
         //Enumeration that defines
         //all instructions for this
         //architecture.
@@ -44,6 +47,14 @@ class Accumulator : public Simulator
             MULT,
             END
         };
+        
+        static const u_int8_t ACC_INST_LOAD; //see impl for constant
+        static const u_int8_t ACC_INST_STO;
+        static const u_int8_t ACC_INST_ADD;
+        static const u_int8_t ACC_INST_MULT;
+        static const u_int8_t ACC_INST_END;
+        
+        //---------------------------------------------------------------------
         
     protected:
         reg m_register;
