@@ -29,7 +29,7 @@ void Accumulator::run()
 {
     std::cout << "\tStarting Accumulator..." << std::endl;
     
-    inst curr_inst = (inst)m_memory->read(m_pc,sizeof(inst)); 
+    inst curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst))); 
     
     std::cout << "\tEnding Accumulator..." << std::endl;
 }
