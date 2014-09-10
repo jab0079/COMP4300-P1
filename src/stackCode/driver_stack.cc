@@ -19,6 +19,10 @@
 
 #include<iostream>
 
+#include "MemSys.hh"
+#include "Stack.hh"
+#include "Utilities.hh"
+
 int main(int argc, char* argv[])
 {
     std::cout << "Stack Simulator Started\n" << std::endl;
