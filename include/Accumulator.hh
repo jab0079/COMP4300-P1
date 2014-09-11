@@ -22,6 +22,7 @@
 #include<iostream>
 
 #include "Simulator.hh"
+#include "Utilities.hh"
 
 
 typedef u_int32_t reg; //32-bit registers
@@ -33,22 +34,6 @@ class Accumulator : public Simulator
         ~Accumulator();
         
         virtual void run();
-        
-        //INSTRUCTION SET------------------------------------------------------
-        
-        //Enumeration that defines
-        //all instructions for this
-        //architecture.
-        enum INST_SET
-        {
-            LOAD,
-            STO,
-            ADD,
-            MULT,
-            END
-        };
-        
-        //---------------------------------------------------------------------
         
     protected:
         reg m_register;

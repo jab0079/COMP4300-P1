@@ -70,6 +70,9 @@ int main(int argc, char* argv[])
     //Run the simulator
     acc->run();
     
+    memory->outputSegment(USER_DATA);
+
+    
     SAFE_DELETE(acc); //see Utilities.hh
     SAFE_DELETE(loader);
     SAFE_DELETE(memory);

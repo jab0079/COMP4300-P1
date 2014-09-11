@@ -22,9 +22,7 @@
 #include<iostream>
 
 #include "Simulator.hh"
-
-
-typedef u_int32_t reg; //32-bit registers
+#include "Utilities.hh"
 
 class Stack : public Simulator
 {
@@ -34,20 +32,7 @@ class Stack : public Simulator
 
         virtual void run();
 
-        //Enumeration that defines
-        //all instructions for this
-        //architecture.
-        enum INST_SET
-        {
-            PUSH,
-            POP,
-            ADD,
-            MULT,
-            END
-        };
-
     protected:
-        reg m_register;
 
     private:
 };

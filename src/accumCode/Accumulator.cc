@@ -42,7 +42,7 @@ void Accumulator::run()
       
       // Get opcode and address
       opcode = curr_inst & 0xFF000000;
-      opcode >> 24; 	// Bitwise shift opcode down
+      opcode = opcode >> 24; 	// Bitwise shift opcode down
       address = curr_inst & 0x00FFFFFF;
       
       // Increment PC
@@ -50,25 +50,25 @@ void Accumulator::run()
       
       switch (opcode)
       {
-	case LOAD:
+	case ACC_INST_LOAD:
 	  m_register = *((reg*)m_memory->read(address, sizeof(reg)));	// read contents of memory at address into accumulator
 	  break;
 	  
-	case STO:
-	  m_memory->write(address, (void*)m_register, sizeof(reg));	// write value of accumulator to memory at address
+	case ACC_INST_STO:
+	  m_memory->write(address, &m_register, sizeof(reg));	// write value of accumulator to memory at address
 	  break;
 	  
-	case ADD:
+	case ACC_INST_ADD:
 	  value = *((u_int32_t*)m_memory->read(address, sizeof(u_int32_t)));	// read contents of memory at address
 	  m_register += value;							// add value to accumulator
 	  break;
 	  
-	case MULT:
+	case ACC_INST_MULT:
 	  value = *((u_int32_t*)m_memory->read(address, sizeof(u_int32_t)));	// read contents of memory at address
 	  m_register *= value;							// multiply the value with the accumulator 
 	  break;
 	  
-	case END:
+	case ACC_INST_END:
 	  user_mode = false;
 	  break;
 	  

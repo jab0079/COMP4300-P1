@@ -11,6 +11,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          9/11/14 - Changed how system checks reading addresses
  *          9/8/14 - Implemented read/write functions and added the
  *                      outputSegment function
  *          9/5/14 - Initial implementation stubs created
@@ -72,7 +73,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
     {
         case (BaseUserTextSegmentAddress):
             //Sanity check
-            if (size > UserTextSegmentSize || address > m_usertext_top - size)
+            if (size > UserTextSegmentSize 
+                || address > BaseUserTextSegmentAddress+UserTextSegmentSize)
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
@@ -83,7 +85,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
             break;
         case (BaseUserDataSegmentAddress):
             //Sanity check
-            if (size > UserDataSegmentSize || address > m_userdata_top - size)
+            if (size > UserDataSegmentSize 
+                || address > BaseUserDataSegmentAddress+UserDataSegmentSize)
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
@@ -94,7 +97,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
             break;
         case (BaseKernelTextSegmentAddress):
             //Sanity check
-            if (size > KernelTextSegmentSize || address > m_kerneltext_top - size)
+            if (size > KernelTextSegmentSize 
+                || address > BaseKernelTextSegmentAddress+KernelTextSegmentSize)
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
@@ -105,7 +109,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
             break;
         case (BaseKernelDataSegmentAddress):
             //Sanity check
-            if (size > KernelDataSegmentSize || address > m_kerneldata_top - size)
+            if (size > KernelDataSegmentSize 
+                || address > BaseKernelDataSegmentAddress+KernelDataSegmentSize)
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
@@ -116,7 +121,8 @@ void* MemSys::read(const addr& address, const unsigned int& size) const
             break;
         case (BaseStackSegmentAddress):
             //Sanity check
-            if (size > StackSegmentSize || address > m_stack_top - size)
+            if (size > StackSegmentSize 
+                || address > BaseStackSegmentAddress+StackSegmentSize)
                 return 0x0; //Should fail more gracefully...throw error?
             
             { //need block so ret is not visible to other cases
