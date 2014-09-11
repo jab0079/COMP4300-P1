@@ -1,7 +1,7 @@
 # Top-level include.txt
 
 CC=g++
-CFLAGS=-g -Wall -D_REENTRANT
+CFLAGS=-g -D_REENTRANT -Wall
 
 SOURCE_DIR=src/
 INCLUDE_DIR=include/

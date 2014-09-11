@@ -12,6 +12,7 @@
  *          executable.
  * 
  *      Change Log:
+ *          9/10/14 - Added the Loader to system
  *          9/9/14 - Added memory system and test data for instructions
  *                      and the actual simulator object.
  *          9/5/14 - Initial creation detailing description.
@@ -22,11 +23,12 @@
 #include<iostream>
 
 #include "MemSys.hh"
+#include "Loader.hh"
 #include "Accumulator.hh"
 #include "Utilities.hh"
 
 int main(int argc, char* argv[])
-{
+{   
     std::cout << std::endl;
     std::cout << "Accumulator Simulation Started..." << std::endl;
     
@@ -34,79 +36,42 @@ int main(int argc, char* argv[])
     MemSys* memory = new MemSys();
     
     //Load program into memory
-    //..for now we will hand generate this
-    //until the loader is implemented
+    Loader* loader = new Loader(memory);
     
-    //Load data into memory
-    u_int32_t X = 3;
-    u_int32_t A = 7;
-    u_int32_t B = 5;
-    u_int32_t C = 4;
-    memory->write(MemSys::BaseUserDataSegmentAddress, &X, sizeof(u_int32_t));
-    memory->write(MemSys::BaseUserDataSegmentAddress+4, &A, sizeof(u_int32_t));
-    memory->write(MemSys::BaseUserDataSegmentAddress+8, &B, sizeof(u_int32_t));
-    memory->write(MemSys::BaseUserDataSegmentAddress+12, &C, sizeof(u_int32_t));
+    //Very much a kludge, but this is the only way I figured
+    //we could determine the path of the compiled sources without
+    //the user having to add in a commandline argument.
+    //NOTE: THIS IS COUPLED TO THE SOURCE TREE STRUCTURE
+    std::string path = "docs/accum_compiled.s";
+    std::string executePath = std::string(argv[0]);
+    std::string replaceStr = "bin/accumSim";
+    if (executePath.compare(std::string("./accumSim")) == 0)
+    { //if we are executing from within the bin directory
+        path.insert(0,"../"); //go up a directory...
+    }
+    else
+    { //otherwise, replace the qualified path, but insert the corrected directory
+        executePath = executePath.substr(0,executePath.length()-replaceStr.length());
+        path = executePath + path; //append qualified path...
+    }
+
+    std::cout << "Loading source into memory..." << std::endl;
+    addr setpc = loader->load(path.c_str(), Loader::ACCUM_ISA);
+    
     memory->outputSegment(USER_DATA);
-    
-    inst instruction = 0;
-    //Load instructions into memory
-//     instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
-    instruction = (Accumulator::ACC_INST_LOAD << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress);
-    memory->write(MemSys::BaseUserTextSegmentAddress, &instruction, sizeof(inst));
-    
-//     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress); //MULT X
-    instruction = (Accumulator::ACC_INST_MULT << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress);
-    memory->write(MemSys::BaseUserTextSegmentAddress+4, &instruction, sizeof(inst));
-    
-//     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+4); //MULT A
-    instruction = (Accumulator::ACC_INST_MULT << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress+4);
-    memory->write(MemSys::BaseUserTextSegmentAddress+8, &instruction, sizeof(inst));
-    
-//     instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
-    instruction = (Accumulator::ACC_INST_STO << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress+16);    
-    memory->write(MemSys::BaseUserTextSegmentAddress+12, &instruction, sizeof(inst));
-    
-//     instruction = 0x00000000 | (MemSys::BaseUserDataSegmentAddress); //LOAD X
-    instruction = (Accumulator::ACC_INST_LOAD << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress);  
-    memory->write(MemSys::BaseUserTextSegmentAddress+16, &instruction, sizeof(inst));
-    
-//     instruction = 0x03000000 | (MemSys::BaseUserDataSegmentAddress+8); //MULT B
-    instruction = (Accumulator::ACC_INST_LOAD << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress+8);
-    memory->write(MemSys::BaseUserTextSegmentAddress+20, &instruction, sizeof(inst));
-    
-//     instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+16); //ADD C+4
-    instruction = (Accumulator::ACC_INST_ADD << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress+16);
-    memory->write(MemSys::BaseUserTextSegmentAddress+24, &instruction, sizeof(inst));
-    
-//     instruction = 0x02000000 | (MemSys::BaseUserDataSegmentAddress+12); //ADD C
-    instruction = (Accumulator::ACC_INST_ADD << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress+12);
-    memory->write(MemSys::BaseUserTextSegmentAddress+28, &instruction, sizeof(inst));
-    
-//     instruction = 0x01000000 | (MemSys::BaseUserDataSegmentAddress+16); //STO C+4
-    instruction = (Accumulator::ACC_INST_STO << 24) //shift left 24 bits
-            | (MemSys::BaseUserDataSegmentAddress+16);
-    memory->write(MemSys::BaseUserTextSegmentAddress+32, &instruction, sizeof(inst));
-    
-    instruction = (Accumulator::ACC_INST_END << 24); //shift left 24 bits //END
-    memory->write(MemSys::BaseUserTextSegmentAddress+36, &instruction, sizeof(inst));
-    
-        memory->outputSegment(USER_TEXT);
+    memory->outputSegment(USER_TEXT);
 
     //Create simulator with memory system
     Simulator* acc = new Accumulator(memory);
+    
+    //Set up the program counter...
+    acc->setProgramCounter(setpc);
     
     //Run the simulator
     acc->run();
     
     SAFE_DELETE(acc); //see Utilities.hh
+    SAFE_DELETE(loader);
     SAFE_DELETE(memory);
     
     std::cout << "...Accumulator Simulation Ended\n" << std::endl;

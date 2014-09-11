@@ -18,12 +18,6 @@
  */
 #include "Accumulator.hh"
 
-const u_int8_t Accumulator::ACC_INST_LOAD = 0x01;
-const u_int8_t Accumulator::ACC_INST_STO = 0x02;
-const u_int8_t Accumulator::ACC_INST_MULT = 0x03;
-const u_int8_t Accumulator::ACC_INST_ADD = 0x04;
-const u_int8_t Accumulator::ACC_INST_END = 0x05;
-
 Accumulator::Accumulator(MemSys* mem) 
 : Simulator(mem)
 {
@@ -36,7 +30,7 @@ void Accumulator::run()
 {
     std::cout << "\tStarting Accumulator..." << std::endl;
     
-    inst curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst))); 
+//     inst curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst))); 
     
     std::cout << "\tEnding Accumulator..." << std::endl;
 }

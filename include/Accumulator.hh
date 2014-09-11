@@ -48,12 +48,6 @@ class Accumulator : public Simulator
             END
         };
         
-        static const u_int8_t ACC_INST_LOAD; //see impl for constant
-        static const u_int8_t ACC_INST_STO;
-        static const u_int8_t ACC_INST_ADD;
-        static const u_int8_t ACC_INST_MULT;
-        static const u_int8_t ACC_INST_END;
-        
         //---------------------------------------------------------------------
         
     protected:

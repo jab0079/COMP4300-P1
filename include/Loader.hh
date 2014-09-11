@@ -14,6 +14,7 @@
  *          files and inserts the correct instructions into memory.
  * 
  *      Change Log:
+ *          9/10/14 - Created two separate methods for the different ISAs
  *          9/5/14 - Initial creation.
  * 
  * 
@@ -21,20 +22,31 @@
 
 #include<iostream>
 #include<fstream>
+#include<sstream>
 
 #include "MemSys.hh"
+#include "Utilities.hh"
+#include "Accumulator.hh"
 
 class Loader
 {
     public:
+        
+        enum INST_SET
+        {
+            STACK_ISA,
+            ACCUM_ISA
+        };
+        
         Loader(MemSys* mem);
         ~Loader();
         
-        virtual addr load(const std::string& file_path);
+        virtual addr load(const std::string& file_path, const INST_SET& set);
         
     protected:
-        virtual addr loadUserText(std::ifstream& strm);
-        virtual addr loadUserData(std::ifstream& strm);
+        virtual inst parseInstructionAccum(const std::string& inst_str);
+        virtual inst parseInstructionStack(const std::string& inst_str);
+        virtual addr parseAddress(const std::string& inst_str);
         
     private:
         MemSys* m_memory;
