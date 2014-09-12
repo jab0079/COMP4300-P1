@@ -11,6 +11,7 @@
  *          This source file defines the implementation for the Accumulator Simulator
  * 
  *      Change Log:
+ * 	    9/11/14 - Finished Implementation and fixed bugs
  *          9/10/14 - Added instruction set constants
  *          9/9/14 - Initial creation
  * 
@@ -38,7 +39,7 @@ void Accumulator::run()
     while (user_mode) 
     {
       // Read memory at PC  
-      curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst)));	// *** Causes a Segmentation Fault (core dumped) error when running
+      curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst)));
       
       // Get opcode and address
       opcode = curr_inst & 0xFF000000;
@@ -50,25 +51,25 @@ void Accumulator::run()
       
       switch (opcode)
       {
-	case ACC_INST_LOAD:
-	  m_register = *((reg*)m_memory->read(address, sizeof(reg)));	// read contents of memory at address into accumulator
+	case ACC_INST_LOAD:	// LOAD
+	  m_register = *((reg*)m_memory->read(address, sizeof(reg)));		// read contents of memory at address into accumulator
 	  break;
 	  
-	case ACC_INST_STO:
-	  m_memory->write(address, &m_register, sizeof(reg));	// write value of accumulator to memory at address
+	case ACC_INST_STO:	// STO
+	  m_memory->write(address, &m_register, sizeof(reg));			// write value of accumulator to memory at address
 	  break;
-	  
-	case ACC_INST_ADD:
-	  value = *((u_int32_t*)m_memory->read(address, sizeof(u_int32_t)));	// read contents of memory at address
-	  m_register += value;							// add value to accumulator
-	  break;
-	  
-	case ACC_INST_MULT:
+	    
+	case ACC_INST_MULT:	// MULT
 	  value = *((u_int32_t*)m_memory->read(address, sizeof(u_int32_t)));	// read contents of memory at address
 	  m_register *= value;							// multiply the value with the accumulator 
 	  break;
 	  
-	case ACC_INST_END:
+	case ACC_INST_ADD:	// ADD
+	  value = *((u_int32_t*)m_memory->read(address, sizeof(u_int32_t)));	// read contents of memory at address
+	  m_register += value;							// add value to accumulator
+	  break;
+	  
+	case ACC_INST_END:	// END
 	  user_mode = false;
 	  break;
 	  
