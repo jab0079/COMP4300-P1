@@ -38,7 +38,7 @@ Synopsis------------------------------------------------------------
 
 Compilation ---------------------------------------------------------
 	
-	Included with this project are a heirarchy of Makefiles that
+	Included with this project are a hierarchy of Makefiles that
 	should assist with the compilation. To compile, simply type
 	in 'make' to the commandline while in the uppermost directory
 	that also contains this README file.
@@ -53,7 +53,7 @@ Source Tree ---------------------------------------------------------
 
   (with respect to the upper-most directory)
 
-	bin/	  - contains all executbles (created by Makefile)
+	bin/	  - contains all executables (created by Makefile)
     
 	docs/	  - contains all extra documentation and sample code
     
