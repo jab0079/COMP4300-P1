@@ -14,6 +14,7 @@
  *          files and inserts the correct instructions into memory.
  * 
  *      Change Log:
+ *          9/17/14 - Made class and derived classes Uncopyable
  *          9/10/14 - Created two separate methods for the different ISAs
  *          9/5/14 - Initial creation.
  * 
@@ -27,8 +28,9 @@
 #include "MemSys.hh"
 #include "Utilities.hh"
 #include "Accumulator.hh"
+#include "Uncopyable.hh"
 
-class Loader
+class Loader : private Uncopyable
 {
     public:
         
@@ -39,7 +41,7 @@ class Loader
         };
         
         Loader(MemSys* mem);
-        ~Loader();
+        virtual ~Loader();
         
         virtual addr load(const std::string& file_path, const INST_SET& set);
         

@@ -14,6 +14,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          9/17/14 - Made class and derived classes Uncopyable
  *          9/8/14 - Set up constants for bases and segment sizes, as
  *                      well as the byte-size segments that accompany
  *                      each segment.
@@ -27,6 +28,8 @@
 #include<stdlib.h> //for calloc
 #include<string.h> //for strncpy
 
+#include "Uncopyable.hh"
+
 typedef u_int32_t addr;
 typedef u_int32_t inst;
 
@@ -39,11 +42,13 @@ enum Segment
   STACK
 };
 
-class MemSys
+class MemSys : private Uncopyable
 {
     
     public:
         MemSys();
+        virtual ~MemSys();
+        
         //Public Methods ------------------------------------------------------
         virtual void* read(const addr& address, 
                            const unsigned int& size) const;
@@ -53,8 +58,6 @@ class MemSys
                            const unsigned int& size);
         
         virtual void outputSegment(const Segment& segment) const;
-        
-        virtual ~MemSys();
         
         // Public Constants ---------------------------------------------------
         //Segment Sizes...(in bytes)

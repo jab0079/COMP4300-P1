@@ -28,7 +28,7 @@ class Stack : public Simulator
 {
     public:
         Stack(MemSys* mem);
-        ~Stack();
+        virtual ~Stack();
 
         virtual void run();
 

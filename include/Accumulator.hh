@@ -31,7 +31,7 @@ class Accumulator : public Simulator
 {
     public:
         Accumulator(MemSys* mem);
-        ~Accumulator();
+        virtual ~Accumulator();
         
         virtual void run();
         

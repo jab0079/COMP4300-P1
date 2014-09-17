@@ -16,6 +16,7 @@
  *          class that should simply be a template for simulators
  * 
  *      Change Log:
+ *          9/17/14 - Made class and derived classes Uncopyable
  *          9/9/14 - Initial creation
  * 
  * 
@@ -24,14 +25,15 @@
 #include <iostream>
 
 #include "MemSys.hh"
+#include "Uncopyable.hh"
 
-class Simulator
+class Simulator : private Uncopyable
 {
     public:
         
         //Constructors / Destructor -------------------------------------------
         Simulator(MemSys* mem);
-        ~Simulator();
+        virtual ~Simulator();
         
         // Methods ------------------------------------------------------------
         virtual void run() = 0;
@@ -50,6 +52,11 @@ class Simulator
         addr m_sp; //stack pointer
         
     private:
+        
+        //We don't want any client to accidentally use these
+        //methods, therefore we will declare but not implement
+        Simulator(const Simulator&); //declarations only
+        Simulator& operator=(const Simulator&);
         
 };
 
