@@ -14,6 +14,7 @@
  *          files and inserts the correct instructions into memory.
  * 
  *      Change Log:
+ *          9/29/14 - Added GPR_ISA to enumeration
  *          9/17/14 - Made class and derived classes Uncopyable
  *          9/10/14 - Created two separate methods for the different ISAs
  *          9/5/14 - Initial creation.
@@ -37,7 +38,8 @@ class Loader : private Uncopyable
         enum INST_SET
         {
             STACK_ISA,
-            ACCUM_ISA
+            ACCUM_ISA,
+            GPR_ISA
         };
         
         Loader(MemSys* mem);

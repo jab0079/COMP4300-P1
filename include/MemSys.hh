@@ -14,6 +14,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          9/29/14 - Added exceptions to read and write
  *          9/17/14 - Made class and derived classes Uncopyable
  *          9/8/14 - Set up constants for bases and segment sizes, as
  *                      well as the byte-size segments that accompany
@@ -24,10 +25,11 @@
  * 
  */
 
-#include<iostream>
-#include<stdlib.h> //for calloc
-#include<string.h> //for strncpy
-
+#include <iostream>
+#include <stdlib.h> //for calloc
+#include <string.h> //for strncpy
+#include <exception>
+#include <stdexcept>
 #include "Uncopyable.hh"
 
 typedef u_int32_t addr;
@@ -51,11 +53,13 @@ class MemSys : private Uncopyable
         
         //Public Methods ------------------------------------------------------
         virtual void* read(const addr& address, 
-                           const unsigned int& size) const;
+                           const unsigned int& size) const 
+                           throw(std::range_error);
         
         virtual bool write(const addr& address, 
                            const void* data, 
-                           const unsigned int& size);
+                           const unsigned int& size)
+                           throw(std::range_error);
         
         virtual void outputSegment(const Segment& segment) const;
         

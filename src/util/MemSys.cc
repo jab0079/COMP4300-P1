@@ -11,6 +11,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          9/29/14 - Added exceptions to read and write
  *          9/11/14 - Changed how system checks reading addresses
  *          9/8/14 - Implemented read/write functions and added the
  *                      outputSegment function
@@ -63,132 +64,167 @@ MemSys::~MemSys()
 }
 
 void* MemSys::read(const addr& address, const unsigned int& size) const
+throw(std::range_error)
 {
     //get the base address to determine which segment to access
     addr base = (address & 0x00F00000);
     
     unsigned int start = address & 0x000FFFFF; //needed for indexing into arrays
     
-    switch (base)
+    try
     {
-        case (BaseUserTextSegmentAddress):
-            //Sanity check
-            if (size > UserTextSegmentSize 
-                || address > BaseUserTextSegmentAddress+UserTextSegmentSize)
-                return 0x0; //Should fail more gracefully...throw error?
-            
-            { //need block so ret is not visible to other cases
-                void* ret = calloc(size,sizeof(char)); 
-                memcpy(ret, m_usertext_seg+start, size);
-                return ret;
-            }
-            break;
-        case (BaseUserDataSegmentAddress):
-            //Sanity check
-            if (size > UserDataSegmentSize 
-                || address > BaseUserDataSegmentAddress+UserDataSegmentSize)
-                return 0x0; //Should fail more gracefully...throw error?
-            
-            { //need block so ret is not visible to other cases
-                void* ret = calloc(size,sizeof(char)); 
-                memcpy(ret, m_userdata_seg+start, size);
-                return ret;
-            }
-            break;
-        case (BaseKernelTextSegmentAddress):
-            //Sanity check
-            if (size > KernelTextSegmentSize 
-                || address > BaseKernelTextSegmentAddress+KernelTextSegmentSize)
-                return 0x0; //Should fail more gracefully...throw error?
-            
-            { //need block so ret is not visible to other cases
-                void* ret = calloc(size,sizeof(char)); 
-                memcpy(ret, m_kerneltext_seg+start, size);
-                return ret;
-            }
-            break;
-        case (BaseKernelDataSegmentAddress):
-            //Sanity check
-            if (size > KernelDataSegmentSize 
-                || address > BaseKernelDataSegmentAddress+KernelDataSegmentSize)
-                return 0x0; //Should fail more gracefully...throw error?
-            
-            { //need block so ret is not visible to other cases
-                void* ret = calloc(size,sizeof(char)); 
-                memcpy(ret, m_kerneldata_seg+start, size);
-                return ret;
-            }
-            break;
-        case (BaseStackSegmentAddress):
-            //Sanity check
-            if (size > StackSegmentSize 
-                || address > BaseStackSegmentAddress+StackSegmentSize)
-                return 0x0; //Should fail more gracefully...throw error?
-            
-            { //need block so ret is not visible to other cases
-                char* ret = (char*)calloc(size,sizeof(char)); 
-                memcpy(ret, (const char *)m_stack_seg+start, size);
-                return ret;
-            }
-            break;
-        default:
-            //Should we throw an error? Or just return null?
-            return 0x0;
-            break;
+        switch (base)
+        {
+            case (BaseUserTextSegmentAddress):
+                //Sanity check
+                if (size > UserTextSegmentSize 
+                    || address > BaseUserTextSegmentAddress+UserTextSegmentSize)
+                    throw std::range_error("MemSys out of bounds read: BaseUserTextSegmentAddress");
+                
+                { //need block so ret is not visible to other cases
+                    void* ret = calloc(size,sizeof(char)); 
+                    memcpy(ret, m_usertext_seg+start, size);
+                    return ret;
+                }
+                break;
+            case (BaseUserDataSegmentAddress):
+                //Sanity check
+                if (size > UserDataSegmentSize 
+                    || address > BaseUserDataSegmentAddress+UserDataSegmentSize)
+                    throw std::range_error("MemSys out of bounds read: BaseUserDataSegmentAddress");
+                
+                { //need block so ret is not visible to other cases
+                    void* ret = calloc(size,sizeof(char)); 
+                    memcpy(ret, m_userdata_seg+start, size);
+                    return ret;
+                }
+                break;
+            case (BaseKernelTextSegmentAddress):
+                //Sanity check
+                if (size > KernelTextSegmentSize 
+                    || address > BaseKernelTextSegmentAddress+KernelTextSegmentSize)
+                    throw std::range_error("MemSys out of bounds read: BaseKernelTextSegmentAddress");
+                
+                { //need block so ret is not visible to other cases
+                    void* ret = calloc(size,sizeof(char)); 
+                    memcpy(ret, m_kerneltext_seg+start, size);
+                    return ret;
+                }
+                break;
+            case (BaseKernelDataSegmentAddress):
+                //Sanity check
+                if (size > KernelDataSegmentSize 
+                    || address > BaseKernelDataSegmentAddress+KernelDataSegmentSize)
+                    throw std::range_error("MemSys out of bounds read: BaseKernelDataSegmentAddress");
+                
+                { //need block so ret is not visible to other cases
+                    void* ret = calloc(size,sizeof(char)); 
+                    memcpy(ret, m_kerneldata_seg+start, size);
+                    return ret;
+                }
+                break;
+            case (BaseStackSegmentAddress):
+                //Sanity check
+                if (size > StackSegmentSize 
+                    || address > BaseStackSegmentAddress+StackSegmentSize)
+                    throw std::range_error("MemSys out of bounds read: BaseStackSegmentAddress");
+                
+                { //need block so ret is not visible to other cases
+                    char* ret = (char*)calloc(size,sizeof(char)); 
+                    memcpy(ret, (const char *)m_stack_seg+start, size);
+                    return ret;
+                }
+                break;
+            default:
+                throw std::range_error("MemSys invalid base read specifier!");
+                break;
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
     }
 }
 
 bool MemSys::write(const addr& address, const void* data, const unsigned int& size)
+throw(std::range_error)
 {
     //get the base address to determine which segment to access
     addr base = (address & 0x00F00000);
     unsigned int start = address & 0x000FFFFF; //needed for indexing into arrays
-    switch (base)
+    try
     {
-        case (BaseUserTextSegmentAddress):
-            if (size > UserTextSegmentSize 
-                || address + size > BaseUserTextSegmentAddress+UserTextSegmentSize)
-                return false; //Should fail more gracefully...throw error?
-            memcpy(m_usertext_seg+start, data, size);
-            if (address + size > m_usertext_top)
-                m_usertext_top = address + size;
-            return true;
-        case (BaseUserDataSegmentAddress):
-            if (size > UserDataSegmentSize 
-                || address + size > BaseUserDataSegmentAddress+UserDataSegmentSize)
-                return false; //Should fail more gracefully...throw error?
-            memcpy(m_userdata_seg+start, data, size);
-            if (address + size > m_userdata_top)
-                m_userdata_top = address + size;
-            return true;
-        case (BaseKernelTextSegmentAddress):
-            if (size > KernelTextSegmentSize 
-                || address + size > BaseKernelTextSegmentAddress+KernelTextSegmentSize)
-                return false; //Should fail more gracefully...throw error?
-            memcpy(m_kerneltext_seg+start, data, size);
-            if (address + size > m_kerneltext_top)
-                m_kerneltext_top = address + size;
-            return true;
-        case (BaseKernelDataSegmentAddress):
-            if (size > KernelDataSegmentSize 
-                || address + size > BaseKernelDataSegmentAddress+KernelDataSegmentSize)
-                return false; //Should fail more gracefully...throw error?
-            memcpy(m_kerneldata_seg+start, data, size);
-            if (address + size > m_kerneldata_top)
-                m_kerneldata_top = address + size;
-            return true;
-        case (BaseStackSegmentAddress):
-            if (size > StackSegmentSize 
-                || address + size > BaseStackSegmentAddress+StackSegmentSize)
-                return false; //Should fail more gracefully...throw error?
-            memcpy(m_stack_seg+start, data, size);
-            if (address + size > m_stack_top)
-                m_stack_top = address + size;
-            return true;
-        default:
-            //Should we throw an error? Or just return null?
-            return false;
-            break;
+        switch (base)
+        {
+            case (BaseUserTextSegmentAddress):
+                
+                if (size > UserTextSegmentSize 
+                    || address + size > BaseUserTextSegmentAddress+UserTextSegmentSize)
+                    throw std::range_error("MemSys out of bounds write: UserTextSegmentSize");
+                
+                memcpy(m_usertext_seg+start, data, size);
+                
+                if (address + size > m_usertext_top)
+                    m_usertext_top = address + size;
+                return true;
+                
+            case (BaseUserDataSegmentAddress):
+                
+                if (size > UserDataSegmentSize 
+                    || address + size > BaseUserDataSegmentAddress+UserDataSegmentSize)
+                    throw std::range_error("MemSys out of bounds write: BaseUserDataSegmentAddress");
+                
+                memcpy(m_userdata_seg+start, data, size);
+                
+                if (address + size > m_userdata_top)
+                    m_userdata_top = address + size;
+                return true;
+                
+            case (BaseKernelTextSegmentAddress):
+                
+                if (size > KernelTextSegmentSize 
+                    || address + size > BaseKernelTextSegmentAddress+KernelTextSegmentSize)
+                    throw std::range_error("MemSys out of bounds write: BaseKernelTextSegmentAddress");
+                
+                memcpy(m_kerneltext_seg+start, data, size);
+                
+                if (address + size > m_kerneltext_top)
+                    m_kerneltext_top = address + size;
+                return true;
+                
+            case (BaseKernelDataSegmentAddress):
+                
+                if (size > KernelDataSegmentSize 
+                    || address + size > BaseKernelDataSegmentAddress+KernelDataSegmentSize)
+                    throw std::range_error("MemSys out of bounds write: BaseKernelDataSegmentAddress");
+                
+                memcpy(m_kerneldata_seg+start, data, size);
+                
+                if (address + size > m_kerneldata_top)
+                    m_kerneldata_top = address + size;
+                return true;
+                
+            case (BaseStackSegmentAddress):
+                
+                if (size > StackSegmentSize 
+                    || address + size > BaseStackSegmentAddress+StackSegmentSize)
+                    throw std::range_error("MemSys out of bounds write: BaseStackSegmentAddress");
+                
+                memcpy(m_stack_seg+start, data, size);
+                
+                if (address + size > m_stack_top)
+                    m_stack_top = address + size;
+                return true;
+                
+            default:
+                throw std::range_error("MemSys invalid base write specifier!");
+                return false;
+                break;
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
     }
 }
 

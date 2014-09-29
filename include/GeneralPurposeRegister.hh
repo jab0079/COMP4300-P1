@@ -1,5 +1,5 @@
-#ifndef ACCUMULATOR_HH
-#define ACCUMULATOR_HH
+#ifndef GENERALPURPOSEREGISTER_HH
+#define GENERALPURPOSEREGISTER_HH
 /*
  * 
  *      Accumulator.hh
@@ -13,8 +13,7 @@
  *          This class defines the interface for the Accumulator Simulator
  * 
  *      Change Log:
- *          9/10/14 - Added instruction set static members
- *          9/9/14 - Initial creation
+ *          9/29/14 - Initial Creation
  * 
  * 
  */
@@ -24,19 +23,21 @@
 #include "Simulator.hh"
 #include "Utilities.hh"
 
-class Accumulator : public Simulator
+static const u_int32_t REGISTER_COUNT = 32;
+
+class GeneralPurposeRegister : public Simulator
 {
     public:
-        Accumulator(MemSys* mem);
-        virtual ~Accumulator();
+        GeneralPurposeRegister(MemSys* mem);
+        virtual ~GeneralPurposeRegister();
         
         virtual void run();
         
     protected:
-        reg m_register; //Utilities.hh
+        reg m_register[REGISTER_COUNT]; //Utilities.hh
         
     private:
 };
 
 
-#endif
+#endif //GENERALPURPOSEREGISTER_HH

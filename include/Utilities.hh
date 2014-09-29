@@ -39,6 +39,25 @@ static const u_int8_t STK_INST_MULT = 0x03;
 static const u_int8_t STK_INST_ADD = 0x04;
 static const u_int8_t STK_INST_END = 0x05;
 
+enum GPR_INST_SET {
+    GPR_ADDI,
+    GPR_B,
+    GPR_BEGZ,
+    GPR_BGE,
+    GPR_BNE,
+    GPR_LA,
+    GPR_LB,
+    GPR_LI,
+    GPR_SUBI,
+    GPR_SYSCALL
+};
+static const u_int8_t GPR_INST_SET_VALS[] =
+{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
+static const u_int8_t GPR_INST_SET_CYCLES[] =
+{6,4,5,5,6,3,6,8};
+
+typedef u_int32_t reg; //32-bit registers
+
 static std::string removeWhiteSpace(const std::string& str)
 {
     std::string s = str;
