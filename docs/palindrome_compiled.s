@@ -28,7 +28,7 @@
 0x00200007:78  #N
 
 .text
-  main:
+  #main:
 	
   # read the string S:
 	la $30, 0x00200100
