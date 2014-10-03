@@ -1,4 +1,4 @@
-COMP4300 - Computer Architecture - Project 2
+COMP4300 - Computer Architecture - Project 1
 
 ===============================================================================
 
@@ -12,28 +12,30 @@ Authors -------------------------------------------------------------
 
 Synopsis------------------------------------------------------------
     
-	This project extended the previous accumulator-based machine 
-	into a General Purpose Register (GPR) multi-cycle machine. 
-	Along with simulating these units, this project also emulates a 
-	memory unit and a loading unit. The memory unit is a centralized 
+	This project consists of two simulators that simulate 32-bit
+	stack-based and accumulator-based arithmetic units. Along with
+	simulating these units, this project also emulates a memory
+	unit and a loading unit. The memory unit is a centralized 
 	array-based segmented memory. The loader loads the accompanied
-	source files into the memory unit to be used by the simulator.
+	source files into the memory unit to be used by the simulators.
 	All loaded items from the source files by the loader are loaded
 	in binary representation, following the binary encoding scheme
 	shown below.
+	
+	STACK-BASED INSTRUCTION SET
+		PUSH -  | 0x01 |   ... 24-bit source      |
+		POP  -  | 0x02 |   ... 24-bit destination |
+		MULT -  | 0x03 |   N/A (24bits)--------   |
+		ADD  -  | 0x04 |   N/A (24bits)--------   |
+		END  -  | 0x05 |   N/A (24bits)--------   |
 
-	GENERAL PURPOSE REGISTER MACHINE INSTRUCTION SET
-		ADDI -  | 0x01 | ... 5-bit dest | 5-bit src1 | 14-bit imm |
-		B    -  | 0x02 | ... 24-bit relative offset		  |
-		BEQZ -  | 0x03 | ... 5-bit src1 | 19-bit relative offset  |
-		BGE  -  | 0x04 | ... 5-bit src1 | 5-bit src2 | 14-bit off |
-		BNE  -  | 0x05 | ... 5-bit src1 | 5-bit src2 | 14-bit off |
-		LA   -  | 0x06 | ... 5-bit dest | 19-bit relative offset  |
-		LB   -  | 0x07 | ... 5-bit dest | 5-bit src1 | 14-bit off |
-		LI   -  | 0x08 | ... 5-bit dest | 19-bit immediate value  |
-		SUBI -  | 0x09 | ... 5-bit dest | 5-bit src1 | 14-bit imm |
-		SYSCALL | 0x0A | N/A (24-bits) -------------------------- |
- 
+	ACCUMULATOR-BASED INSTRUCTION SET
+		LOAD -  | 0x01 |   ... 24-bit source      |
+		STO  -  | 0x02 |   ... 24-bit destination |
+		MULT -  | 0x03 |   ... 24-bit source      |
+		ADD  -  | 0x04 |   ... 24-bit source      |
+		END  -  | 0x05 |   N/A (24bits)--------   |
+
 Compilation ---------------------------------------------------------
 	
 	Included with this project are a hierarchy of Makefiles that
@@ -64,8 +66,6 @@ Source Tree ---------------------------------------------------------
 	src/stackCode - contains all source files for the stackSim
     
 	src/accumCode - contains all source files for the accumSim
-
-	src/gprCode - contains all source files for the gprSim
     
 	src/utils     - contains all utility source files 
 			            used by all executables

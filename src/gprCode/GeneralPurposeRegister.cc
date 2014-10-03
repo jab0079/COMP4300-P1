@@ -59,14 +59,14 @@ void GeneralPurposeRegister::run()
 	    value = decodeInstr(curr_inst, 14);			// Get signed immediate value
 	    
 	    m_register[r_dest] = m_register[r_src1] + value;	// Add r_src1 and immediate value, store in r_dest
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_ADDI];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_ADDI];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_B:
             value = decodeInstr(curr_inst, 24) * 4;	// Get signed label offset value
             
             m_pc += value;				// Branch
-            m_cycles += GPR_INST_SET_CYCLES[GPR_B];
+            m_cycles += GPR_INST_SET_CYCLES[GPR_B];	// Increment Cycles spent in execution
             break;
 	    
         case GPR_BEQZ:
@@ -78,7 +78,7 @@ void GeneralPurposeRegister::run()
 	    {
 	      m_pc += value;
 	    }
-            m_cycles += GPR_INST_SET_CYCLES[GPR_BEQZ];
+            m_cycles += GPR_INST_SET_CYCLES[GPR_BEQZ];	// Increment Cycles spent in execution
             break;
 	    
         case GPR_BGE:
@@ -92,7 +92,7 @@ void GeneralPurposeRegister::run()
 	    {
 	      m_pc += value;
 	    }
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_BGE];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_BGE];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_BNE:
@@ -106,7 +106,7 @@ void GeneralPurposeRegister::run()
 	    {
 	      m_pc += value;
 	    }
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_BNE];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_BNE];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_LA:
@@ -115,7 +115,7 @@ void GeneralPurposeRegister::run()
 	    value = decodeInstr(curr_inst, 19)	;	// Get signed label offset value 			
 	    
 	    m_register[r_dest] = value;			// Load signed label offset address into r_dest
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_LA];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_LA];	// Increment Cycles spent in execution
             break;
 	    
         case GPR_LB:
@@ -124,9 +124,11 @@ void GeneralPurposeRegister::run()
 	    r_src1 = curr_inst & 0x0007C000;			// Get source 1 register number
 	    r_src1 = r_src1 >> 14;
 	    value = decodeInstr(curr_inst, 14);			// Get signed offset value
+	    
+	    // Correct address and read from memory into r_dest
 	    corrected_address = (MemSys::BaseUserDataSegmentAddress | m_register[r_src1]) + value;
 	    m_register[r_dest] = *((u_int8_t*)m_memory->read(corrected_address, sizeof(u_int8_t)));
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_LB];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_LB];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_LI:
@@ -135,7 +137,7 @@ void GeneralPurposeRegister::run()
 	    value = decodeInstr(curr_inst, 19);		// Get signed immediate value 			
 	    
 	    m_register[r_dest] = value;			// Load signed label offset address into r_dest
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_LI];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_LI];	// Increment Cycles spent in execution
             break;
 	    
         case GPR_SUBI:
@@ -146,7 +148,7 @@ void GeneralPurposeRegister::run()
 	    value = decodeInstr(curr_inst, 14);			// Get signed immediate value
 	    
 	    m_register[r_dest] = m_register[r_src1] - value;	// Subtract r_src1 and immediate value, store in r_dest
-	    m_cycles += GPR_INST_SET_CYCLES[GPR_SUBI];
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_SUBI];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_SYSCALL:
@@ -156,11 +158,11 @@ void GeneralPurposeRegister::run()
 	    {
 	      case SYSCALL_PRINT_STR:
 	      {
-		addr str_addr = MemSys::BaseUserDataSegmentAddress | m_register[REG_ARG_1];
-		u_int8_t letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
+		addr str_addr = MemSys::BaseUserDataSegmentAddress | m_register[REG_ARG_1];	// Corrected Address
+		u_int8_t letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));	// Read first char
 		std::string str;
 		str_addr++;
-		while (letter != '\0')
+		while (letter != '\0')		// Print each char in the string until NUL terminator
 		{
 		  str += letter;
 		  letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
@@ -175,25 +177,26 @@ void GeneralPurposeRegister::run()
 	      {
 		std::string input;
 		std::cin >> input;
-		addr str_addr = MemSys::BaseUserDataSegmentAddress | m_register[REG_ARG_1];
-		for (int i = 0; i < input.length(); i++)
+		addr str_addr = MemSys::BaseUserDataSegmentAddress | m_register[REG_ARG_1];	// Corrected Address
+		for (int i = 0; i < input.length(); i++)	// Write each char to memory
 		{
 		  m_memory->write(str_addr, &input[i], sizeof(u_int8_t));
 		  str_addr++;
 		}
-		u_int8_t null = '\0';
+		u_int8_t null = '\0';				// Add NUL terminator
 		m_memory->write(str_addr, &null, sizeof(u_int8_t));
 	      }
 		break;
+		
 	      case SYSCALL_EXIT:
-		user_mode = false;
+		user_mode = false;	// Exit user_mode
 		break;
 		
 	      default:
 		break;
 	    }
-	   }
-	   m_cycles += GPR_INST_SET_CYCLES[GPR_SYSCALL];
+	  }
+	    m_cycles += GPR_INST_SET_CYCLES[GPR_SYSCALL];	// Increment Cycles spent in execution
             break;
 	    
 	default:

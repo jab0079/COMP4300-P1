@@ -1,6 +1,6 @@
 /*
  * 
- *      driver_accum.cc
+ *      driver_gpr.cc
  * 
  *      Contributors:   Adam Eichelkraut
  *                      Jared Brown
@@ -12,6 +12,7 @@
  *          executable.
  * 
  *      Change Log:
+ *	    10/3/14 - Updated for GPR simulator
  *          9/10/14 - Added the Loader to system
  *          9/9/14 - Added memory system and test data for instructions
  *                      and the actual simulator object.
@@ -70,6 +71,7 @@ int main(int argc, char* argv[])
     //Run the simulator
     gpr->run();
     
+    //Calculate and Print summary stats
     u_int32_t ic = gpr->getInstructionCount();
     u_int32_t cy = gpr->getCycleCount();
     float su = (float)(8*ic)/cy;

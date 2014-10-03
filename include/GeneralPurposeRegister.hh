@@ -13,6 +13,7 @@
  *          This class defines the interface for the GeneralPurposeRegister Simulator
  * 
  *      Change Log:
+ * 	    10/3/14 - Added Register Constants and decodeInstr method
  *          9/29/14 - Initial Creation
  * 
  * 
@@ -25,9 +26,9 @@
 #include "Utilities.hh"
 
 static const u_int32_t REGISTER_COUNT = 32;
-static const u_int32_t REG_VAL_1 = 2;
-static const u_int32_t REG_ARG_1 = 4;
-static const u_int32_t REG_ARG_2 = 5;
+static const u_int32_t REG_VAL_1 = 2;	// Register $2 = $v0 from MIPS
+static const u_int32_t REG_ARG_1 = 4;	// Register $4 = $a0 from MIPS
+static const u_int32_t REG_ARG_2 = 5;	// Register $5 = $a1 from MIPS
 
 class GeneralPurposeRegister : public Simulator
 {
