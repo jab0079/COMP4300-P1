@@ -43,7 +43,7 @@ static const u_int8_t STK_INST_END = 0x05;
 enum GPR_INST_SET {
     GPR_ADDI, //0
     GPR_B, //1
-    GPR_BEGZ, //2
+    GPR_BEQZ, //2
     GPR_BGE, //3
     GPR_BNE, //4
     GPR_LA, //5

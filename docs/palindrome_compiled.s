@@ -23,7 +23,6 @@
 0x00200002:66  #B
 0x00200003:65  #A
 0x00200004:00  #\0
-0x00200005:10  #\n
 0x00200006:89  #Y
 0x00200007:00  #\0
 0x00200008:78  #N
@@ -38,25 +37,25 @@
 	li $2, 0x1	                # load "read_string" code into $2.
 	syscall
 
-	la $8, 0x00200100	          # A = S.
-	la $9, 0x00200100	          # we need to move B to the end
+	la $8, 0x00200000	          # A = S.
+	la $9, 0x00200000	          # we need to move B to the end
 
 #length_loop:			            # length of the string
-	lb $10, ($11)		              # load the byte at addr B into $10.
+	lb $10, ($9)		              # load the byte at addr B into $10.
 	beqz $10, 0x2                # if $10 == 0, branch out of loop.
 
 	addi $9, $9, 0x1	          # otherwise, increment B,
 	b 0xFFFFFFFC		            # and repeat the loop.
 
 #end_length_loop:
-	subi $9, $9, 0x2	          # subtract 2 to move B back past the '\0' and '\n'.
+	subi $9, $9, 0x1	          # subtract 2 to move B back past the '\0' and '\n'.
 
 #test_loop:
 	bge $8, $9, 0x06	            # if A >= B, it's a palindrome.
 
 	lb $10, ($8)		              # load the byte at addr A into $10,
 	lb $11, ($9)		              # load the byte at addr B into $11.
-	bne $10, $11, 0x06             # if $10 != $11, not a palindrome.
+	bne $10, $11, 0x07             # if $10 != $11, not a palindrome.
 
 # Otherwise,
 
@@ -72,11 +71,11 @@
 	b 0x4
 
 #not_palin:
-	la $4, 0x00200007	    # print the not_palin_msg, and exit.
+	la $4, 0x00200008	    # print the not_palin_msg, and exit.
 	li $2, 0x00
 	syscall
 	b 0x00
 
 #exit:			        	        # exit the program
-	li $2, 0x00		              # load "exit" code into $2.
+	li $2, 0x02		              # load "exit" code into $2.
 	syscall			                # make the system call.

@@ -178,7 +178,7 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
     else if (inst_token.compare("BEQZ")==0)
         //BEGZ Rsrc1, label
         //[8-bit op][5-bit src][19-bit relative offset]
-        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_BEGZ], inst_str);
+        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_BEQZ], inst_str);
     else if (inst_token.compare("BGE")==0)
         //BGE Rsrc1, Rsrc2, label
         //[8-bit op][5-bit src1][5-bit src2][14-bit offset]

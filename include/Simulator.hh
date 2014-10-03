@@ -16,6 +16,7 @@
  *          class that should simply be a template for simulators
  * 
  *      Change Log:
+ * 	    10/3/14 - Added instruction counting
  *          9/17/14 - Made class and derived classes Uncopyable
  *          9/9/14 - Initial creation
  * 
@@ -43,6 +44,8 @@ class Simulator : private Uncopyable
         virtual void setStackPointer(const addr& in);
         virtual addr getProgramCounter() const;
         virtual addr getStackPointer() const;
+	virtual u_int32_t getInstructionCount() const;
+	virtual u_int32_t getCycleCount() const;
         
     protected:
         
@@ -50,6 +53,9 @@ class Simulator : private Uncopyable
         MemSys* m_memory; //memory
         addr m_pc; //program counter
         addr m_sp; //stack pointer
+        
+        u_int32_t m_ic; //instruction count
+        u_int32_t m_cycles; //total number of cycles
         
     private:
         

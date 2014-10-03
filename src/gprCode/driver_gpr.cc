@@ -37,9 +37,7 @@ int main(int argc, char* argv[])
     
     //Load program into memory
     Loader* loader = new Loader(memory);
-    
-    std::cout << loader->parseInstructionGPR("addi$30,0x00200100") << std::endl;
-    
+        
     //Very much a kludge, but this is the only way I figured
     //we could determine the path of the compiled sources without
     //the user having to add in a commandline argument.
@@ -72,8 +70,15 @@ int main(int argc, char* argv[])
     //Run the simulator
     gpr->run();
     
+    u_int32_t ic = gpr->getInstructionCount();
+    u_int32_t cy = gpr->getCycleCount();
+    float su = (float)(8*ic)/cy;
+    
+    std::cout << "Instruction Count: " << ic << std::endl;
+    std::cout << "Cycle Count: " << cy << std::endl;
+    std::cout << "Speed up: " << su << std::endl;
+    
     memory->outputSegment(USER_DATA);
-
     
     SAFE_DELETE(gpr); //see Utilities.hh
     SAFE_DELETE(loader);
