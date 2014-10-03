@@ -52,6 +52,13 @@ enum GPR_INST_SET {
     GPR_SUBI, //8
     GPR_SYSCALL //9
 };
+
+enum SYSCALL_CODES {
+    SYSCALL_PRINT_STR,
+    SYSCALL_READ_STR,
+    SYSCALL_EXIT
+};
+
 static const u_int8_t GPR_INST_SET_VALS[] =
 { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
 static const u_int8_t GPR_INST_SET_CYCLES[] =

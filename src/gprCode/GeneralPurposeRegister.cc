@@ -104,7 +104,7 @@ void GeneralPurposeRegister::run()
         case GPR_LA:
             r_dest = curr_inst & 0x00F80000;		// Get destination register number
 	    r_dest = r_dest >> 19;
-	    value = decodeInstr(curr_inst, 19) * 4;	// Get signed label offset value 			
+	    value = decodeInstr(curr_inst, 19)	;	// Get signed label offset value 			
 	    
 	    m_register[r_dest] = value;			// Load signed label offset address into r_dest
             break;
@@ -122,7 +122,7 @@ void GeneralPurposeRegister::run()
         case GPR_LI:
             r_dest = curr_inst & 0x00F80000;		// Get destination register number
 	    r_dest = r_dest >> 19;
-	    value = decodeInstr(curr_inst, 19) * 4;	// Get signed immediate value 			
+	    value = decodeInstr(curr_inst, 19);		// Get signed immediate value 			
 	    
 	    m_register[r_dest] = value;			// Load signed label offset address into r_dest
             break;
@@ -132,13 +132,44 @@ void GeneralPurposeRegister::run()
 	    r_dest = r_dest >> 19;
 	    r_src1 = curr_inst & 0x0007C000;			// Get source 1 register number
 	    r_src1 = r_src1 >> 14;
-	    imm = decodeInstr(curr_inst, 14);			// Get signed immediate value
+	    value = decodeInstr(curr_inst, 14);			// Get signed immediate value
 	    
-	    m_register[r_dest] = m_register[r_src1] - imm;	// Subtract r_src1 and immediate value, store in r_dest
+	    m_register[r_dest] = m_register[r_src1] - value;	// Subtract r_src1 and immediate value, store in r_dest
             break;
 	    
         case GPR_SYSCALL:
-            // stubbed out...
+	{
+            u_int32_t sys_code = m_register[REG_VAL_1];		// Get syscall code
+	    
+	    switch(sys_code)
+	    {
+	      case SYSCALL_PRINT_STR:
+	      {
+		addr str_addr = m_register[REG_ARG_1];
+// 		u_int32_t num_chars = m_register[REG_ARG_2];
+		
+		u_int8_t letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
+		std::string str;
+		while (letter != '\0')
+		{
+		  str += letter;
+		  letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
+		} 
+		
+		std::cout << str << std::endl; 
+	      }
+		break;
+		
+	      case SYSCALL_READ_STR:
+		break;
+		
+	      case SYSCALL_EXIT:
+		break;
+		
+	      default:
+		break;
+	    }
+	   }
             break;
 	    
 	default:
@@ -154,11 +185,11 @@ int32_t GeneralPurposeRegister::decodeInstr(const u_int32_t& instr, const u_int8
     std::bitset<32> val32(instr);
     std::bitset<32> val;
     
-    for (int i = 0; i < num_bits - 1; i++)
+    for (int i = 0; i < num_bits - 2; i++) // Copy all bits up to msb
 	val.set(i, val32[i]);
       
-    for (int i = num_bits; i < 32; i++)
-        val.set(i, val32[num_bits]);
+    for (int i = num_bits - 1; i < 32; i++)	// Sign extend msb
+        val.set(i, val32[num_bits - 1]);
     
     return val.to_ulong();
 }

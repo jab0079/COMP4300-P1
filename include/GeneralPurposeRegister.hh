@@ -25,6 +25,9 @@
 #include "Utilities.hh"
 
 static const u_int32_t REGISTER_COUNT = 32;
+static const u_int32_t REG_VAL_1 = 2;
+static const u_int32_t REG_ARG_1 = 4;
+static const u_int32_t REG_ARG_2 = 5;
 
 class GeneralPurposeRegister : public Simulator
 {
