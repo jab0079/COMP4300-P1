@@ -25,6 +25,7 @@
 #include<iostream>
 #include<fstream>
 #include<sstream>
+#include<bitset>
 
 #include "MemSys.hh"
 #include "Utilities.hh"
@@ -47,11 +48,16 @@ class Loader : private Uncopyable
         
         virtual addr load(const std::string& file_path, const INST_SET& set);
         
-    protected:
         virtual inst parseInstructionAccum(const std::string& inst_str);
         virtual inst parseInstructionStack(const std::string& inst_str);
-        virtual addr parseAddress(const std::string& inst_str);
+        virtual inst parseInstructionGPR(const std::string& inst_str);
         
+        virtual addr parseAddress(const std::string& inst_str);
+        virtual u_int32_t parseOffset(const std::string& inst_str);
+        virtual u_int32_t parseValue(const std::string& hexStr, const u_int8_t& num_bits);
+        virtual inst parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
+        virtual inst parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
+    protected:  
     private:
         MemSys* m_memory;
         

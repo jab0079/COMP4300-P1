@@ -79,7 +79,7 @@ static std::string removeComments(const std::string& str)
 
 
 
-static u_int32_t strHexToAddr(std::string& hexstr)
+static u_int32_t strHexToAddr(const std::string& hexstr)
 {
     //ignore '0x'
     u_int32_t ret = 0;

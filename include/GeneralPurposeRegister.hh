@@ -2,7 +2,7 @@
 #define GENERALPURPOSEREGISTER_HH
 /*
  * 
- *      Accumulator.hh
+ *      GeneralPurposeRegister.hh
  * 
  *      Contributors:   Adam Eichelkraut
  *                      Jared Brown
@@ -10,7 +10,7 @@
  *                      jab0079@tigermail.auburn.edu
  * 
  *      Description: 
- *          This class defines the interface for the Accumulator Simulator
+ *          This class defines the interface for the GeneralPurposeRegister Simulator
  * 
  *      Change Log:
  *          9/29/14 - Initial Creation

@@ -13,6 +13,7 @@
  *          into a MemSys object.
  * 
  *      Change Log:
+ *          8/2/14 - Added GPR instruction set implementation
  *          9/10/14 - Implemented load function and helper functions
  *          9/5/14 - Initial creation.
  * 
@@ -72,7 +73,7 @@ addr Loader::load(const std::string& file_path, const INST_SET& set)
         }
         
         if (userData)
-        { //should be the same for both Stack and Accumulator
+        { //should be the same for all
             //parse address
             int colon = line.find(":");
             std::string address = line.substr(0,colon);
@@ -104,6 +105,9 @@ addr Loader::load(const std::string& file_path, const INST_SET& set)
                     break;
                 case ACCUM_ISA:
                     instruction = parseInstructionAccum(line);
+                    break;
+                case GPR_ISA:
+                    instruction = parseInstructionGPR(line);
                     break;
             }
             
@@ -151,6 +155,51 @@ inst Loader::parseInstructionAccum(const std::string& inst_str)
         return (ACC_INST_END << 24);
 }
 
+inst Loader::parseInstructionGPR(const std::string& inst_str)
+{
+    std::string inst_token = inst_str.substr(0,inst_str.find(" "));
+    if (inst_token.compare("ADDI")==0)
+        //ADDI Rdest, Rsrc1, Imm
+        //[8-bit op][5-bit dest][5-bit src][14-bit immediate]
+        return parse2Reg1Val(GPR_INST_SET_VALS[GPR_ADDI], inst_str);
+    else if (inst_token.compare("B")==0)
+        //B label
+        //[8-bit op][24-bit relative offset]
+        return (GPR_INST_SET_VALS[GPR_B] << 24) | parseOffset(inst_str);
+    else if (inst_token.compare("BEGZ")==0)
+        //BEGZ Rsrc1, label
+        //[8-bit op][5-bit src][19-bit relative offset]
+        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_BEGZ], inst_str);
+    else if (inst_token.compare("BGE")==0)
+        //BGE Rsrc1, Rsrc2, label
+        //[8-bit op][5-bit src1][5-bit src2][14-bit offset]
+        return parse2Reg1Val(GPR_INST_SET_VALS[GPR_BGE], inst_str);
+    else if (inst_token.compare("BNE")==0)
+        //BNE Rsrc1, Rsrc2, label
+        //[8-bit op][5-bit src1][5-bit src2][14-bit offset]
+        return parse2Reg1Val(GPR_INST_SET_VALS[GPR_BNE], inst_str);
+    else if (inst_token.compare("LA")==0)
+        //LA Rdest, label
+        //[8-bit op][5-bit dest][19-bit address]
+        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_LA], inst_str);
+    else if (inst_token.compare("LB")==0)
+        //LB Rdest, offset(Rsrc1)
+        //[8-bit op][5-bit Rsrc1][19-bit offset]
+        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_LB], inst_str);
+    else if (inst_token.compare("LI")==0)
+        //LI Rdest, Imm
+        //[8-bit op][5-bit Rsrc1][19-bit immediate]
+        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_LI], inst_str);
+    else if (inst_token.compare("SUBI")==0)
+        //SUBI Rdest, Rsrc1, Imm
+        //[8-bit op][5-bit dest][5-bit src][14-bit immediate]
+        return parse2Reg1Val(GPR_INST_SET_VALS[GPR_SUBI], inst_str);
+    else if (inst_token.compare("SYSCALL")==0)
+        //SYSCALL
+        //[8-bit op][24-bit unused]
+        return (GPR_INST_SET_VALS[GPR_SYSCALL] << 24);
+}
+
 addr Loader::parseAddress(const std::string& inst_str)
 {
     addr address = 0;
@@ -164,5 +213,71 @@ addr Loader::parseAddress(const std::string& inst_str)
     }
     return address;
 }
+
+u_int32_t Loader::parseValue(const std::string& hexStr, const u_int8_t& num_bits)
+{
+    std::bitset<32> val32(strHexToAddr(hexStr));
+    std::bitset<32> val;
+    //take first num_bits bits
+    for (int i = 0; i < num_bits; i++)
+        val.set(i, val32[i]);
+    
+    return val.to_ulong();
+}
+
+
+u_int32_t Loader::parseOffset(const std::string& inst_str)
+{
+    int hex_loc = inst_str.find("x");
+    return parseValue(inst_str.substr(hex_loc-1,inst_str.length()),24);
+}
+
+inst Loader::parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str)
+{
+    std::stringstream s;
+    inst instruction = 0;
+    std::string token_str = inst_str; //we will modify this so copy it
+    instruction = instruction | (opcode << 24);
+    
+    //parse registers
+    for (int i = 0; i < 2; i++)
+    {
+        int reg_loc = token_str.find("$");
+        int comma_loc = token_str.find(",");
+        std::string reg_str = token_str.substr(reg_loc+1,comma_loc-reg_loc-1);
+        int register_num = 0;
+        s.clear();
+        s << reg_str;
+        s >> register_num;
+        instruction = instruction | (register_num << (19-i*5));
+        token_str = token_str.substr(comma_loc+1); //after the comma
+    }
+    
+    instruction = instruction | parseValue(token_str, 14);
+    
+    return instruction;
+}
+
+inst Loader::parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str)
+{
+    std::stringstream s;
+    inst instruction = 0;
+    std::string token_str = inst_str; //we will modify this so copy it
+    instruction = instruction | (opcode << 24);
+    
+    int reg_loc = token_str.find("$");
+    int comma_loc = token_str.find(",");
+    std::string reg_str = token_str.substr(reg_loc+1,comma_loc-reg_loc-1);
+    int register_num = 0;
+    s << reg_str;
+    s >> register_num;
+    instruction = instruction | (register_num << 19);
+    token_str = token_str.substr(comma_loc+1); //after the comma
+    
+    instruction = instruction | parseValue(token_str, 19);
+
+    return instruction;
+}
+
 
 

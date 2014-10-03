@@ -38,42 +38,44 @@ int main(int argc, char* argv[])
     //Load program into memory
     Loader* loader = new Loader(memory);
     
-    //Very much a kludge, but this is the only way I figured
-    //we could determine the path of the compiled sources without
-    //the user having to add in a commandline argument.
-    //NOTE: THIS IS COUPLED TO THE SOURCE TREE STRUCTURE
-    std::string path = "docs/gpr_compiled.s";
-    std::string executePath = std::string(argv[0]);
-    std::string replaceStr = "bin/gprSim";
-    if (executePath.compare(std::string("./gprSim")) == 0)
-    { //if we are executing from within the bin directory
-        path.insert(0,"../"); //go up a directory...
-    }
-    else
-    { //otherwise, replace the qualified path, but insert the corrected directory
-        executePath = executePath.substr(0,executePath.length()-replaceStr.length());
-        path = executePath + path; //append qualified path...
-    }
-
-    std::cout << "Loading source into memory..." << std::endl;
-    addr setpc = loader->load(path.c_str(), Loader::GPR_ISA);
+    std::cout << loader->parseInstructionGPR("BEGZ $31, 0x00000004") << std::endl;
     
-    memory->outputSegment(USER_DATA);
-    memory->outputSegment(USER_TEXT);
+//     //Very much a kludge, but this is the only way I figured
+//     //we could determine the path of the compiled sources without
+//     //the user having to add in a commandline argument.
+//     //NOTE: THIS IS COUPLED TO THE SOURCE TREE STRUCTURE
+//     std::string path = "docs/gpr_compiled.s";
+//     std::string executePath = std::string(argv[0]);
+//     std::string replaceStr = "bin/gprSim";
+//     if (executePath.compare(std::string("./gprSim")) == 0)
+//     { //if we are executing from within the bin directory
+//         path.insert(0,"../"); //go up a directory...
+//     }
+//     else
+//     { //otherwise, replace the qualified path, but insert the corrected directory
+//         executePath = executePath.substr(0,executePath.length()-replaceStr.length());
+//         path = executePath + path; //append qualified path...
+//     }
+// 
+//     std::cout << "Loading source into memory..." << std::endl;
+//     addr setpc = loader->load(path.c_str(), Loader::GPR_ISA);
+//     
+//     memory->outputSegment(USER_DATA);
+//     memory->outputSegment(USER_TEXT);
 
     //Create simulator with memory system
-    Simulator* acc = new GeneralPurposeRegister(memory);
+    Simulator* gpr = new GeneralPurposeRegister(memory);
     
-    //Set up the program counter...
-    acc->setProgramCounter(setpc);
-    
-    //Run the simulator
-    acc->run();
-    
-    memory->outputSegment(USER_DATA);
+//     //Set up the program counter...
+//     acc->setProgramCounter(setpc);
+//     
+//     //Run the simulator
+//     acc->run();
+//     
+//     memory->outputSegment(USER_DATA);
 
     
-    SAFE_DELETE(acc); //see Utilities.hh
+    SAFE_DELETE(gpr); //see Utilities.hh
     SAFE_DELETE(loader);
     SAFE_DELETE(memory);
     
