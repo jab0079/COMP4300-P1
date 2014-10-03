@@ -80,6 +80,12 @@ int main(int argc, char* argv[])
     std::cout << "Cycle Count: " << cy << std::endl;
     std::cout << "Speed up: " << su << std::endl;
     
+    std::ofstream output("../result.txt");
+    output << "Instruction Count: " << ic << std::endl;
+    output << "Cycle Count: " << cy << std::endl;
+    output << "Speed up: " << su << std::endl;
+    output.close();
+    
     memory->outputSegment(USER_DATA);
     
     SAFE_DELETE(gpr); //see Utilities.hh
