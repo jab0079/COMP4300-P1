@@ -32,6 +32,7 @@ class GeneralPurposeRegister : public Simulator
         virtual ~GeneralPurposeRegister();
         
         virtual void run();
+	virtual u_int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
         
     protected:
         reg m_register[REGISTER_COUNT]; //Utilities.hh
