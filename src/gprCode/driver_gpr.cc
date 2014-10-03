@@ -12,7 +12,8 @@
  *          executable.
  * 
  *      Change Log:
- *	    10/3/14 - Updated for GPR simulator
+ *          10/3/14 - Finished GPR Simulator
+ *	        10/3/14 - Updated for GPR simulator
  *          9/10/14 - Added the Loader to system
  *          9/9/14 - Added memory system and test data for instructions
  *                      and the actual simulator object.
@@ -59,8 +60,8 @@ int main(int argc, char* argv[])
     std::cout << "Loading source into memory..." << std::endl;
     addr setpc = loader->load(path.c_str(), Loader::GPR_ISA);
     
-    memory->outputSegment(USER_DATA);
-    memory->outputSegment(USER_TEXT);
+//     memory->outputSegment(USER_DATA);
+//     memory->outputSegment(USER_TEXT);
 
     //Create simulator with memory system
     Simulator* gpr = new GeneralPurposeRegister(memory);
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
     output << "Speed up: " << su << std::endl;
     output.close();
     
-    memory->outputSegment(USER_DATA);
+//     memory->outputSegment(USER_DATA);
     
     SAFE_DELETE(gpr); //see Utilities.hh
     SAFE_DELETE(loader);

@@ -18,10 +18,6 @@
 ## $4 - syscall parameters.
 ## $5 - syscall parameters.
 .data
-0x00200000:65  #A
-0x00200001:66  #B
-0x00200002:66  #B
-0x00200003:65  #A
 0x00200004:00  #\0
 0x00200006:89  #Y
 0x00200007:00  #\0
@@ -37,8 +33,8 @@
 	li $2, 0x1	                # load "read_string" code into $2.
 	syscall
 
-	la $8, 0x00200000	          # A = S.
-	la $9, 0x00200000	          # we need to move B to the end
+	la $8, 0x00200100	          # A = S.
+	la $9, 0x00200100	          # we need to move B to the end
 
 #length_loop:			            # length of the string
 	lb $10, ($9)		              # load the byte at addr B into $10.
