@@ -56,23 +56,23 @@ int main(int argc, char* argv[])
         executePath = executePath.substr(0,executePath.length()-replaceStr.length());
         path = executePath + path; //append qualified path...
     }
-// 
+
     std::cout << "Loading source into memory..." << std::endl;
     addr setpc = loader->load(path.c_str(), Loader::GPR_ISA);
-//     
+    
     memory->outputSegment(USER_DATA);
     memory->outputSegment(USER_TEXT);
-// 
-//     //Create simulator with memory system
+
+    //Create simulator with memory system
     Simulator* gpr = new GeneralPurposeRegister(memory);
     
-//     //Set up the program counter...
-//     acc->setProgramCounter(setpc);
-//     
-//     //Run the simulator
-//     acc->run();
-//     
-//     memory->outputSegment(USER_DATA);
+    //Set up the program counter...
+    gpr->setProgramCounter(setpc);
+    
+    //Run the simulator
+    gpr->run();
+    
+    memory->outputSegment(USER_DATA);
 
     
     SAFE_DELETE(gpr); //see Utilities.hh

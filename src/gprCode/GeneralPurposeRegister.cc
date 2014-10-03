@@ -31,7 +31,7 @@ void GeneralPurposeRegister::run()
     
     inst curr_inst = 0, opcode = 0;
     reg r_dest = 0, r_src1 = 0, r_src2 = 0;
-    int32_t value = 0;
+    int32_t value = 0, imm;
     
     bool user_mode = true;
     while (user_mode) 

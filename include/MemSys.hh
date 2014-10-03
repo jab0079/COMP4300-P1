@@ -31,6 +31,7 @@
 #include <exception>
 #include <stdexcept>
 #include "Uncopyable.hh"
+#include "Utilities.hh"
 
 typedef u_int32_t addr;
 typedef u_int32_t inst;

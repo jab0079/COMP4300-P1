@@ -267,12 +267,10 @@ void MemSys::outputSegment(const Segment& segment) const
         int row = 0;
         for (int i = 0; i < size; i++)
         {
-            std::cout << (u_int32_t)seg[i] << " ";
             counter++;
             if (counter == 4)
             {
-                std::cout << "\t\t" << *((u_int32_t *)(seg+(row*4)));
-                std::cout << std::endl;
+                std::cout << int_to_hex(*((u_int32_t *)(seg+(row*4)))) << std::endl;
                 counter = 0;
                 row++;
             }
