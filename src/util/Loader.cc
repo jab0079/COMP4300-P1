@@ -157,7 +157,11 @@ inst Loader::parseInstructionAccum(const std::string& inst_str)
 
 inst Loader::parseInstructionGPR(const std::string& inst_str)
 {
-    std::string inst_token = inst_str.substr(0,inst_str.find(" "));
+    std::string inst_token = inst_str.substr(0,inst_str.find(" "));\
+    for(int i=0;i<inst_token.length();i++)
+    {
+	inst_token[i]=toupper(inst_token[i]);
+    }
     if (inst_token.compare("ADDI")==0)
         //ADDI Rdest, Rsrc1, Imm
         //[8-bit op][5-bit dest][5-bit src][14-bit immediate]
@@ -182,10 +186,24 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
         //LA Rdest, label
         //[8-bit op][5-bit dest][19-bit address]
         return parse1Reg1Val(GPR_INST_SET_VALS[GPR_LA], inst_str);
-    else if (inst_token.compare("LB")==0)
+    else if (inst_token.compare("LB")==0) {
         //LB Rdest, offset(Rsrc1)
-        //[8-bit op][5-bit Rsrc1][19-bit offset]
-        return parse1Reg1Val(GPR_INST_SET_VALS[GPR_LB], inst_str);
+        //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
+	int comma_loc = inst_str.find(",");
+	int open_paren_loc = inst_str.find("(");
+	int close_paren_loc = inst_str.find(")");
+	std::string offset_str = inst_str.substr(comma_loc+2,open_paren_loc-comma_loc-2);
+	std::string rsrc1_str = inst_str.substr(open_paren_loc+1,close_paren_loc-open_paren_loc-1);
+	std::string inst_str_modified = inst_str.substr(1,comma_loc);
+	std::stringstream s;
+	if (offset_str.compare("") == 0)
+		offset_str = "0";
+	s << offset_str;
+	int off_val;
+	s >> off_val;
+	inst_str_modified += " " + rsrc1_str + ", " + int_to_hex(off_val);
+	return parse2Reg1Val(GPR_INST_SET_VALS[GPR_LB], inst_str_modified);
+    }
     else if (inst_token.compare("LI")==0)
         //LI Rdest, Imm
         //[8-bit op][5-bit Rsrc1][19-bit immediate]

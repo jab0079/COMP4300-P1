@@ -26,6 +26,7 @@
 #include<iostream>
 #include<algorithm>
 #include<sstream>
+#include<iomanip>
 
 static const u_int8_t ACC_INST_LOAD = 0x01;
 static const u_int8_t ACC_INST_STO = 0x02;
@@ -77,27 +78,27 @@ static std::string removeComments(const std::string& str)
     return ret;
 }
 
+//adpoted from ...
+//http://stackoverflow.com/questions/5100718/int-to-hex-string-in-c
+template< typename T >
+static std::string int_to_hex( T i )
+{
+  std::stringstream stream;
+  stream << "0x" 
+         << std::setfill ('0') << std::setw(sizeof(T)*2) 
+         << std::hex << i;
+  return stream.str();
+}
+
 
 
 static u_int32_t strHexToAddr(const std::string& hexstr)
 {
-    //ignore '0x'
-    u_int32_t ret = 0;
-    for (u_int32_t i = 2; i < hexstr.length(); i++)
-    {
-        ret = ret << 4; //shift to the right four places
-        u_int32_t num = 0;
-        if (hexstr[i] >= 48 && hexstr[i] <= 57)
-        {//number
-            num = (u_int32_t)hexstr[i] - 48; //ASCII
-        }
-        else
-        {//letter
-            num = (u_int32_t)hexstr[i] - 55; //ASCII
-        }
-        ret = ret | num; //bitwise or
-    }
-    return ret;
+    unsigned int x;   
+    std::stringstream ss;
+    ss << std::hex << hexstr;
+    ss >> x;
+    return x;
 }
 
 static bool containsStr(const std::string& str, const std::string& pattern)

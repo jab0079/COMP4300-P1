@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     //Load program into memory
     Loader* loader = new Loader(memory);
     
-    std::cout << loader->parseInstructionGPR("BEGZ $31, 0x00000004") << std::endl;
+    std::cout << loader->parseInstructionGPR("lb $31, ($12)") << std::endl;
     
 //     //Very much a kludge, but this is the only way I figured
 //     //we could determine the path of the compiled sources without
@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
 //     
 //     memory->outputSegment(USER_DATA);
 //     memory->outputSegment(USER_TEXT);
-
-    //Create simulator with memory system
+// 
+//     //Create simulator with memory system
     Simulator* gpr = new GeneralPurposeRegister(memory);
     
 //     //Set up the program counter...
