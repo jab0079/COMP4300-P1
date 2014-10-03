@@ -157,7 +157,12 @@ inst Loader::parseInstructionAccum(const std::string& inst_str)
 
 inst Loader::parseInstructionGPR(const std::string& inst_str)
 {
-    std::string inst_token = inst_str.substr(0,inst_str.find(" "));\
+    std::string inst_token;
+    int dollar_loc=inst_str.find("$");
+    if (dollar_loc!=std::string::npos)
+	inst_token = inst_str.substr(0,inst_str.find("$"));
+    else
+	inst_token = inst_str.substr(0,inst_str.find("0x"));   
     for(int i=0;i<inst_token.length();i++)
     {
 	inst_token[i]=toupper(inst_token[i]);
@@ -201,7 +206,7 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
 	s << offset_str;
 	int off_val;
 	s >> off_val;
-	inst_str_modified += " " + rsrc1_str + ", " + int_to_hex(off_val);
+	inst_str_modified += rsrc1_str + "," + int_to_hex(off_val);
 	return parse2Reg1Val(GPR_INST_SET_VALS[GPR_LB], inst_str_modified);
     }
     else if (inst_token.compare("LI")==0)

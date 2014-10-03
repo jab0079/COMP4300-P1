@@ -41,16 +41,16 @@ static const u_int8_t STK_INST_ADD = 0x04;
 static const u_int8_t STK_INST_END = 0x05;
 
 enum GPR_INST_SET {
-    GPR_ADDI,
-    GPR_B,
-    GPR_BEGZ,
-    GPR_BGE,
-    GPR_BNE,
-    GPR_LA,
-    GPR_LB,
-    GPR_LI,
-    GPR_SUBI,
-    GPR_SYSCALL
+    GPR_ADDI, //0
+    GPR_B, //1
+    GPR_BEGZ, //2
+    GPR_BGE, //3
+    GPR_BNE, //4
+    GPR_LA, //5
+    GPR_LB, //6
+    GPR_LI, //7
+    GPR_SUBI, //8
+    GPR_SYSCALL //9
 };
 static const u_int8_t GPR_INST_SET_VALS[] =
 { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
