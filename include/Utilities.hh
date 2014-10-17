@@ -14,6 +14,7 @@
  *          to all sources in the project
  * 
  *      Change Log:
+ * 			10/14/14 - Added NOP to GPR
  *          9/9/14 - Initial creation
  * 
  * 
@@ -50,7 +51,8 @@ enum GPR_INST_SET {
     GPR_LB, //6
     GPR_LI, //7
     GPR_SUBI, //8
-    GPR_SYSCALL //9
+    GPR_SYSCALL, //9
+    GPR_NOP //10
 };
 
 enum SYSCALL_CODES {
@@ -60,7 +62,7 @@ enum SYSCALL_CODES {
 };
 
 static const u_int8_t GPR_INST_SET_VALS[] =
-{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
+{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A};
 static const u_int8_t GPR_INST_SET_CYCLES[] =
 {6,4,5,5,6,3,6,8};
 

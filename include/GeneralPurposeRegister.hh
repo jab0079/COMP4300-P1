@@ -13,7 +13,8 @@
  *          This class defines the interface for the GeneralPurposeRegister Simulator
  * 
  *      Change Log:
- * 	    10/3/14 - Added Register Constants and decodeInstr method
+ * 			10/14/14 - Added latches to prepare for pipelining
+ * 	    	10/3/14 - Added Register Constants and decodeInstr method
  *          9/29/14 - Initial Creation
  * 
  * 

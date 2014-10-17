@@ -2,7 +2,7 @@
 #define UNCOPYABLE_HH
 /*
  * 
- *      Simulator.hh
+ *      Uncopyable.hh
  * 
  *      Contributors:   Adam Eichelkraut
  *                      Jared Brown

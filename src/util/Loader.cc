@@ -13,7 +13,8 @@
  *          into a MemSys object.
  * 
  *      Change Log:
- *          8/2/14 - Added GPR instruction set implementation
+ * 			10/14/14 - Added NOP Instruction to GPR
+ *          10/2/14 - Added GPR instruction set implementation
  *          9/10/14 - Implemented load function and helper functions
  *          9/5/14 - Initial creation.
  * 
@@ -160,12 +161,12 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
     std::string inst_token;
     int dollar_loc=inst_str.find("$");
     if (dollar_loc!=std::string::npos)
-	inst_token = inst_str.substr(0,inst_str.find("$"));
+	  inst_token = inst_str.substr(0,inst_str.find("$"));
     else
-	inst_token = inst_str.substr(0,inst_str.find("0x"));   
+	  inst_token = inst_str.substr(0,inst_str.find("0x"));   
     for(int i=0;i<inst_token.length();i++)
     {
-	inst_token[i]=toupper(inst_token[i]);
+	  inst_token[i]=toupper(inst_token[i]);
     }
     if (inst_token.compare("ADDI")==0)
         //ADDI Rdest, Rsrc1, Imm
@@ -194,20 +195,20 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
     else if (inst_token.compare("LB")==0) {
         //LB Rdest, offset(Rsrc1)
         //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
-	int comma_loc = inst_str.find(",");
-	int open_paren_loc = inst_str.find("(");
-	int close_paren_loc = inst_str.find(")");
-	std::string offset_str = inst_str.substr(comma_loc+2,open_paren_loc-comma_loc-2);
-	std::string rsrc1_str = inst_str.substr(open_paren_loc+1,close_paren_loc-open_paren_loc-1);
-	std::string inst_str_modified = inst_str.substr(1,comma_loc);
-	std::stringstream s;
-	if (offset_str.compare("") == 0)
-		offset_str = "0";
-	s << offset_str;
-	int off_val;
-	s >> off_val;
-	inst_str_modified += rsrc1_str + "," + int_to_hex(off_val);
-	return parse2Reg1Val(GPR_INST_SET_VALS[GPR_LB], inst_str_modified);
+		int comma_loc = inst_str.find(",");
+		int open_paren_loc = inst_str.find("(");
+		int close_paren_loc = inst_str.find(")");
+		std::string offset_str = inst_str.substr(comma_loc+2,open_paren_loc-comma_loc-2);
+		std::string rsrc1_str = inst_str.substr(open_paren_loc+1,close_paren_loc-open_paren_loc-1);
+		std::string inst_str_modified = inst_str.substr(1,comma_loc);
+		std::stringstream s;
+		if (offset_str.compare("") == 0)
+			offset_str = "0";
+		s << offset_str;
+		int off_val;
+		s >> off_val;
+		inst_str_modified += rsrc1_str + "," + int_to_hex(off_val);
+		return parse2Reg1Val(GPR_INST_SET_VALS[GPR_LB], inst_str_modified);
     }
     else if (inst_token.compare("LI")==0)
         //LI Rdest, Imm
@@ -221,6 +222,8 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
         //SYSCALL
         //[8-bit op][24-bit unused]
         return (GPR_INST_SET_VALS[GPR_SYSCALL] << 24);
+	else if (inst_token.compare("NOP") == 0)
+		return (GPR_INST_SET_VALS[GPR_NOP] << 24);
 }
 
 addr Loader::parseAddress(const std::string& inst_str)
