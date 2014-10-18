@@ -236,7 +236,7 @@ int32_t GeneralPurposeRegister::decodeInstr(const u_int32_t& instr, const u_int8
 void GeneralPurposeRegister::gpr_fetch(const CYCLE_DESCRIPTOR& c_desc)
 {
   inst curr_inst = 0;
-  if (c_desc == Simulator::CYCLE_FETCH)
+  if (c_desc == CYCLE_FETCH)
   {
       // Read memory at PC  
       curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst)));
@@ -245,22 +245,56 @@ void GeneralPurposeRegister::gpr_fetch(const CYCLE_DESCRIPTOR& c_desc)
   }
   else
   { //what i do with this
-      std::cout << "GPR_FETCH METHOD RECIEVED \
-      UNEXPECTED CYCLE DESCRIPTOR: " 
-      << c_desc
-      << std::endl;
+      helpUnexpDescr("GPR_FETCH()", c_desc);
   }
 }
 
 void GeneralPurposeRegister::gpr_decode(const CYCLE_DESCRIPTOR& c_desc)
 {
-  
-  
+  if (c_desc == CYCLE_DECODE)
+  {
+    //pull old instruction from latch
+    inst old_instr = m_if_id->pullInstruction();
+    //decode it into opcode
+    u_int8_t opcode = ((old_instr & 0xFF000000) >> 24);
+    m_id_exe->push_opcode(opcode);
+    //delegate other decoding pieces to instruction method...
+    delegateCycle(opcode, CYCLE_DECODE);
+  }
+  else
+  { //what i do with this
+      helpUnexpDescr("GPR_DECODE()", c_desc);
+  }
 }
 
 void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 {
-  
+  switch (c_desc)
+  {
+    case CYCLE_DECODE:
+      //pull old instruction again...(should still be the same...)
+      inst curr_inst = m_if_id->pullInstruction();
+      m_id_exe->push_rd((curr_inst & 0x00F80000) >> 19); //push dest
+      m_id_exe->push_rs((curr_inst & 0x0007C000) >> 14); //push src
+      m_id_exe->push_val(decodeInstr(curr_inst, 14)); //push immediate
+      break;
+    case CYCLE_EXECUTE:
+      m_exe_mem->push_opcode(m_id_exe->pull_opcode()); //forward opcode
+      m_exe_mem->push_rd(m_id_exe->pull_rd()); //forward dest
+      u_int8_t rsrc1; //for cleaner code
+      u_int32_t val;
+      rsrc1 = m_id_exe->pull_rs();
+      val = m_id_exe->pull_val();
+      m_exe_mem->push_aluout(m_register[rsrc1] + val);
+      break;
+    case CYCLE_MEMORY:
+      //pull dest, pull aluout, write to register
+      m_register[m_exe_mem->pull_rd()] = m_exe_mem->pull_aluout();
+      break;
+    default:
+      helpUnexpDescr("GPR_ADDI()", c_desc);
+      break;
+  }
 }
 
 void GeneralPurposeRegister::gpr_b(const CYCLE_DESCRIPTOR& c_desc)
@@ -306,5 +340,36 @@ void GeneralPurposeRegister::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
 void GeneralPurposeRegister::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
 {
   
+}
+
+void GeneralPurposeRegister::delegateCycle(const u_int8_t& opcode,
+                                           const CYCLE_DESCRIPTOR& c_desc)
+{
+    switch (opcode)
+    {
+      case GPR_ADDI:    gpr_addi(c_desc); break;
+      case GPR_B:       gpr_b(c_desc); break;
+      case GPR_BEQZ:    gpr_beqz(c_desc); break;
+      case GPR_BGE:     gpr_bge(c_desc); break;
+      case GPR_BNE:     gpr_bne(c_desc); break;
+      case GPR_LA:      gpr_la(c_desc); break;
+      case GPR_LB:      gpr_lb(c_desc); break;
+      case GPR_LI:      gpr_li(c_desc); break;
+      case GPR_SUBI:    gpr_subi(c_desc); break;
+      case GPR_SYSCALL: gpr_syscall(c_desc); break;
+      default:
+        std::cout << "DELEGATE_CYCLE() -- UNEXPECTED OPCODE: " 
+        << opcode << std::endl;
+        break;
+    }
+}
+
+void GeneralPurposeRegister::helpUnexpDescr(const std::string& methodName, 
+                                            const CYCLE_DESCRIPTOR& desc)
+{
+    std::cout << methodName
+    << " RECIEVED UNEXPECTED CYCLE DESCRIPTOR: " 
+    << desc
+    << std::endl;
 }
 

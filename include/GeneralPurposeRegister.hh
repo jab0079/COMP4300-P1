@@ -69,8 +69,12 @@ class GeneralPurposeRegister : public Simulator
         virtual void gpr_syscall(const CYCLE_DESCRIPTOR& c);
         
     private:
-      
-        virtual int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
+        virtual void delegateCycle(const u_int8_t& opcode,
+                                   const CYCLE_DESCRIPTOR& c_desc);
+        virtual void helpUnexpDescr(const std::string& method, 
+                                    const CYCLE_DESCRIPTOR& desc);
+        virtual int32_t decodeInstr(const u_int32_t& instr, 
+                                    const u_int8_t& num_bits);
 
 };
 
