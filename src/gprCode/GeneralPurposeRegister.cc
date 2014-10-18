@@ -262,18 +262,21 @@ void GeneralPurposeRegister::gpr_decode(const CYCLE_DESCRIPTOR& c_desc)
     delegateCycle(opcode, CYCLE_DECODE);
   }
   else
-  { //what i do with this
+  { //wat..?
       helpUnexpDescr("GPR_DECODE()", c_desc);
   }
 }
 
 void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t rsrc1;
+  u_int32_t val;
   switch (c_desc)
   {
     case CYCLE_DECODE:
       //pull old instruction again...(should still be the same...)
-      inst curr_inst = m_if_id->pullInstruction();
+      curr_inst = m_if_id->pullInstruction();
       m_id_exe->push_rd((curr_inst & 0x00F80000) >> 19); //push dest
       m_id_exe->push_rs((curr_inst & 0x0007C000) >> 14); //push src
       m_id_exe->push_val(decodeInstr(curr_inst, 14)); //push immediate
@@ -281,8 +284,6 @@ void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
     case CYCLE_EXECUTE:
       m_exe_mem->push_opcode(m_id_exe->pull_opcode()); //forward opcode
       m_exe_mem->push_rd(m_id_exe->pull_rd()); //forward dest
-      u_int8_t rsrc1; //for cleaner code
-      u_int32_t val;
       rsrc1 = m_id_exe->pull_rs();
       val = m_id_exe->pull_val();
       m_exe_mem->push_aluout(m_register[rsrc1] + val);
@@ -292,7 +293,7 @@ void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
       m_register[m_exe_mem->pull_rd()] = m_exe_mem->pull_aluout();
       break;
     default:
-      helpUnexpDescr("GPR_ADDI()", c_desc);
+      helpUnexpDescr("GPR_ADDI()", c_desc); //halp wat i do
       break;
   }
 }
