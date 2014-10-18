@@ -222,3 +222,65 @@ int32_t GeneralPurposeRegister::decodeInstr(const u_int32_t& instr, const u_int8
     return val.to_ulong();
 }
 
+void GeneralPurposeRegister::gpr_fetch(const CYCLE_DESCRIPTOR& c_desc)
+{
+  if (c_desc == Simulator::CYCLE_FETCH)
+  {
+  }
+}
+
+void GeneralPurposeRegister::gpr_decode(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_b(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_beqz(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_bne(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_la(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_li(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+
+void GeneralPurposeRegister::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
+{
+  
+}
+

@@ -13,6 +13,9 @@
  *          This class defines the interface for the GeneralPurposeRegister Simulator
  * 
  *      Change Log:
+ *          10/18/14 - Added sepearate methods for each instruction and
+ *                      for fetch and decode (to assist with pipelining).
+ *                      Also moved decodeInstr to the 'private' field.
  * 			10/14/14 - Added latches to prepare for pipelining
  * 	    	10/3/14 - Added Register Constants and decodeInstr method
  *          9/29/14 - Initial Creation
@@ -38,12 +41,28 @@ class GeneralPurposeRegister : public Simulator
         virtual ~GeneralPurposeRegister();
         
         virtual void run();
-        virtual int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
-        
+                
     protected:
         reg m_register[REGISTER_COUNT]; //Utilities.hh
         
+        virtual void gpr_fetch(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_decode(const CYCLE_DESCRIPTOR& c);
+        
+        virtual void gpr_addi(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_b(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_beqz(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_bge(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_bne(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_la(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_lb(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_li(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_subi(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_syscall(const CYCLE_DESCRIPTOR& c);
+        
     private:
+      
+        virtual int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
+
 };
 
 

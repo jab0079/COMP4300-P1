@@ -25,6 +25,7 @@
 #include <iostream>
 
 #include "Uncopyable.hh"
+#include "Utilities.hh"
 
 class Latch : public Uncopyable
 {

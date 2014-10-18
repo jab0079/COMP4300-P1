@@ -14,6 +14,7 @@
  *          to all sources in the project
  * 
  *      Change Log:
+ *          10/18/14 - Moved typedefs inst and addr to here
  * 			10/14/14 - Added NOP to GPR
  *          9/9/14 - Initial creation
  * 
@@ -67,6 +68,8 @@ static const u_int8_t GPR_INST_SET_CYCLES[] =
 {6,4,5,5,6,3,6,8};
 
 typedef u_int32_t reg; //32-bit registers
+typedef u_int32_t addr;
+typedef u_int32_t inst;
 
 static std::string removeWhiteSpace(const std::string& str)
 {

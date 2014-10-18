@@ -16,7 +16,8 @@
  *          class that should simply be a template for simulators
  * 
  *      Change Log:
- * 	    10/3/14 - Added instruction counting
+ *          10/18/14 - Added CYCLE_DESCRIPTOR enumeration
+ *          10/3/14 - Added instruction counting
  *          9/17/14 - Made class and derived classes Uncopyable
  *          9/9/14 - Initial creation
  * 
@@ -44,8 +45,8 @@ class Simulator : private Uncopyable
         virtual void setStackPointer(const addr& in);
         virtual addr getProgramCounter() const;
         virtual addr getStackPointer() const;
-	virtual u_int32_t getInstructionCount() const;
-	virtual u_int32_t getCycleCount() const;
+        virtual u_int32_t getInstructionCount() const;
+        virtual u_int32_t getCycleCount() const;
         
     protected:
         
@@ -57,12 +58,22 @@ class Simulator : private Uncopyable
         u_int32_t m_ic; //instruction count
         u_int32_t m_cycles; //total number of cycles
         
-    private:
+        enum CYCLE_DESCRIPTOR
+        {
+          CYCLE_FETCH,
+          CYCLE_DECODE,
+          CYCLE_EXECUTE,
+          CYCLE_MEMORY,
+          CYCLE_WRITEBACK
+        };
         
-        //We don't want any client to accidentally use these
-        //methods, therefore we will declare but not implement
+    private:
+      
+/*        
+        We don't want any client to accidentally use these
+        methods, therefore we will declare but not implement
         Simulator(const Simulator&); //declarations only
-        Simulator& operator=(const Simulator&);
+        Simulator& operator=(const Simulator&);*/
         
 };
 

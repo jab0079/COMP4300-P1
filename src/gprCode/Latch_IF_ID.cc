@@ -37,3 +37,4 @@ inst Latch_IF_ID::pullInstruction()
 void Latch_IF_ID::pushInstruction(const inst& i)
 {
   m_inst_buffer_new = i;
+}

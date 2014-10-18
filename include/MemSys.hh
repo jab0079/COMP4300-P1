@@ -14,6 +14,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          10/18/14 - Moved typedefs addr and inst to Utilities.hh
  *          9/29/14 - Added exceptions to read and write
  *          9/17/14 - Made class and derived classes Uncopyable
  *          9/8/14 - Set up constants for bases and segment sizes, as
@@ -32,9 +33,6 @@
 #include <stdexcept>
 #include "Uncopyable.hh"
 #include "Utilities.hh"
-
-typedef u_int32_t addr;
-typedef u_int32_t inst;
 
 enum Segment
 {
