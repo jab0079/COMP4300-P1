@@ -21,10 +21,21 @@
 GeneralPurposeRegister::GeneralPurposeRegister(MemSys* mem) 
 : Simulator(mem)
 {
+  //instantiate latches
+  m_if_id = new Latch_IF_ID();
+  m_id_exe = new Latch_ID_EXE();
+  m_exe_mem = new Latch_EXE_MEM();
+  m_mem_wb = new Latch_MEM_WB();
 }
 
 GeneralPurposeRegister::~GeneralPurposeRegister()
-{}
+{
+  //destroy latches (SAFE_DELETE found in utilities.hh)
+  SAFE_DELETE(m_if_id);
+  SAFE_DELETE(m_id_exe);
+  SAFE_DELETE(m_exe_mem);
+  SAFE_DELETE(m_mem_wb);
+}
 
 void GeneralPurposeRegister::run()
 {
@@ -224,13 +235,26 @@ int32_t GeneralPurposeRegister::decodeInstr(const u_int32_t& instr, const u_int8
 
 void GeneralPurposeRegister::gpr_fetch(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst = 0;
   if (c_desc == Simulator::CYCLE_FETCH)
   {
+      // Read memory at PC  
+      curr_inst = *((inst*)m_memory->read(m_pc,sizeof(inst)));
+      //push instruction to latch
+      m_if_id->pushInstruction(curr_inst);
+  }
+  else
+  { //what i do with this
+      std::cout << "GPR_FETCH METHOD RECIEVED \
+      UNEXPECTED CYCLE DESCRIPTOR: " 
+      << c_desc
+      << std::endl;
   }
 }
 
 void GeneralPurposeRegister::gpr_decode(const CYCLE_DESCRIPTOR& c_desc)
 {
+  
   
 }
 

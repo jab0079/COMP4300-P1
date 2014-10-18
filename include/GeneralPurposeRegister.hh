@@ -29,6 +29,11 @@
 #include "Simulator.hh"
 #include "Utilities.hh"
 
+#include "Latch_IF_ID.hh"
+#include "Latch_ID_EXE.hh"
+#include "Latch_EXE_MEM.hh"
+#include "Latch_MEM_WB.hh"
+
 static const u_int32_t REGISTER_COUNT = 32;
 static const u_int32_t REG_VAL_1 = 2;	// Register $2 = $v0 from MIPS
 static const u_int32_t REG_ARG_1 = 4;	// Register $4 = $a0 from MIPS
@@ -44,6 +49,10 @@ class GeneralPurposeRegister : public Simulator
                 
     protected:
         reg m_register[REGISTER_COUNT]; //Utilities.hh
+        Latch_IF_ID* m_if_id;
+        Latch_ID_EXE* m_id_exe;
+        Latch_EXE_MEM* m_exe_mem;
+        Latch_MEM_WB* m_mem_wb;
         
         virtual void gpr_fetch(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_decode(const CYCLE_DESCRIPTOR& c);
