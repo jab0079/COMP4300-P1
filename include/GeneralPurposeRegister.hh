@@ -16,8 +16,8 @@
  *          10/18/14 - Added sepearate methods for each instruction and
  *                      for fetch and decode (to assist with pipelining).
  *                      Also moved decodeInstr to the 'private' field.
- * 			10/14/14 - Added latches to prepare for pipelining
- * 	    	10/3/14 - Added Register Constants and decodeInstr method
+ *  	    10/14/14 - Added latches to prepare for pipelining
+ * 	    10/3/14 - Added Register Constants and decodeInstr method
  *          9/29/14 - Initial Creation
  * 
  * 

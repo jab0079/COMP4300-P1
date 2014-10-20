@@ -37,13 +37,13 @@ class Latch_MEM_WB : public Latch
       virtual void update();
       
       virtual void push_opcode(const inst& opcode);
-      virtual void push_mdr(const u_int32_t& mdr);
+      virtual void push_mdr(const u_int8_t& mdr);
       virtual void push_aluout(const u_int32_t& aluout);
       virtual void push_opB(const u_int32_t& opB);
       virtual void push_rd(const u_int32_t& rd);
       
       virtual inst pull_opcode() const;
-      virtual u_int32_t pull_mdr() const;
+      virtual u_int8_t pull_mdr() const;
       virtual u_int32_t pull_aluout() const;
       virtual u_int32_t pull_opB() const;
       virtual u_int32_t pull_rd() const;
@@ -55,8 +55,8 @@ class Latch_MEM_WB : public Latch
       inst m_opcode_old;
       inst m_opcode_new;
       //mdr
-      u_int32_t m_mdr_old;
-      u_int32_t m_mdr_new;
+      u_int8_t m_mdr_old;
+      u_int8_t m_mdr_new;
       //OperandB
       u_int32_t m_opB_old;
       u_int32_t m_opB_new;

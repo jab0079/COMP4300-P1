@@ -37,7 +37,7 @@ void Latch_MEM_WB::update()
 
 void Latch_MEM_WB::push_opcode(const inst& opcode)
 { m_opcode_new = opcode; }
-void Latch_MEM_WB::push_mdr(const u_int32_t& mdr)
+void Latch_MEM_WB::push_mdr(const u_int8_t& mdr)
 { m_mdr_new = mdr; }
 void Latch_MEM_WB::push_aluout(const u_int32_t& aluout)
 { m_aluout_new = aluout; }
@@ -48,7 +48,7 @@ void Latch_MEM_WB::push_rd(const u_int32_t& rd)
 
 inst Latch_MEM_WB::pull_opcode() const
 { return m_opcode_old; }
-u_int32_t Latch_MEM_WB::pull_mdr() const
+u_int8_t Latch_MEM_WB::pull_mdr() const
 { return m_mdr_old; }
 u_int32_t Latch_MEM_WB::pull_aluout() const
 { return m_aluout_old; }

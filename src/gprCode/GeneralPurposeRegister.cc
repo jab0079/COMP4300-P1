@@ -74,22 +74,22 @@ void GeneralPurposeRegister::run()
             break;
 	    
         case GPR_B:
-            value = decodeInstr(curr_inst, 24) * 4;	// Get signed label offset value
+            value = decodeInstr(curr_inst, 24) * 4;		// Get signed label offset value
             
-            m_pc += value;				// Branch
-            m_cycles += GPR_INST_SET_CYCLES[GPR_B];	// Increment Cycles spent in execution
+            m_pc += value;					// Branch
+            m_cycles += GPR_INST_SET_CYCLES[GPR_B];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_BEQZ:
-            r_src1 = curr_inst & 0x00F80000;		// Get source 1 register number
+            r_src1 = curr_inst & 0x00F80000;			// Get source 1 register number
             r_src1 = r_src1 >> 19;
-            value = decodeInstr(curr_inst, 19) * 4;	// Get signed label offset value			
+            value = decodeInstr(curr_inst, 19) * 4;		// Get signed label offset value			
             
-            if (m_register[r_src1] == 0)		// Branch if equals zero
+            if (m_register[r_src1] == 0)			// Branch if equals zero
             {
             m_pc += value;
             }
-            m_cycles += GPR_INST_SET_CYCLES[GPR_BEQZ];	// Increment Cycles spent in execution
+            m_cycles += GPR_INST_SET_CYCLES[GPR_BEQZ];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_BGE:
@@ -121,12 +121,12 @@ void GeneralPurposeRegister::run()
             break;
 	    
         case GPR_LA:
-            r_dest = curr_inst & 0x00F80000;		// Get destination register number
+            r_dest = curr_inst & 0x00F80000;			// Get destination register number
             r_dest = r_dest >> 19;
-            value = decodeInstr(curr_inst, 19)	;	// Get signed label offset value 			
+            value = decodeInstr(curr_inst, 19)	;		// Get signed label offset value 			
             
-            m_register[r_dest] = value;			// Load signed label offset address into r_dest
-            m_cycles += GPR_INST_SET_CYCLES[GPR_LA];	// Increment Cycles spent in execution
+            m_register[r_dest] = value;				// Load signed label offset address into r_dest
+            m_cycles += GPR_INST_SET_CYCLES[GPR_LA];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_LB:
@@ -143,12 +143,12 @@ void GeneralPurposeRegister::run()
             break;
 	    
         case GPR_LI:
-            r_dest = curr_inst & 0x00F80000;		// Get destination register number
+            r_dest = curr_inst & 0x00F80000;			// Get destination register number
             r_dest = r_dest >> 19;
-            value = decodeInstr(curr_inst, 19);		// Get signed immediate value 			
+            value = decodeInstr(curr_inst, 19);			// Get signed immediate value 			
             
-            m_register[r_dest] = value;			// Load signed label offset address into r_dest
-            m_cycles += GPR_INST_SET_CYCLES[GPR_LI];	// Increment Cycles spent in execution
+            m_register[r_dest] = value;				// Load signed immediate value into r_dest
+            m_cycles += GPR_INST_SET_CYCLES[GPR_LI];		// Increment Cycles spent in execution
             break;
 	    
         case GPR_SUBI:
@@ -173,7 +173,7 @@ void GeneralPurposeRegister::run()
                     u_int8_t letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));	// Read first char
                     std::string str;
                     str_addr++;
-                    while (letter != '\0')		// Print each char in the string until NUL terminator
+                    while (letter != '\0')			// Print each char in the string until NUL terminator
                     {
                     str += letter;
                     letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
@@ -184,26 +184,27 @@ void GeneralPurposeRegister::run()
                 }
                 break;
 		
-            case SYSCALL_READ_STR:
-            {
-                std::string input;
-                std::cin >> input;
-                addr str_addr = MemSys::BaseUserDataSegmentAddress | m_register[REG_ARG_1];	// Corrected Address
-                for (int i = 0; i < input.length(); i++)	// Write each char to memory
-                {
-                    m_memory->write(str_addr, &input[i], sizeof(u_int8_t));
-                    str_addr++;
-                }
-                u_int8_t null_c = '\0';				// Add NUL terminator
-                m_memory->write(str_addr, &null_c, sizeof(u_int8_t));
-            }
-                break;
-            case SYSCALL_EXIT:
-                user_mode = false;	// Exit user_mode
+		case SYSCALL_READ_STR:
+		{
+		    std::string input;
+		    std::cin >> input;
+		    addr str_addr = MemSys::BaseUserDataSegmentAddress | m_register[REG_ARG_1];	// Corrected Address
+		    for (int i = 0; i < input.length(); i++)	// Write each char to memory
+		    {
+		      m_memory->write(str_addr, &input[i], sizeof(u_int8_t));
+		      str_addr++;
+		    }
+		    u_int8_t null_c = '\0';			// Add NUL terminator
+		    m_memory->write(str_addr, &null_c, sizeof(u_int8_t));
+		}
                 break;
 		
-            default:
+		case SYSCALL_EXIT:
+		  user_mode = false;	// Exit user_mode
                 break;
+		
+	      default:
+		break;
             }
         }
 	    m_cycles += GPR_INST_SET_CYCLES[GPR_SYSCALL];	// Increment Cycles spent in execution
@@ -222,13 +223,11 @@ int32_t GeneralPurposeRegister::decodeInstr(const u_int32_t& instr, const u_int8
     std::bitset<32> val32(instr);
     std::bitset<32> val;
     
-    for (int i = 0; i < num_bits - 1; i++) // Copy all bits up to msb
+    for (int i = 0; i < num_bits - 1; i++)	// Copy all bits up to msb
 	val.set(i, val32[i]);
       
     for (int i = num_bits - 1; i < 32; i++)	// Sign extend msb
         val.set(i, val32[num_bits - 1]);
-    
-//     std::cout << val.to_string() << std::endl;
     
     return val.to_ulong();
 }
@@ -258,6 +257,9 @@ void GeneralPurposeRegister::gpr_decode(const CYCLE_DESCRIPTOR& c_desc)
     //decode it into opcode
     u_int8_t opcode = ((old_instr & 0xFF000000) >> 24);
     m_id_exe->push_opcode(opcode);
+    //increment pc and ic
+    m_ic++;
+    m_pc += sizeof(inst);
     //delegate other decoding pieces to instruction method...
     delegateCycle(opcode, CYCLE_DECODE);
   }
@@ -270,28 +272,53 @@ void GeneralPurposeRegister::gpr_decode(const CYCLE_DESCRIPTOR& c_desc)
 void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 {
   inst curr_inst;
-  u_int8_t rsrc1;
-  u_int32_t val;
+  u_int8_t r_dest, r_src1;
+  u_int32_t value, op_A, op_B;
+  
   switch (c_desc)
   {
     case CYCLE_DECODE:
       //pull old instruction again...(should still be the same...)
       curr_inst = m_if_id->pullInstruction();
-      m_id_exe->push_rd((curr_inst & 0x00F80000) >> 19); //push dest
-      m_id_exe->push_rs((curr_inst & 0x0007C000) >> 14); //push src
-      m_id_exe->push_val(decodeInstr(curr_inst, 14)); //push immediate
+      
+      // Get and push r_dest number
+      r_dest = (curr_inst & 0x00F80000) >> 19;
+      m_id_exe->push_rd(r_dest); 
+      
+      // Get and push r_src1 number & operand A
+      r_src1 = (curr_inst & 0x0007C000) >> 14;
+      m_id_exe->push_rs(r_src1);
+      m_id_exe->push_opA(m_register[r_src1]);
+      
+      // Get and push signed immediate value & operand B
+      value = decodeInstr(curr_inst, 14);
+      m_id_exe->push_val(value);
+      m_id_exe->push_opB(value);
       break;
+      
     case CYCLE_EXECUTE:
-      m_exe_mem->push_opcode(m_id_exe->pull_opcode()); //forward opcode
-      m_exe_mem->push_rd(m_id_exe->pull_rd()); //forward dest
-      rsrc1 = m_id_exe->pull_rs();
-      val = m_id_exe->pull_val();
-      m_exe_mem->push_aluout(m_register[rsrc1] + val);
+      // Forward opcode and r_dest
+      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+      m_exe_mem->push_rd(m_id_exe->pull_rd());
+      
+      // Get op A & B and add them, then push ALU_out
+      op_A = m_id_exe->pull_opA();
+      op_B = m_id_exe->pull_opB();
+      m_exe_mem->push_aluout(op_A + op_B);
       break;
+      
     case CYCLE_MEMORY:
-      //pull dest, pull aluout, write to register
-      m_register[m_exe_mem->pull_rd()] = m_exe_mem->pull_aluout();
+      // Forward opcode, r_dest, and ALU_out	
+      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+      m_mem_wb->push_rd(m_exe_mem->pull_rd());
+      m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
       break;
+      
+    case CYCLE_WRITEBACK:
+      // Pull r_dest number & aluout, then write to r_dest
+      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
+      break;
+      
     default:
       helpUnexpDescr("GPR_ADDI()", c_desc); //halp wat i do
       break;
@@ -300,46 +327,389 @@ void GeneralPurposeRegister::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 
 void GeneralPurposeRegister::gpr_b(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int32_t value, aluout;
   
+  if (c_desc == CYCLE_DECODE)
+  {
+      curr_inst = m_if_id->pullInstruction();
+      // Get signed label offset value and calculate newpc
+      value = decodeInstr(curr_inst, 24);
+      aluout = m_pc + value * 4;
+      
+      // Branch (update PC)
+      m_id_exe->push_newpc(aluout);
+      m_pc = aluout;
+      
+      // Follow with NOP??
+  }
+  else
+  { 
+      helpUnexpDescr("GPR_B()", c_desc);
+  }
 }
 
 void GeneralPurposeRegister::gpr_beqz(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_src1;
+  u_int32_t value, aluout;
+  
+  if (c_desc == CYCLE_DECODE)
+  {
+      curr_inst = m_if_id->pullInstruction();
+      // Get source 1 register number
+      r_src1 = (curr_inst & 0x00F80000) >> 19;
+      // Get signed label offset value and calculate newpc
+      value = decodeInstr(curr_inst, 19);
+      aluout = m_pc + value * 4;
+            
+      if (m_register[r_src1] == 0)
+      {	// Branch (update PC), if equals zero
+	m_id_exe->push_newpc(aluout);
+	m_pc = aluout;
+      }
+  }
+  else
+  { 
+      helpUnexpDescr("GPR_BEQZ()", c_desc);
+  }
   
 }
 
 void GeneralPurposeRegister::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_src1, r_src2;
+  u_int32_t value, aluout;
+  
+  if (c_desc == CYCLE_DECODE)
+  {
+      curr_inst = m_if_id->pullInstruction();
+      // Get source 1 register number
+      r_src1 = (curr_inst & 0x00F80000) >> 19;
+      // Get source 2 register number
+      r_src2 = (curr_inst & 0x0007C000) >> 14;
+      // Get signed label offset value and calculate newpc
+      value = decodeInstr(curr_inst, 19);
+      aluout = m_pc + value * 4;
+            
+      if (m_register[r_src1] >= m_register[r_src2])
+      {	// Branch (update PC), if value of r_src1 >= r_src2
+	m_id_exe->push_newpc(aluout);
+	m_pc = aluout;
+      }
+  }
+  else
+  { 
+      helpUnexpDescr("GPR_BGE()", c_desc);
+  }
   
 }
 
 void GeneralPurposeRegister::gpr_bne(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_src1, r_src2;
+  u_int32_t value, aluout;
   
+  if (c_desc == CYCLE_DECODE)
+  {
+      curr_inst = m_if_id->pullInstruction();
+      // Get source 1 register number
+      r_src1 = (curr_inst & 0x00F80000) >> 19;
+      // Get source 2 register number
+      r_src2 = (curr_inst & 0x0007C000) >> 14;
+      // Get signed label offset value and calculate newpc
+      value = decodeInstr(curr_inst, 19);
+      aluout = m_pc + value * 4;
+            
+      if (m_register[r_src1] != m_register[r_src2])
+      {	// Branch (update PC), if value of r_src1 != r_src2
+	m_id_exe->push_newpc(aluout);
+	m_pc = aluout;
+      }
+  }
+  else
+  { 
+      helpUnexpDescr("GPR_BNE()", c_desc);
+  }
 }
 
 void GeneralPurposeRegister::gpr_la(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_dest;
+  u_int32_t value;
   
+  switch (c_desc)
+  {
+    case CYCLE_DECODE:
+      curr_inst = m_if_id->pullInstruction();
+      
+      // Get and push r_dest number
+      r_dest = (curr_inst & 0x00F80000) >> 19;
+      m_id_exe->push_rd(r_dest); 
+      
+      // Get and push signed label offset value
+      value = decodeInstr(curr_inst, 19);
+      m_id_exe->push_val(value);
+      break;
+      
+    case CYCLE_EXECUTE:
+      // Forward opcode, r_dest, and op_B (from value)
+      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+      m_exe_mem->push_rd(m_id_exe->pull_rd());
+      m_exe_mem->push_opB(m_id_exe->pull_val());
+      break;
+      
+    case CYCLE_MEMORY:
+      // Forward opcode, r_dest, and op_B
+      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+      m_mem_wb->push_rd(m_exe_mem->pull_rd());
+      m_mem_wb->push_opB(m_exe_mem->pull_opB());
+      break;
+      
+    case CYCLE_WRITEBACK:
+      // Load signed label offset address into r_dest
+      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_opB();
+      break;
+      
+    default:
+      helpUnexpDescr("GPR_LA()", c_desc);
+      break;
+  }
 }
 
 void GeneralPurposeRegister::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_dest, r_src1, mdr;
+  u_int32_t value, aluout;
   
+  switch (c_desc)
+  {
+    case CYCLE_DECODE:
+      curr_inst = m_if_id->pullInstruction();
+      
+      // Get and push r_dest number
+      r_dest = (curr_inst & 0x00F80000) >> 19;
+      m_id_exe->push_rd(r_dest); 
+      
+      // Get and push r_src1 number
+      r_src1 = (curr_inst & 0x0007C000) >> 14;
+      m_id_exe->push_rs(r_src1);
+      
+      // Get and push signed offset value
+      value = decodeInstr(curr_inst, 14);
+      m_id_exe->push_val(value);
+      break;
+      
+    case CYCLE_EXECUTE:
+      // Forward opcode and r_dest
+      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+      m_exe_mem->push_rd(m_id_exe->pull_rd());
+      
+      // Correct target address and push to ALU_out
+      aluout = (MemSys::BaseUserDataSegmentAddress | m_register[m_id_exe->pull_rs()]) + m_id_exe->pull_val();
+      m_exe_mem->push_aluout(aluout);
+      break;
+      
+    case CYCLE_MEMORY:
+      // Forward opcode and r_dest
+      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+      m_mem_wb->push_rd(m_exe_mem->pull_rd());
+      
+      // Read from memory at corrected target address into MDR
+      mdr = *((u_int8_t*)m_memory->read(m_exe_mem->pull_aluout(), sizeof(u_int8_t)));
+      m_mem_wb->push_mdr(mdr);
+      break;
+      
+    case CYCLE_WRITEBACK:
+      // Write MDR to r_dest
+      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_mdr();
+      break;
+      
+    default:
+      helpUnexpDescr("GPR_LB()", c_desc);
+      break;
+  }
 }
 
 void GeneralPurposeRegister::gpr_li(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_dest;
+  u_int32_t value;
   
+  switch (c_desc)
+  {
+    case CYCLE_DECODE:
+      curr_inst = m_if_id->pullInstruction();
+      
+      // Get and push r_dest number
+      r_dest = (curr_inst & 0x00F80000) >> 19;
+      m_id_exe->push_rd(r_dest); 
+      
+      // Get and push signed immediate value
+      value = decodeInstr(curr_inst, 19);
+      m_id_exe->push_val(value);
+      break;
+      
+    case CYCLE_EXECUTE:
+      // Forward opcode, r_dest, and op_B (from imm value)
+      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+      m_exe_mem->push_rd(m_id_exe->pull_rd());
+      m_exe_mem->push_opB(m_id_exe->pull_val());
+      break;
+      
+    case CYCLE_MEMORY:
+      // Forward opcode, r_dest, and op_B
+      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+      m_mem_wb->push_rd(m_exe_mem->pull_rd());
+      m_mem_wb->push_opB(m_exe_mem->pull_opB());
+      break;
+      
+    case CYCLE_WRITEBACK:
+      // Load signed label offset address into r_dest
+      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_opB();
+      break;
+      
+    default:
+      helpUnexpDescr("GPR_LI()", c_desc);
+      break;
+  }
 }
 
 void GeneralPurposeRegister::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int8_t r_dest, r_src1;
+  u_int32_t value, op_A, op_B;
   
+  switch (c_desc)
+  {
+    case CYCLE_DECODE:
+      curr_inst = m_if_id->pullInstruction();
+      
+      // Get and push r_dest number
+      r_dest = (curr_inst & 0x00F80000) >> 19;
+      m_id_exe->push_rd(r_dest); 
+      
+      // Get and push r_src1 number & operand A
+      r_src1 = (curr_inst & 0x0007C000) >> 14;
+      m_id_exe->push_rs(r_src1);
+      m_id_exe->push_opA(m_register[r_src1]);
+      
+      // Get and push signed immediate value & operand B
+      value = decodeInstr(curr_inst, 14);
+      m_id_exe->push_val(value);
+      m_id_exe->push_opB(value);
+      break;
+      
+    case CYCLE_EXECUTE:
+      // Forward opcode and r_dest
+      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+      m_exe_mem->push_rd(m_id_exe->pull_rd());
+      
+      // Get op A & B and subtract them, then push ALU_out
+      op_A = m_id_exe->pull_opA();
+      op_B = m_id_exe->pull_opB();
+      m_exe_mem->push_aluout(op_A - op_B);
+      break;
+      
+    case CYCLE_MEMORY:
+      // Forward opcode, r_dest, and ALU_out	
+      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+      m_mem_wb->push_rd(m_exe_mem->pull_rd());
+      m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
+      break;
+      
+    case CYCLE_WRITEBACK:
+      // Pull r_dest number & aluout, then write to r_dest
+      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
+      break;
+      
+    default:
+      helpUnexpDescr("GPR_SUBI()", c_desc); //halp wat i do
+      break;
+  }
 }
 
 void GeneralPurposeRegister::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
 {
+  inst curr_inst;
+  u_int32_t sys_code;
+  addr str_addr;
+  
+  switch (c_desc)
+  {
+    case CYCLE_DECODE:
+      curr_inst = m_if_id->pullInstruction();
+      
+      // Get sys_code and push into r_dest ???
+      sys_code = m_register[REG_VAL_1];
+      m_id_exe->push_rd(sys_code);
+      break;
+      
+    case CYCLE_EXECUTE:
+      // Forward sys_code
+      m_exe_mem->push_rd(m_id_exe->pull_rd());
+      
+      // Calculate corrected str_addr and push into ALU_out
+      str_addr = MemSys::BaseUserDataSegmentAddress | m_id_exe->pull_rd();
+      m_exe_mem->push_aluout(str_addr);
+      break;
+      
+    case CYCLE_MEMORY:
+    {
+      str_addr = m_exe_mem->pull_aluout();
+      switch(m_exe_mem->pull_rd())
+      {
+	case SYSCALL_PRINT_STR:
+	{
+	    u_int8_t letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));	// Read first char
+	    std::string str;
+	    str_addr++;
+	    while (letter != '\0')		// Print each char in the string until NUL terminator
+	    {
+	    str += letter;
+	    letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
+	    str_addr++;
+	    } 
+	    std::cout << str << std::endl; 
+	}
+	break;
+	
+	case SYSCALL_READ_STR:
+	{
+	    std::string input;
+	    std::cin >> input;
+	    for (int i = 0; i < input.length(); i++)	// Write each char to memory
+	    {
+	      m_memory->write(str_addr, &input[i], sizeof(u_int8_t));
+	      str_addr++;
+	    }
+	    u_int8_t null_c = '\0';				// Add NUL terminator
+	    m_memory->write(str_addr, &null_c, sizeof(u_int8_t));
+	}
+	break;
+	
+	case SYSCALL_EXIT:
+	  //user_mode = false;	// Exit user_mode *****
+	  break;
+      
+	default:
+	  break;
+      }
+      
+    }
+    break;
+      
+    default:
+      helpUnexpDescr("GPR_SYSCALL()", c_desc);
+      break;
+  }
   
 }
 
