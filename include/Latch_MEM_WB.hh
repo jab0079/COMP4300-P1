@@ -15,8 +15,9 @@
  *          write-back cycles of a pipelined simulator
  * 
  *      Change Log:
- *          10/18/14 - Added definitions for opcode, rd,
- *                      aluout, mdr and corresponding push/pulls
+ *          10/20/14 - Added operand B
+ *          10/18/14 - Created initial implementation for
+ *                      latch with corresponding push/pull methods
  *          10/14/14 - Initial creation
  * 
  * 
@@ -38,11 +39,13 @@ class Latch_MEM_WB : public Latch
       virtual void push_opcode(const inst& opcode);
       virtual void push_mdr(const u_int32_t& mdr);
       virtual void push_aluout(const u_int32_t& aluout);
+      virtual void push_opB(const u_int32_t& opB);
       virtual void push_rd(const u_int32_t& rd);
       
       virtual inst pull_opcode() const;
       virtual u_int32_t pull_mdr() const;
       virtual u_int32_t pull_aluout() const;
+      virtual u_int32_t pull_opB() const;
       virtual u_int32_t pull_rd() const;
       
     protected:
@@ -54,7 +57,9 @@ class Latch_MEM_WB : public Latch
       //mdr
       u_int32_t m_mdr_old;
       u_int32_t m_mdr_new;
-      //operand B?
+      //OperandB
+      u_int32_t m_opB_old;
+      u_int32_t m_opB_new;
       //ALUout
       u_int32_t m_aluout_old;
       u_int32_t m_aluout_new;

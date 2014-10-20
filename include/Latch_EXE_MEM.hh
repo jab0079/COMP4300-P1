@@ -15,8 +15,9 @@
  *          memory cycles of a pipelined simulator
  * 
  *      Change Log:
- *          10/18/14 - Added definitions for opcode, rd,
- *                      aluout and corresponding push/pulls
+ *          10/20/14 - Added operand B
+ *          10/18/14 - Created initial implementation for
+ *                      latch with corresponding push/pull methods
  *          10/14/14 - Initial creation
  * 
  * 
@@ -36,10 +37,12 @@ class Latch_EXE_MEM : public Latch
       
       virtual void push_opcode(const inst& op);
       virtual void push_aluout(const u_int32_t& aluout);
+      virtual void push_opB(const u_int32_t& opB);
       virtual void push_rd(const u_int32_t& rd);
       
       virtual inst pull_opcode() const;
       virtual u_int32_t pull_aluout() const;
+      virtual u_int32_t pull_opB() const;
       virtual u_int32_t pull_rd() const;
       
     protected:
@@ -51,7 +54,9 @@ class Latch_EXE_MEM : public Latch
       //ALUout
       u_int32_t m_aluout_old;
       u_int32_t m_aluout_new;
-      //OperandB?
+      //OperandB
+      u_int32_t m_opB_old;
+      u_int32_t m_opB_new;
       //rd
       u_int32_t m_rd_old;
       u_int32_t m_rd_new;

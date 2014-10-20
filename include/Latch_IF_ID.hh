@@ -15,6 +15,8 @@
  *          decode cycles of a pipelined simulator
  * 
  *      Change Log:
+ *          10/18/14 - Created initial implementation for
+ *                      latch with corresponding push/pull methods
  *          10/14/14 - Initial creation
  * 
  * 
