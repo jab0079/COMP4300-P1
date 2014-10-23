@@ -11,3 +11,4 @@ BIN_DIR=bin/
 EXE_STACK=stackSim
 EXE_ACCUM=accumSim
 EXE_GPR=gprSim
+EXE_PIPE=pipeSim
