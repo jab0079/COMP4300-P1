@@ -17,6 +17,7 @@
  *          old information.
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/14/14 - Initial creation
  * 
  * 
@@ -34,6 +35,7 @@ class Latch : public Uncopyable
       virtual ~Latch() {}
       
       virtual void update() = 0;
+      virtual void reset() = 0;
       
 };
 

@@ -13,6 +13,7 @@
  *          This class defines the interface for the Pipeline Simulator
  * 
  *      Change Log:
+ *          10/24/14 - Added methods to reset latches and start pipeline
  *          10/18/14 - Added sepearate methods for each instruction and
  *                      for fetch and decode (to assist with pipelining).
  *                      Also moved decodeInstr to the 'private' field.
@@ -49,6 +50,7 @@ class Pipeline : public Simulator
                 
     protected:
         reg m_register[REGISTER_COUNT]; //Utilities.hh
+        bool m_usermode;
         Latch_IF_ID* m_if_id;
         Latch_ID_EXE* m_id_exe;
         Latch_EXE_MEM* m_exe_mem;
@@ -67,6 +69,10 @@ class Pipeline : public Simulator
         virtual void gpr_li(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_subi(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_syscall(const CYCLE_DESCRIPTOR& c);
+        
+        virtual void resetLatches();
+        virtual void runPipeline();
+        virtual void updateLatches();
         
     private:
         virtual void delegateCycle(const u_int8_t& opcode,

@@ -13,6 +13,7 @@
  *          cycles.
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/20/14 - Added operand A, B
  *          10/14/14 - Initial Creation
  * 
@@ -35,6 +36,26 @@ void Latch_ID_EXE::update()
   m_val_old = m_val_new;
   m_opA_old = m_opA_new;
   m_opB_old = m_opB_new;
+}
+
+void Latch_ID_EXE::reset()
+{
+  m_newpc_old = 0;
+  m_rs_old = 0;
+  m_rt_old = 0;
+  m_rd_old = 0;
+  m_opcode_old = 0;
+  m_val_old = 0;
+  m_opA_old = 0;
+  m_opB_old = 0;
+  m_newpc_new = 0;
+  m_rs_new = 0;
+  m_rt_new = 0;
+  m_rd_new = 0;
+  m_opcode_new = 0;
+  m_val_new = 0;
+  m_opA_new = 0;
+  m_opB_new = 0;
 }
 
 void Latch_ID_EXE::push_opcode(const inst& i)

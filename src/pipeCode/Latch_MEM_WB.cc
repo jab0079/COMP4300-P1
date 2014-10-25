@@ -13,6 +13,7 @@
  *          cycles.
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/20/14 - Added operand B
  *          10/18/14 - Implemented pulls/pushes/update methods
  *          10/14/14 - Initial Creation
@@ -33,6 +34,20 @@ void Latch_MEM_WB::update()
   m_aluout_old = m_aluout_new;
   m_opB_old = m_opB_new;
   m_rd_old = m_rd_new;
+}
+
+void Latch_MEM_WB::reset()
+{
+  m_opcode_old = 0;
+  m_mdr_old = 0;
+  m_aluout_old = 0;
+  m_opB_old = 0;
+  m_rd_old = 0;
+  m_opcode_new = 0;
+  m_mdr_new = 0;
+  m_aluout_new = 0;
+  m_opB_new = 0;
+  m_rd_new = 0;
 }
 
 void Latch_MEM_WB::push_opcode(const inst& opcode)

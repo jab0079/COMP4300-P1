@@ -15,6 +15,7 @@
  *          execution cycles of a pipelined simulator
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/20/14 - Added operand A, B
  *          10/18/14 - Created initial implementation for
  *                      latch with corresponding push/pull methods
@@ -33,6 +34,8 @@ class Latch_ID_EXE : public Latch
       Latch_ID_EXE();
       virtual ~Latch_ID_EXE();
       
+      virtual void update();
+      virtual void reset();
       
       virtual void push_opcode(const inst& i);
       virtual void push_rs(const u_int32_t& rs);
@@ -52,7 +55,6 @@ class Latch_ID_EXE : public Latch
       virtual u_int32_t pull_val() const;
       virtual u_int32_t pull_newpc() const;
       
-      virtual void update();
       
       
     protected:

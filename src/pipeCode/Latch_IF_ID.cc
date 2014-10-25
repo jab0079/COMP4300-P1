@@ -13,6 +13,7 @@
  *          cycles.
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/14/14 - Initial Creation
  * 
  * 
@@ -27,6 +28,12 @@ Latch_IF_ID::~Latch_IF_ID() {}
 void Latch_IF_ID::update()
 {
   m_inst_buffer_old = m_inst_buffer_new;
+}
+
+void Latch_IF_ID::reset()
+{
+  m_inst_buffer_old = 0;
+  m_inst_buffer_new = 0;
 }
 
 inst Latch_IF_ID::pullInstruction()

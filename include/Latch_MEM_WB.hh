@@ -15,6 +15,7 @@
  *          write-back cycles of a pipelined simulator
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/20/14 - Added operand B
  *          10/18/14 - Created initial implementation for
  *                      latch with corresponding push/pull methods
@@ -35,6 +36,7 @@ class Latch_MEM_WB : public Latch
       virtual ~Latch_MEM_WB();
       
       virtual void update();
+      virtual void reset();
       
       virtual void push_opcode(const inst& opcode);
       virtual void push_mdr(const u_int8_t& mdr);

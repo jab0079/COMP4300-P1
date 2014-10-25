@@ -15,6 +15,7 @@
  *          decode cycles of a pipelined simulator
  * 
  *      Change Log:
+ *          10/24/14 - Added reset method
  *          10/18/14 - Created initial implementation for
  *                      latch with corresponding push/pull methods
  *          10/14/14 - Initial creation
@@ -35,6 +36,7 @@ class Latch_IF_ID : public Latch
       virtual ~Latch_IF_ID();
       
       virtual void update();
+      virtual void reset();
       
       /*
        * Method pulls the old instruction 
