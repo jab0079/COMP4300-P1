@@ -11,6 +11,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          10/26/14 - Added methods to get tops of each segment
  *          9/29/14 - Added exceptions to read and write
  *          9/11/14 - Changed how system checks reading addresses
  *          9/8/14 - Implemented read/write functions and added the
@@ -227,6 +228,12 @@ throw(std::range_error)
         std::cerr << e.what() << std::endl;
     }
 }
+
+addr MemSys::getUserTextTop() const { return m_usertext_top; }
+addr MemSys::getUserDataTop() const { return m_userdata_top; }
+addr MemSys::getKernelTextTop() const { return m_kerneltext_top; }
+addr MemSys::getKernelDataTop() const { return m_kerneldata_top; }
+addr MemSys::getStackTop() const { return m_stack_top; }
 
 void MemSys::outputSegment(const Segment& segment) const
 {

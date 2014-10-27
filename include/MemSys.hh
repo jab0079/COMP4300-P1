@@ -14,6 +14,7 @@
  *          used by the simulators in this application.
  * 
  *      Change Log:
+ *          10/26/14 - Added methods to get tops of each segment
  *          10/18/14 - Moved typedefs addr and inst to Utilities.hh
  *          9/29/14 - Added exceptions to read and write
  *          9/17/14 - Made class and derived classes Uncopyable
@@ -62,6 +63,12 @@ class MemSys : private Uncopyable
         
         virtual void outputSegment(const Segment& segment) const;
         
+        virtual addr getUserTextTop() const;
+        virtual addr getUserDataTop() const;
+        virtual addr getKernelTextTop() const;
+        virtual addr getKernelDataTop() const;
+        virtual addr getStackTop() const;
+        
         // Public Constants ---------------------------------------------------
         //Segment Sizes...(in bytes)
         static const unsigned int UserTextSegmentSize;
@@ -85,10 +92,7 @@ class MemSys : private Uncopyable
         addr m_kerneldata_top;
         addr m_stack_top;
     
-    private:
-        //Private Methods -----------------------------------------------------
-//         MemSys();
-        
+    private:   
         //Private Members -----------------------------------------------------
         char* m_usertext_seg;
         char* m_userdata_seg;

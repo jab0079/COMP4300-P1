@@ -13,6 +13,7 @@
  *          This class defines the interface for the Pipeline Simulator
  * 
  *      Change Log:
+ *          10/26/14 - Added trapped member for exceptions like syscalls
  *          10/24/14 - Added methods to reset latches and start pipeline
  *          10/18/14 - Added sepearate methods for each instruction and
  *                      for fetch and decode (to assist with pipelining).
@@ -51,6 +52,7 @@ class Pipeline : public Simulator
     protected:
         reg m_register[REGISTER_COUNT]; //Utilities.hh
         bool m_usermode;
+        bool m_trapped;
         Latch_IF_ID* m_if_id;
         Latch_ID_EXE* m_id_exe;
         Latch_EXE_MEM* m_exe_mem;

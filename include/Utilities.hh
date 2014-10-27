@@ -14,6 +14,9 @@
  *          to all sources in the project
  * 
  *      Change Log:
+ *          10/26/14 - Changed values of GPR instructions to be 
+ *                      incremented by one in order to solve issue
+ *                      of "bubbled" instructions in pipeline (skipped)
  *          10/18/14 - Moved typedefs inst and addr to here
  * 			10/14/14 - Added NOP to GPR
  *          9/9/14 - Initial creation
@@ -43,17 +46,17 @@ static const u_int8_t STK_INST_ADD = 0x04;
 static const u_int8_t STK_INST_END = 0x05;
 
 enum GPR_INST_SET {
-    GPR_ADDI, //0
-    GPR_B, //1
-    GPR_BEQZ, //2
-    GPR_BGE, //3
-    GPR_BNE, //4
-    GPR_LA, //5
-    GPR_LB, //6
-    GPR_LI, //7
-    GPR_SUBI, //8
-    GPR_SYSCALL, //9
-    GPR_NOP //10
+    GPR_ADDI, //1
+    GPR_B, //2
+    GPR_BEQZ, //3
+    GPR_BGE, //4
+    GPR_BNE, //5
+    GPR_LA, //6
+    GPR_LB, //7
+    GPR_LI, //8
+    GPR_SUBI, //9
+    GPR_SYSCALL, //10
+    GPR_NOP //11
 };
 
 enum SYSCALL_CODES {

@@ -26,6 +26,9 @@ Pipeline::Pipeline(MemSys* mem)
   m_id_exe = new Latch_ID_EXE();
   m_exe_mem = new Latch_EXE_MEM();
   m_mem_wb = new Latch_MEM_WB();
+  
+  m_usermode = false;
+  m_trapped = false;
 }
 
 Pipeline::~Pipeline()
@@ -64,6 +67,7 @@ void Pipeline::updateLatches()
 void Pipeline::runPipeline()
 {
     m_usermode = true;
+    m_trapped = false;
     while (m_usermode)
     {
         gpr_fetch(CYCLE_FETCH);
@@ -503,12 +507,15 @@ void Pipeline::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
   switch (c_desc)
   {
     case CYCLE_DECODE:
-      curr_inst = m_if_id->pullInstruction();
-      
-      // Get sys_code and push into r_dest ???
-      sys_code = m_register[REG_VAL_1];
-      m_id_exe->push_rd(sys_code);
-      break;
+        //Set simulator in trapped state for control
+        m_trapped = true; 
+        
+        curr_inst = m_if_id->pullInstruction();
+        
+        // Get sys_code and push into r_dest ???
+        sys_code = m_register[REG_VAL_1];
+        m_id_exe->push_rd(sys_code);
+        break;
       
     case CYCLE_EXECUTE:
       // Forward sys_code
@@ -592,23 +599,26 @@ void Pipeline::gpr_nop(const CYCLE_DESCRIPTOR& c_desc)
 void Pipeline::delegateCycle(const u_int8_t& opcode,
                              const CYCLE_DESCRIPTOR& c_desc)
 {
-    switch (opcode)
-    {
-      case GPR_ADDI:    gpr_addi(c_desc); break;
-      case GPR_B:       gpr_b(c_desc); break;
-      case GPR_BEQZ:    gpr_beqz(c_desc); break;
-      case GPR_BGE:     gpr_bge(c_desc); break;
-      case GPR_BNE:     gpr_bne(c_desc); break;
-      case GPR_LA:      gpr_la(c_desc); break;
-      case GPR_LB:      gpr_lb(c_desc); break;
-      case GPR_LI:      gpr_li(c_desc); break;
-      case GPR_SUBI:    gpr_subi(c_desc); break;
-      case GPR_SYSCALL: gpr_syscall(c_desc); break;
-      default:
-//         std::cout << "DELEGATE_CYCLE() -- UNEXPECTED OPCODE: " 
-//         << opcode << std::endl;
-        break;
-    }
+    if (opcode == GPR_INST_SET_VALS[GPR_ADDI])
+        gpr_addi(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_B])
+        gpr_b(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_BEQZ])
+        gpr_beqz(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_BGE])
+        gpr_bge(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_BNE])
+        gpr_bne(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_LA])
+        gpr_la(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_LB])
+        gpr_lb(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_LI])
+        gpr_li(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_SUBI])
+        gpr_subi(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_SYSCALL])
+        gpr_syscall(c_desc);
 }
 
 void Pipeline::helpUnexpDescr(const std::string& methodName, 
