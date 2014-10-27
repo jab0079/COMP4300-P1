@@ -36,6 +36,8 @@ class Latch_EXE_MEM : public Latch
       
       virtual void update();
       virtual void reset();
+      virtual void reset_old();
+
       
       virtual void push_opcode(const inst& op);
       virtual void push_aluout(const u_int32_t& aluout);

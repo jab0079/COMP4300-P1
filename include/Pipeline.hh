@@ -69,6 +69,7 @@ class Pipeline : public Simulator
         virtual void gpr_li(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_subi(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_syscall(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_nop(const CYCLE_DESCRIPTOR& c);
         
         virtual void resetLatches();
         virtual void runPipeline();

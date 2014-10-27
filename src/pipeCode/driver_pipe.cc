@@ -39,10 +39,10 @@ int main(int argc, char* argv[])
     //we could determine the path of the compiled sources without
     //the user having to add in a commandline argument.
     //NOTE: THIS IS COUPLED TO THE SOURCE TREE STRUCTURE
-    std::string path = "docs/palindrome_compiled.s";
+    std::string path = "docs/lab3a.s";
     std::string executePath = std::string(argv[0]);
-    std::string replaceStr = "bin/gprSim";
-    if (executePath.compare(std::string("./gprSim")) == 0)
+    std::string replaceStr = "bin/pipeSim";
+    if (executePath.compare(std::string("./pipeSim")) == 0)
     { //if we are executing from within the bin directory
         path.insert(0,"../"); //go up a directory...
     }

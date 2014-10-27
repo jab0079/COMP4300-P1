@@ -40,22 +40,27 @@ void Latch_ID_EXE::update()
 
 void Latch_ID_EXE::reset()
 {
-  m_newpc_old = 0;
-  m_rs_old = 0;
-  m_rt_old = 0;
-  m_rd_old = 0;
-  m_opcode_old = 0;
-  m_val_old = 0;
-  m_opA_old = 0;
-  m_opB_old = 0;
-  m_newpc_new = 0;
-  m_rs_new = 0;
-  m_rt_new = 0;
-  m_rd_new = 0;
-  m_opcode_new = 0;
-  m_val_new = 0;
-  m_opA_new = 0;
-  m_opB_new = 0;
+    reset_old();
+    m_newpc_new = 0;
+    m_rs_new = 0;
+    m_rt_new = 0;
+    m_rd_new = 0;
+    m_opcode_new = 0;
+    m_val_new = 0;
+    m_opA_new = 0;
+    m_opB_new = 0;
+}
+
+void Latch_ID_EXE::reset_old()
+{
+    m_newpc_old = 0;
+    m_rs_old = 0;
+    m_rt_old = 0;
+    m_rd_old = 0;
+    m_opcode_old = 0;
+    m_val_old = 0;
+    m_opA_old = 0;
+    m_opB_old = 0;  
 }
 
 void Latch_ID_EXE::push_opcode(const inst& i)

@@ -27,60 +27,60 @@
 
 .text
 #main:
-        # read the string S:
-        la $4, 0x00200100
-        li $5, 0x0400            # 1024
-        li $2, 0x01              # load "read_string" code into $2.
-        syscall
+    # read the string S:
+    la $4, 0x00200100
+    li $5, 0x0400            # 1024
+    li $2, 0x01              # load "read_string" code into $2.
+    syscall
 
-        la $8, 0x00200100       # A = S.
-        la $9, 0x00200100       # we need to move B to the end
+    la $8, 0x00200100       # A = S.
+    la $9, 0x00200100       # we need to move B to the end
 
 #length_loop:                   # length of the string
-        lb $10, ($9)            # load the byte at addr B into $10.
-        nop
-        beqz $10, 0x03           # if $10 == 0, branch out of loop.
-	nop
-	
-	addi $9, $9, 0x01        # otherwise, increment B,
-        b 0xFFFFFFFA            # and repeat the loop.
-	nop
+    lb $10, ($9)            # load the byte at addr B into $10.
+    nop
+    beqz $10, 0x03           # if $10 == 0, branch out of loop.
+    nop
+
+    addi $9, $9, 0x01        # otherwise, increment B,
+    b 0xFFFFFFFA            # and repeat the loop.
+    nop
 
 #end_length_loop:
-        subi $9, $9, 0x1        # subtract 2 to move B back past the '\0' and '\n'.
+    subi $9, $9, 0x1        # subtract 2 to move B back past the '\0' and '\n'.
 
 #test_loop:
-        bge $8, $9, 0x0B        # if A >= B, it's a palindrome.
-	nop
+    bge $8, $9, 0x0B        # if A >= B, it's a palindrome.
+    nop
+
+    lb $10, ($8)            # load the byte at addr A into $10,
+    nop
+    lb $11, ($9)            # load the byte at addr B into $11.
+    nop
+    bne $10, $11, 0x0A      # if $10 != $11, not a palindrome.
+    nop
 	
-	lb $10, ($8)            # load the byte at addr A into $10,
-	nop
-	lb $11, ($9)            # load the byte at addr B into $11.
-	nop
-	bne $10, $11, 0x0A      # if $10 != $11, not a palindrome.
-	nop
-	
-        # Otherwise,
-        addi $8, $8, 0x01       # increment A,
-        subi $9, $9, 0x01       # decrement B,
-        b 0xFFFFFFF5            # and repeat the loop.
-	nop
+    # Otherwise,
+    addi $8, $8, 0x01       # increment A,
+    subi $9, $9, 0x01       # decrement B,
+    b 0xFFFFFFF5            # and repeat the loop.
+    nop
 	
 #is_palin:                      # print the is_palin_msg, and exit.
 
-        la $4, 0x00200006
-        li $2, 0x00
-        syscall
-        b 0x06
-        nop
+    la $4, 0x00200006
+    li $2, 0x00
+    syscall
+    b 0x06
+    nop
 
 #not_palin:
-        la $4, 0x00200008       # print the not_palin_msg, and exit.
-        li $2, 0x00
-        syscall
-        b 0x01
-        nop
+    la $4, 0x00200008       # print the not_palin_msg, and exit.
+    li $2, 0x00
+    syscall
+    b 0x01
+    nop
 
 #exit:                          # exit the program
-        li $2, 0x02             # load "exit" code into $2.
-        syscall                 # make the system call.
+    li $2, 0x02             # load "exit" code into $2.
+    syscall                 # make the system call.

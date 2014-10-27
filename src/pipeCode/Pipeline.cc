@@ -567,6 +567,28 @@ void Pipeline::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
   }
 }
 
+void Pipeline::gpr_nop(const CYCLE_DESCRIPTOR& c_desc)
+{
+    switch (c_desc)
+    {
+        case CYCLE_DECODE:
+            m_id_exe->reset_old();
+            break;
+        case CYCLE_EXECUTE:
+            m_exe_mem->reset_old();
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            break;
+        case CYCLE_MEMORY:
+            m_mem_wb->reset_old();
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            break;
+        default:
+            helpUnexpDescr("GPR_NOP()", c_desc);
+            break;
+        
+    }
+}
+
 void Pipeline::delegateCycle(const u_int8_t& opcode,
                              const CYCLE_DESCRIPTOR& c_desc)
 {
@@ -583,8 +605,8 @@ void Pipeline::delegateCycle(const u_int8_t& opcode,
       case GPR_SUBI:    gpr_subi(c_desc); break;
       case GPR_SYSCALL: gpr_syscall(c_desc); break;
       default:
-        std::cout << "DELEGATE_CYCLE() -- UNEXPECTED OPCODE: " 
-        << opcode << std::endl;
+//         std::cout << "DELEGATE_CYCLE() -- UNEXPECTED OPCODE: " 
+//         << opcode << std::endl;
         break;
     }
 }

@@ -38,16 +38,21 @@ void Latch_MEM_WB::update()
 
 void Latch_MEM_WB::reset()
 {
-  m_opcode_old = 0;
-  m_mdr_old = 0;
-  m_aluout_old = 0;
-  m_opB_old = 0;
-  m_rd_old = 0;
-  m_opcode_new = 0;
-  m_mdr_new = 0;
-  m_aluout_new = 0;
-  m_opB_new = 0;
-  m_rd_new = 0;
+    reset_old();
+    m_opcode_new = 0;
+    m_mdr_new = 0;
+    m_aluout_new = 0;
+    m_opB_new = 0;
+    m_rd_new = 0;
+}
+
+void Latch_MEM_WB::reset_old()
+{
+    m_opcode_old = 0;
+    m_mdr_old = 0;
+    m_aluout_old = 0;
+    m_opB_old = 0;
+    m_rd_old = 0;
 }
 
 void Latch_MEM_WB::push_opcode(const inst& opcode)

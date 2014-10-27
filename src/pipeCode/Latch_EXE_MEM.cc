@@ -47,6 +47,14 @@ void Latch_EXE_MEM::reset()
   m_rd_old = 0;
 }
 
+void Latch_EXE_MEM::reset_old()
+{
+  m_opcode_old = 0;
+  m_aluout_old = 0;
+  m_opB_old = 0;
+  m_rd_old = 0;
+}
+
 void Latch_EXE_MEM::push_opcode(const inst& op)
 { m_opcode_new = op; }
 void Latch_EXE_MEM::push_aluout(const u_int32_t& aluout)

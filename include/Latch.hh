@@ -36,6 +36,7 @@ class Latch : public Uncopyable
       
       virtual void update() = 0;
       virtual void reset() = 0;
+      virtual void reset_old() = 0;
       
 };
 
