@@ -29,11 +29,11 @@ Latch_MEM_WB::~Latch_MEM_WB() {}
 
 void Latch_MEM_WB::update()
 {
-  m_opcode_old = m_opcode_new;
-  m_mdr_old = m_mdr_new;
-  m_aluout_old = m_aluout_new;
-  m_opB_old = m_opB_new;
-  m_rd_old = m_rd_new;
+    m_opcode_old = m_opcode_new;
+    m_mdr_old = m_mdr_new;
+    m_aluout_old = m_aluout_new;
+    m_opB_old = m_opB_new;
+    m_rd_old = m_rd_new;
 }
 
 void Latch_MEM_WB::reset()

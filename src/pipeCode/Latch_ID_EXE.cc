@@ -28,14 +28,14 @@ Latch_ID_EXE::~Latch_ID_EXE() {}
 
 void Latch_ID_EXE::update()
 {
-  m_newpc_old = m_newpc_new;
-  m_rs_old = m_rs_new;
-  m_rt_old = m_rt_new;
-  m_rd_old = m_rd_new;
-  m_opcode_old = m_opcode_new;
-  m_val_old = m_val_new;
-  m_opA_old = m_opA_new;
-  m_opB_old = m_opB_new;
+    m_newpc_old = m_newpc_new;
+    m_rs_old = m_rs_new;
+    m_rt_old = m_rt_new;
+    m_rd_old = m_rd_new;
+    m_opcode_old = m_opcode_new;
+    m_val_old = m_val_new;
+    m_opA_old = m_opA_new;
+    m_opB_old = m_opB_new;
 }
 
 void Latch_ID_EXE::reset()

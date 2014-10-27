@@ -27,7 +27,7 @@ Latch_IF_ID::~Latch_IF_ID() {}
 
 void Latch_IF_ID::update()
 {
-  m_inst_buffer_old = m_inst_buffer_new;
+    m_inst_buffer_old = m_inst_buffer_new;
 }
 
 void Latch_IF_ID::reset()
@@ -48,10 +48,10 @@ void Latch_IF_ID::reset_new()
 
 inst Latch_IF_ID::pullInstruction()
 {
-  return m_inst_buffer_old;
+    return m_inst_buffer_old;
 }
 
 void Latch_IF_ID::pushInstruction(const inst& i)
 {
-  m_inst_buffer_new = i;
+    m_inst_buffer_new = i;
 }

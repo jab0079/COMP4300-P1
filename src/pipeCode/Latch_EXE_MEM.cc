@@ -29,10 +29,10 @@ Latch_EXE_MEM::~Latch_EXE_MEM() {}
 
 void Latch_EXE_MEM::update()
 {
-  m_opcode_old = m_opcode_new;
-  m_aluout_old = m_aluout_new;
-  m_opB_old = m_opB_new;
-  m_rd_old = m_rd_new;
+    m_opcode_old = m_opcode_new;
+    m_aluout_old = m_aluout_new;
+    m_opB_old = m_opB_new;
+    m_rd_old = m_rd_new;
 }
 
 void Latch_EXE_MEM::reset()
@@ -51,10 +51,10 @@ void Latch_EXE_MEM::reset_new()
 
 void Latch_EXE_MEM::reset_old()
 {
-  m_opcode_old = 0;
-  m_aluout_old = 0;
-  m_opB_old = 0;
-  m_rd_old = 0;
+    m_opcode_old = 0;
+    m_aluout_old = 0;
+    m_opB_old = 0;
+    m_rd_old = 0;
 }
 
 void Latch_EXE_MEM::push_opcode(const inst& op)

@@ -14,7 +14,7 @@
 	add $1, $1, $2
 	add $1, $1, $3
 	add $1, $1, $4
-	bge  $5, $0, 0xFFFFFFFB	#go back to loop
+	bge  $5, $0, 0xFFFFFFFA         #go back to loop
 	nop
 
 	add $4, $0, $1

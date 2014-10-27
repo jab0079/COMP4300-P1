@@ -11,6 +11,7 @@
  *          This source file defines the implementation for the Pipeline Simulator
  * 
  *      Change Log:
+ *          10/27/14 - Added checks for data hazards
  *          10/26/14 - Implemented correct syscall exception procedures; Fixed types
  *                      that were used for some of the values in some instructions
  *                      particularly the branch instructions;
@@ -88,10 +89,10 @@ int32_t Pipeline::decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits)
     std::bitset<32> val32(instr);
     std::bitset<32> val;
     
-    for (int i = 0; i < num_bits - 1; i++)  // Copy all bits up to msb
-    val.set(i, val32[i]);
+    for (int i = 0; i < num_bits - 1; i++)      // Copy all bits up to msb
+        val.set(i, val32[i]);
       
-    for (int i = num_bits - 1; i < 32; i++) // Sign extend msb
+    for (int i = num_bits - 1; i < 32; i++)     // Sign extend msb
         val.set(i, val32[num_bits - 1]);
     
     return val.to_ulong();
@@ -122,120 +123,155 @@ void Pipeline::gpr_decode()
 
 void Pipeline::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 {
-  inst curr_inst;
-  u_int8_t r_dest, r_src1, r_forwarddest;
-  int32_t value, op_A, op_B;
+    inst curr_inst;
+    u_int8_t r_dest, r_src1, r_forwarddest;
+    int32_t value, op_A, op_B;
   
     switch (c_desc)
     {
         case CYCLE_DECODE:
-        //pull old instruction again...(should still be the same...)
-        curr_inst = m_if_id->pullInstruction();
+            //pull old instruction again...(should still be the same...)
+            curr_inst = m_if_id->pullInstruction();
+            
+            // Get and push r_dest number
+            r_dest = (curr_inst & 0x00F80000) >> 19;
+            m_id_exe->push_rd(r_dest); 
+            
+            // Get and push r_src1 number & operand A value
+            r_src1 = (curr_inst & 0x0007C000) >> 14;
+            m_id_exe->push_rs(r_src1);
+            m_id_exe->push_opA((int32_t)m_register[r_src1]);
+            
+            // Get and push signed immediate value & operand B value
+            value = decodeInstr(curr_inst, 14);
+            m_id_exe->push_val(value);
+            m_id_exe->push_opB(value);
+            break;
         
-        // Get and push r_dest number
-        r_dest = (curr_inst & 0x00F80000) >> 19;
-        m_id_exe->push_rd(r_dest); 
-        
-        // Get and push r_src1 number & operand A
-        r_src1 = (curr_inst & 0x0007C000) >> 14;
-        m_id_exe->push_rs(r_src1);
-        m_id_exe->push_opA(m_register[r_src1]);
-        
-        // Get and push signed immediate value & operand B
-        value = decodeInstr(curr_inst, 14);
-        m_id_exe->push_val(value);
-        m_id_exe->push_opB(value);
-        break;
-        
-    case CYCLE_EXECUTE:
-        // Forward opcode and r_dest
-        m_exe_mem->push_opcode(m_id_exe->pull_opcode());
-        m_exe_mem->push_rd(m_id_exe->pull_rd());
-        
-        // Get op A & B and add them, then push ALU_out
-        op_A = m_id_exe->pull_opA();
-        op_B = m_id_exe->pull_opB();
-        m_exe_mem->push_aluout(op_A + op_B);
-        break;
-        
-    case CYCLE_MEMORY:
-        // Forward opcode, r_dest, and ALU_out    
-        m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
-        m_mem_wb->push_rd(m_exe_mem->pull_rd());
-        m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
-        break;
-        
-    case CYCLE_WRITEBACK:
-        // Pull r_dest number & aluout, then write to r_dest
-        m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
-        break;
-        
-    default:
-        helpUnexpDescr("GPR_ADDI()", c_desc); //halp wat i do
-        break;
+        case CYCLE_EXECUTE:
+            // Forward opcode and r_dest
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            m_exe_mem->push_rd(m_id_exe->pull_rd());
+            
+            // Get op A & B (checking for data hazards)
+            op_A = m_id_exe->pull_opA();
+            op_B = m_id_exe->pull_opB();
+            // Check for Mem Hazards
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_mem_wb->pull_aluout();
+            // Check for Exe Hazards
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_exe_mem->pull_aluout();            
+          
+            // Add op A & B, then push ALU_out
+            m_exe_mem->push_aluout(op_A + op_B);
+            break;
+            
+        case CYCLE_MEMORY:
+            // Forward opcode, r_dest, and ALU_out    
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            m_mem_wb->push_rd(m_exe_mem->pull_rd());
+            m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
+            break;
+            
+        case CYCLE_WRITEBACK:
+            // Pull r_dest number & aluout, then write to r_dest
+            m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
+            break;
+            
+        default:
+            helpUnexpDescr("GPR_ADDI()", c_desc);
+            break;
     }
 }
 
 void Pipeline::gpr_b(const CYCLE_DESCRIPTOR& c_desc)
 {
-  inst curr_inst;
-  int32_t value; 
-  u_int32_t aluout;
-  
-  if (c_desc == CYCLE_DECODE)
-  {
-      curr_inst = m_if_id->pullInstruction();
-      // Get signed label offset value and calculate newpc
-      value = decodeInstr(curr_inst, 24);
-      aluout = m_pc + value * 4;
-      
-      // Branch (update PC)
-      m_id_exe->push_newpc(aluout);
-      m_pc = aluout;
-      
-      // Follow with NOP??
-  }
-  else
-  { 
-      helpUnexpDescr("GPR_B()", c_desc);
-  }
+    inst curr_inst;
+    int32_t value; 
+    u_int32_t aluout;
+    
+    switch (c_desc)
+    {
+        case CYCLE_DECODE:
+          curr_inst = m_if_id->pullInstruction();
+          // Get signed label offset value and calculate newpc
+          value = decodeInstr(curr_inst, 24);
+          aluout = m_pc + value * 4;
+        
+          // Branch (update PC)
+          m_id_exe->push_newpc(aluout);
+          m_pc = aluout;
+          break;
+          
+        case CYCLE_EXECUTE: //do nothing
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            break;
+        case CYCLE_MEMORY: //do nothing
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            break;
+        case CYCLE_WRITEBACK: //do nothing
+            break;
+        default:
+            helpUnexpDescr("GPR_B()", c_desc);
+            break;
+    }
 }
 
 void Pipeline::gpr_beqz(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_src1;
-    int32_t value;
+    int32_t value, op_A;
     u_int32_t aluout;
     
-    if (c_desc == CYCLE_DECODE)
+    switch (c_desc)
     {
-        curr_inst = m_if_id->pullInstruction();
-        // Get source 1 register number
-        r_src1 = (curr_inst & 0x00F80000) >> 19;
-        // Get signed label offset value and calculate newpc
-        value = decodeInstr(curr_inst, 19);
-        aluout = m_pc + value * 4;
-                
-        if (m_register[r_src1] == 0)
-        { // Branch (update PC), if equals zero
-            m_id_exe->push_newpc(aluout);
-            m_pc = aluout;
-        }
+        case CYCLE_DECODE:
+          curr_inst = m_if_id->pullInstruction();
+          // Get source 1 register number
+          r_src1 = (curr_inst & 0x00F80000) >> 19;
+          // Get signed label offset value and calculate newpc
+          value = decodeInstr(curr_inst, 19);
+          aluout = m_pc + value * 4;
+                  
+          // Get op A (checking for data hazards)
+          op_A = (int32_t)m_register[r_src1];
+          // Check for Mem Hazards
+          if (m_mem_wb->pull_rd() == r_src1)
+              op_A = (int32_t)m_mem_wb->pull_aluout();
+          // Check for Exe Hazards
+          if (m_exe_mem->pull_rd() == r_src1)
+              op_A = (int32_t)m_exe_mem->pull_aluout();
+          
+          if (op_A == 0)
+          { // Branch (update PC), if equals zero
+              m_id_exe->push_newpc(aluout);
+              m_pc = aluout;
+          }
+          break;
+          
+        case CYCLE_EXECUTE: //do nothing
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            break;
+        case CYCLE_MEMORY: //do nothing
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            break;
+        case CYCLE_WRITEBACK: //do nothing
+            break;
+        default:
+            helpUnexpDescr("GPR_BEQZ()", c_desc);
+            break;
     }
-    else
-    { 
-        helpUnexpDescr("GPR_BEQZ()", c_desc);
-    }
-  
 }
 
 void Pipeline::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_src1, r_src2;
-    int32_t value; 
+    int32_t value, op_A, op_B; 
     u_int32_t aluout;
+    
     switch (c_desc)
     {
         case CYCLE_DECODE:
@@ -248,206 +284,103 @@ void Pipeline::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
             value = decodeInstr(curr_inst, 14);
             aluout = m_pc + value * 4;
                     
-            if ((int32_t)m_register[r_src1] >= (int32_t)m_register[r_src2])
-            { // Branch (update PC), if value of r_src1 >= r_src2
+            // Get op A & B (checking for data hazards)
+            op_A = (int32_t)m_register[r_src1];
+            op_B = (int32_t)m_register[r_src2];
+            // Check for Mem Hazards
+            if (m_mem_wb->pull_rd() == r_src1)
+                op_A = (int32_t)m_mem_wb->pull_aluout();
+            if (m_mem_wb->pull_rd() == r_src2)
+                op_B = (int32_t)m_mem_wb->pull_aluout();
+            // Check for Exe Hazards
+            if (m_exe_mem->pull_rd() == r_src1)
+                op_A = (int32_t)m_exe_mem->pull_aluout();
+            if (m_exe_mem->pull_rd() == r_src2)
+                op_B = (int32_t)m_exe_mem->pull_aluout();
+            
+            
+            if (op_A >= op_B)
+            { // Branch (update PC), if value of r_src1(op_A) >= r_src2(op_B)
                 m_id_exe->push_newpc(aluout);
                 m_pc = aluout;
             }
             break;
+            
         case CYCLE_EXECUTE: //do nothing
             m_exe_mem->push_opcode(m_id_exe->pull_opcode());
             break;
         case CYCLE_MEMORY: //do nothing
             m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
             break;
+        case CYCLE_WRITEBACK: //do nothing
+            break;
+        default:
+            helpUnexpDescr("GPR_BGE()", c_desc);
+            break;
     }
-//     else
-//     { 
-//         helpUnexpDescr("GPR_BGE()", c_desc);
-//     }
 }
 
 void Pipeline::gpr_bne(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_src1, r_src2;
-    int32_t value;
+    int32_t value, op_A, op_B;
     u_int32_t aluout;
 
-    if (c_desc == CYCLE_DECODE)
+    switch (c_desc)
     {
-        curr_inst = m_if_id->pullInstruction();
-        // Get source 1 register number
-        r_src1 = (curr_inst & 0x00F80000) >> 19;
-        // Get source 2 register number
-        r_src2 = (curr_inst & 0x0007C000) >> 14;
-        // Get signed label offset value and calculate newpc
-        value = decodeInstr(curr_inst, 14);
-        aluout = m_pc + value * 4;
+        case CYCLE_DECODE:
+            curr_inst = m_if_id->pullInstruction();
+            // Get source 1 register number
+            r_src1 = (curr_inst & 0x00F80000) >> 19;
+            // Get source 2 register number
+            r_src2 = (curr_inst & 0x0007C000) >> 14;
+            // Get signed label offset value and calculate newpc
+            value = decodeInstr(curr_inst, 14);
+            aluout = m_pc + value * 4;
+                    
+            // Get op A & B (checking for data hazards)
+            op_A = (int32_t)m_register[r_src1];
+            op_B = (int32_t)m_register[r_src2];
+            // Check for Mem Hazards
+            if (m_mem_wb->pull_rd() == r_src1)
+                op_A = (int32_t)m_mem_wb->pull_aluout();
+            if (m_mem_wb->pull_rd() == r_src2)
+                op_B = (int32_t)m_mem_wb->pull_aluout();
+            // Check for Exe Hazards
+            if (m_exe_mem->pull_rd() == r_src1)
+                op_A = (int32_t)m_exe_mem->pull_aluout();
+            if (m_exe_mem->pull_rd() == r_src2)
+                op_B = (int32_t)m_exe_mem->pull_aluout();
             
-        if (m_register[r_src1] != m_register[r_src2])
-        { // Branch (update PC), if value of r_src1 != r_src2
-            m_id_exe->push_newpc(aluout);
-            m_pc = aluout;
-        }
-    }
-    else
-    { 
-        helpUnexpDescr("GPR_BNE()", c_desc);
+            
+            if (op_A != op_B)
+            { // Branch (update PC), if value of r_src1(op_A) != r_src2(op_B)
+                m_id_exe->push_newpc(aluout);
+                m_pc = aluout;
+            }
+            break;
+            
+        case CYCLE_EXECUTE: //do nothing
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            break;
+        case CYCLE_MEMORY: //do nothing
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            break;
+        case CYCLE_WRITEBACK: //do nothing
+            break;
+        default:
+            helpUnexpDescr("GPR_BNE()", c_desc);
+            break;
     }
 }
 
 void Pipeline::gpr_la(const CYCLE_DESCRIPTOR& c_desc)
 {
-  inst curr_inst;
-  u_int8_t r_dest;
-  u_int32_t value;
-  
-  switch (c_desc)
-  {
-    case CYCLE_DECODE:
-      curr_inst = m_if_id->pullInstruction();
-      
-      // Get and push r_dest number
-      r_dest = (curr_inst & 0x00F80000) >> 19;
-      m_id_exe->push_rd(r_dest); 
-      
-      // Get and push signed label offset value
-      value = decodeInstr(curr_inst, 19);
-      m_id_exe->push_val(value);
-      break;
-      
-    case CYCLE_EXECUTE:
-      // Forward opcode, r_dest, and aluout (from value)
-      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
-      m_exe_mem->push_rd(m_id_exe->pull_rd());
-      m_exe_mem->push_aluout(m_id_exe->pull_val());
-      break;
-      
-    case CYCLE_MEMORY:
-      // Forward opcode, r_dest, and aluout
-      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
-      m_mem_wb->push_rd(m_exe_mem->pull_rd());
-      m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
-      break;
-      
-    case CYCLE_WRITEBACK:
-      // Load signed label offset address into r_dest
-      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
-      break;
-      
-    default:
-      helpUnexpDescr("GPR_LA()", c_desc);
-      break;
-  }
-}
-
-void Pipeline::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
-{
-  inst curr_inst;
-  u_int8_t r_dest, r_src1, mdr;
-  u_int32_t value, aluout;
-  
-  switch (c_desc)
-  {
-    case CYCLE_DECODE:
-      curr_inst = m_if_id->pullInstruction();
-      
-      // Get and push r_dest number
-      r_dest = (curr_inst & 0x00F80000) >> 19;
-      m_id_exe->push_rd(r_dest); 
-      
-      // Get and push r_src1 number
-      r_src1 = (curr_inst & 0x0007C000) >> 14;
-      m_id_exe->push_rs(r_src1);
-      
-      // Get and push signed offset value
-      value = decodeInstr(curr_inst, 14);
-      m_id_exe->push_val(value);
-      break;
-      
-    case CYCLE_EXECUTE:
-      // Forward opcode and r_dest
-      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
-      m_exe_mem->push_rd(m_id_exe->pull_rd());
-      
-      // Correct target address and push to ALU_out
-      aluout = (MemSys::BaseUserDataSegmentAddress | m_register[m_id_exe->pull_rs()]) + m_id_exe->pull_val();
-      m_exe_mem->push_aluout(aluout);
-      break;
-      
-    case CYCLE_MEMORY:
-      // Forward opcode and r_dest
-      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
-      m_mem_wb->push_rd(m_exe_mem->pull_rd());
-      
-      // Read from memory at corrected target address into MDR
-      mdr = *((u_int8_t*)m_memory->read(m_exe_mem->pull_aluout(), sizeof(u_int8_t)));
-      m_mem_wb->push_mdr(mdr);
-      break;
-      
-    case CYCLE_WRITEBACK:
-      // Write MDR to r_dest
-      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_mdr();
-      break;
-      
-    default:
-      helpUnexpDescr("GPR_LB()", c_desc);
-      break;
-  }
-}
-
-void Pipeline::gpr_li(const CYCLE_DESCRIPTOR& c_desc)
-{
-  inst curr_inst;
-  u_int8_t r_dest;
-  u_int32_t value;
-  
-  switch (c_desc)
-  {
-    case CYCLE_DECODE:
-      curr_inst = m_if_id->pullInstruction();
-      
-      // Get and push r_dest number
-      r_dest = (curr_inst & 0x00F80000) >> 19;
-      m_id_exe->push_rd(r_dest); 
-      
-      // Get and push signed immediate value
-      value = decodeInstr(curr_inst, 19);
-      m_id_exe->push_val(value);
-      break;
-      
-    case CYCLE_EXECUTE:
-      // Forward opcode, r_dest, and op_B (from imm value)
-      m_exe_mem->push_opcode(m_id_exe->pull_opcode());
-      m_exe_mem->push_rd(m_id_exe->pull_rd());
-      m_exe_mem->push_aluout(m_id_exe->pull_val());
-      break;
-      
-    case CYCLE_MEMORY:
-      // Forward opcode, r_dest, and aluout
-      m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
-      m_mem_wb->push_rd(m_exe_mem->pull_rd());
-      m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
-      break;
-      
-    case CYCLE_WRITEBACK:
-      // Load signed label offset address into r_dest
-      m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
-      break;
-      
-    default:
-      helpUnexpDescr("GPR_LI()", c_desc);
-      break;
-  }
-}
-
-void Pipeline::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
-{
     inst curr_inst;
-    u_int8_t r_dest, r_src1, r_forwarddest;
-    int32_t value, op_A, op_B;
-  
+    u_int8_t r_dest;
+    int32_t value;
+    
     switch (c_desc)
     {
         case CYCLE_DECODE:
@@ -457,12 +390,159 @@ void Pipeline::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
             r_dest = (curr_inst & 0x00F80000) >> 19;
             m_id_exe->push_rd(r_dest); 
             
-            // Get and push r_src1 number & operand A
+            // Get and push signed label offset value
+            value = decodeInstr(curr_inst, 19);
+            m_id_exe->push_val(value);
+            break;
+          
+        case CYCLE_EXECUTE:
+            // Forward opcode, r_dest, and aluout (from value)
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            m_exe_mem->push_rd(m_id_exe->pull_rd());
+            m_exe_mem->push_aluout(m_id_exe->pull_val());
+            break;
+          
+        case CYCLE_MEMORY:
+            // Forward opcode, r_dest, and aluout
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            m_mem_wb->push_rd(m_exe_mem->pull_rd());
+            m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
+            break;
+          
+        case CYCLE_WRITEBACK:
+            // Load signed label offset address into r_dest
+            m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
+            break;
+          
+        default:
+            helpUnexpDescr("GPR_LA()", c_desc);
+            break;
+    }
+}
+
+void Pipeline::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
+{
+    inst curr_inst;
+    u_int8_t r_dest, r_src1, mdr;
+    int32_t value;
+    u_int32_t aluout;
+    
+    switch (c_desc)
+    {
+        case CYCLE_DECODE:
+            curr_inst = m_if_id->pullInstruction();
+            
+            // Get and push r_dest number
+            r_dest = (curr_inst & 0x00F80000) >> 19;
+            m_id_exe->push_rd(r_dest); 
+            
+            // Get and push r_src1 number
             r_src1 = (curr_inst & 0x0007C000) >> 14;
             m_id_exe->push_rs(r_src1);
-            m_id_exe->push_opA(m_register[r_src1]);
-        
-            // Get and push signed immediate value & operand B
+            
+            // Get and push signed offset value
+            value = decodeInstr(curr_inst, 14);
+            m_id_exe->push_val(value);
+            break;
+          
+        case CYCLE_EXECUTE:
+            // Forward opcode and r_dest
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            m_exe_mem->push_rd(m_id_exe->pull_rd());
+            
+            // Correct target address and push to ALU_out
+            aluout = (MemSys::BaseUserDataSegmentAddress | m_register[m_id_exe->pull_rs()]) + m_id_exe->pull_val();
+            m_exe_mem->push_aluout(aluout);
+            break;
+          
+        case CYCLE_MEMORY:
+            // Forward opcode and r_dest
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            m_mem_wb->push_rd(m_exe_mem->pull_rd());
+            
+            // Read from memory at corrected target address into MDR
+            mdr = *((u_int8_t*)m_memory->read(m_exe_mem->pull_aluout(), sizeof(u_int8_t)));
+            m_mem_wb->push_mdr(mdr);
+            break;
+          
+        case CYCLE_WRITEBACK:
+            // Write MDR to r_dest
+            m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_mdr();
+            break;
+          
+        default:
+            helpUnexpDescr("GPR_LB()", c_desc);
+            break;
+    }
+}
+
+void Pipeline::gpr_li(const CYCLE_DESCRIPTOR& c_desc)
+{
+    inst curr_inst;
+    u_int8_t r_dest;
+    int32_t value;
+    
+    switch (c_desc)
+    {
+        case CYCLE_DECODE:
+            curr_inst = m_if_id->pullInstruction();
+            
+            // Get and push r_dest number
+            r_dest = (curr_inst & 0x00F80000) >> 19;
+            m_id_exe->push_rd(r_dest); 
+            
+            // Get and push signed immediate value
+            value = decodeInstr(curr_inst, 19);
+            m_id_exe->push_val(value);
+            break;
+          
+        case CYCLE_EXECUTE:
+            // Forward opcode, r_dest, and op_B (from imm value)
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            m_exe_mem->push_rd(m_id_exe->pull_rd());
+            m_exe_mem->push_aluout(m_id_exe->pull_val());
+            break;
+          
+        case CYCLE_MEMORY:
+            // Forward opcode, r_dest, and aluout
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            m_mem_wb->push_rd(m_exe_mem->pull_rd());
+            m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
+            break;
+          
+        case CYCLE_WRITEBACK:
+            // Load signed label offset address into r_dest
+            m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
+            break;
+          
+        default:
+            helpUnexpDescr("GPR_LI()", c_desc);
+            break;
+    }
+}
+
+void Pipeline::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
+{
+    inst curr_inst;
+    u_int8_t r_dest, r_src1;
+    int32_t value, op_A, op_B;
+  
+    switch (c_desc)
+    {
+        case CYCLE_DECODE:
+            //pull old instruction again...(should still be the same...)
+            curr_inst = m_if_id->pullInstruction();
+            
+            // Get and push r_dest number
+            r_dest = (curr_inst & 0x00F80000) >> 19;
+            m_id_exe->push_rd(r_dest); 
+            
+            // Get and push r_src1 number & operand A value
+            r_src1 = (curr_inst & 0x0007C000) >> 14;
+            m_id_exe->push_rs(r_src1);
+            m_id_exe->push_opA((int32_t)m_register[r_src1]);
+            
+            // Get and push signed immediate value & operand B value
             value = decodeInstr(curr_inst, 14);
             m_id_exe->push_val(value);
             m_id_exe->push_opB(value);
@@ -471,17 +551,19 @@ void Pipeline::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
         case CYCLE_EXECUTE:
             // Forward opcode and r_dest
             m_exe_mem->push_opcode(m_id_exe->pull_opcode());
-            r_dest = m_id_exe->pull_rd();
-            r_forwarddest = m_exe_mem->pull_rd(); //from previous instruction
-            m_exe_mem->push_rd(r_dest);
-        
-            // Get op A & B and subtract them, then push ALU_out
-            //data hazard detection...
-            if (r_dest != r_forwarddest)
-                op_A = m_id_exe->pull_opA();
-            else
-                op_A = m_exe_mem->pull_aluout();
+            m_exe_mem->push_rd(m_id_exe->pull_rd());
+            
+            // Get op A & B (checking for data hazards)
+            op_A = m_id_exe->pull_opA();
             op_B = m_id_exe->pull_opB();
+            // Check for Mem Hazards
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_mem_wb->pull_aluout();
+            // Check for Exe Hazards
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_exe_mem->pull_aluout();            
+          
+            // Subtract op A & B, then push ALU_out
             m_exe_mem->push_aluout(op_A - op_B);
             break;
         
@@ -498,7 +580,7 @@ void Pipeline::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
             break;
         
         default:
-            helpUnexpDescr("GPR_SUBI()", c_desc); //halp wat i do
+            helpUnexpDescr("GPR_SUBI()", c_desc);
             break;
     }
 }
@@ -511,7 +593,7 @@ void Pipeline::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
             //Psuedo-stop simulator here and jump to
             //"prearranged" exception handler code...  
             syscall_exception();
-        break;
+            break;
 
         default:
             helpUnexpDescr("GPR_SYSCALL()", c_desc);
@@ -576,6 +658,7 @@ void Pipeline::syscall_exception()
             m_memory->write(str_addr, &null_c, sizeof(u_int8_t));
         }
         break;
+        
         case SYSCALL_EXIT:
             m_usermode = false;
             break;
