@@ -55,6 +55,16 @@ int main(int argc, char* argv[])
     std::cout << "Loading source into memory..." << std::endl;
     addr setpc = loader->load(path.c_str(), Loader::GPR_ISA);
     
+    //Put a null sentinel value at the end to buffer
+    //if a syscall is at the end of file, it can read this
+    //null value and exit in the decode stage without memory
+    //errors...
+    addr topText = memory->getUserTextTop();
+    inst sentinel = 0;
+    memory->write(topText, &sentinel, sizeof(inst));
+    memory->write(topText+4, &sentinel, sizeof(inst));
+
+    
     memory->outputSegment(USER_DATA);
     memory->outputSegment(USER_TEXT);
     

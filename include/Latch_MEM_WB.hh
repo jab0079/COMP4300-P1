@@ -38,6 +38,7 @@ class Latch_MEM_WB : public Latch
       virtual void update();
       virtual void reset();
       virtual void reset_old();
+      virtual void reset_new();
       
       virtual void push_opcode(const inst& opcode);
       virtual void push_mdr(const u_int8_t& mdr);

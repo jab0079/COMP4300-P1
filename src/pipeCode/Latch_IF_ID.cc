@@ -33,12 +33,17 @@ void Latch_IF_ID::update()
 void Latch_IF_ID::reset()
 {
     reset_old();
-    m_inst_buffer_new = 0;
+    reset_new();
 }
 
 void Latch_IF_ID::reset_old()
 {
     m_inst_buffer_old = 0;
+}
+
+void Latch_IF_ID::reset_new()
+{
+    m_inst_buffer_new = 0;
 }
 
 inst Latch_IF_ID::pullInstruction()

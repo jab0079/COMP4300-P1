@@ -13,9 +13,9 @@
     nop
     nop
     nop
-    bge  $2, $1, 0xFFFFFFF9
+    bge  $2, $1, 0xFFFFFFF8
     nop
 
-    li $2, 0x0A
+    li $2, 0x02
     syscall
 	

@@ -38,6 +38,7 @@ class Latch_IF_ID : public Latch
       virtual void update();
       virtual void reset();
       virtual void reset_old();
+      virtual void reset_new();
 
       
       /*

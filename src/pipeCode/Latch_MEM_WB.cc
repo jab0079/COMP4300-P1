@@ -39,6 +39,11 @@ void Latch_MEM_WB::update()
 void Latch_MEM_WB::reset()
 {
     reset_old();
+    reset_new();
+}
+
+void Latch_MEM_WB::reset_new()
+{
     m_opcode_new = 0;
     m_mdr_new = 0;
     m_aluout_new = 0;

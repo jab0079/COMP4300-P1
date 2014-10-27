@@ -37,14 +37,16 @@ void Latch_EXE_MEM::update()
 
 void Latch_EXE_MEM::reset()
 {
-  m_opcode_new = 0;
-  m_opcode_old = 0;
-  m_aluout_new = 0;
-  m_aluout_old = 0;
-  m_opB_new = 0;
-  m_opB_old = 0;
-  m_rd_new = 0;
-  m_rd_old = 0;
+    reset_old();
+    reset_new();
+}
+
+void Latch_EXE_MEM::reset_new()
+{
+    m_opcode_new = 0;
+    m_aluout_new = 0;
+    m_opB_new = 0;
+    m_rd_new = 0;
 }
 
 void Latch_EXE_MEM::reset_old()

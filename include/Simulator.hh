@@ -16,6 +16,7 @@
  *          class that should simply be a template for simulators
  * 
  *      Change Log:
+ *          10/26/14 - Moved register constants to here
  *          10/18/14 - Added CYCLE_DESCRIPTOR enumeration
  *          10/3/14 - Added instruction counting
  *          9/17/14 - Made class and derived classes Uncopyable
@@ -28,6 +29,10 @@
 
 #include "MemSys.hh"
 #include "Uncopyable.hh"
+
+static const u_int32_t REG_VAL_1 = 2;   // Register $2 = $v0 from MIPS
+static const u_int32_t REG_ARG_1 = 4;   // Register $4 = $a0 from MIPS
+static const u_int32_t REG_ARG_2 = 5;   // Register $5 = $a1 from MIPS
 
 class Simulator : private Uncopyable
 {

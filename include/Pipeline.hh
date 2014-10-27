@@ -37,9 +37,6 @@
 #include "Latch_MEM_WB.hh"
 
 static const u_int32_t REGISTER_COUNT = 32;
-static const u_int32_t REG_VAL_1 = 2;   // Register $2 = $v0 from MIPS
-static const u_int32_t REG_ARG_1 = 4;   // Register $4 = $a0 from MIPS
-static const u_int32_t REG_ARG_2 = 5;   // Register $5 = $a1 from MIPS
 
 class Pipeline : public Simulator
 {
@@ -58,8 +55,8 @@ class Pipeline : public Simulator
         Latch_EXE_MEM* m_exe_mem;
         Latch_MEM_WB* m_mem_wb;
         
-        virtual void gpr_fetch(const CYCLE_DESCRIPTOR& c);
-        virtual void gpr_decode(const CYCLE_DESCRIPTOR& c);
+        virtual void gpr_fetch();
+        virtual void gpr_decode();
         
         virtual void gpr_addi(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_b(const CYCLE_DESCRIPTOR& c);
@@ -72,6 +69,8 @@ class Pipeline : public Simulator
         virtual void gpr_subi(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_syscall(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_nop(const CYCLE_DESCRIPTOR& c);
+        
+        virtual void syscall_exception();
         
         virtual void resetLatches();
         virtual void runPipeline();

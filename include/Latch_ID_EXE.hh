@@ -37,6 +37,7 @@ class Latch_ID_EXE : public Latch
       virtual void update();
       virtual void reset();
       virtual void reset_old();
+      virtual void reset_new();
 
       
       virtual void push_opcode(const inst& i);
