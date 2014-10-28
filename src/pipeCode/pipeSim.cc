@@ -1,6 +1,6 @@
 /*
  * 
- *      Pipeline.cc
+ *      pipeSim.cc
  * 
  *      Contributors:   Adam Eichelkraut
  *                      Jared Brown
@@ -20,7 +20,7 @@
  * 
  * 
  */
-#include "Pipeline.hh"
+#include "pipeSim.hh"
 
 Pipeline::Pipeline(MemSys* mem) 
 : Simulator(mem)

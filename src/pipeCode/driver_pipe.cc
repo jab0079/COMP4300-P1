@@ -25,7 +25,7 @@
 
 #include "MemSys.hh"
 #include "Loader.hh"
-#include "Pipeline.hh"
+#include "pipeSim.hh"
 #include "Utilities.hh"
 
 int main(int argc, char* argv[])

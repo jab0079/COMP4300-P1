@@ -3,14 +3,14 @@ COMP4300 - Computer Architecture - Project 3
 ===============================================================================
 
 
-Authors -------------------------------------------------------------
+Authors --------------------------------------------------------------------
 	
 	Adam Eichelkraut - ake0005@tigermail.auburn.edu
 	Jared Brown - jab0079@tigermail.auburn.edu
 
 
 
-Synopsis------------------------------------------------------------
+Synopsis--------------------------------------------------------------------
     
 	This project extended the previous General Purpose Register (GPR) 
 	multi-cycle machine into a scalar piped architecture with 5 stages. 
@@ -20,7 +20,9 @@ Synopsis------------------------------------------------------------
 	source files into the memory unit to be used by the simulator.
 	All loaded items from the source files by the loader are loaded
 	in binary representation, following the binary encoding scheme
-	shown below.
+	shown below. The pipeline machine implements interlocks between
+	the 5 MIPS stages to recognize and resolve data hazards through 
+	forwarding or using NOPs.
 
 
 	GENERAL PURPOSE REGISTER MACHINE INSTRUCTION SET (Modified for the Pipeline) 
@@ -38,7 +40,7 @@ Synopsis------------------------------------------------------------
 		NOP  -  | 0x0B | 24-bits usused .................................... |
 		SYSCALL | 0x0C | 24-bits usused .................................... |
  
-Compilation ---------------------------------------------------------
+Compilation --------------------------------------------------------------------------
 	
 	Included with this project are a hierarchy of Makefiles that
 	should assist with the compilation. To compile, simply type
@@ -51,7 +53,7 @@ Compilation ---------------------------------------------------------
 	directory will contain all compiled objects associated with
 	their respective source file names.
 	
-Source Tree ---------------------------------------------------------
+Source Tree --------------------------------------------------------------------------
 
   (with respect to the upper-most directory)
 
@@ -76,7 +78,11 @@ Source Tree ---------------------------------------------------------
 	src/utils     - contains all utility source files 
 			            used by all executables
 
-Testing -------------------------------------------------------------
+Testing -----------------------------------------------------------------------
+  
+  The sample code can be ran using the executables in the bin/ directory
+  by passing the path name as a command line argument. 
+	For example: "./pipeSim ../docs/lab3c.s"
 
   Below are explanations on the output that comes out of each
   executable.
@@ -88,7 +94,8 @@ Testing -------------------------------------------------------------
 
 	The two blocks of output after that are the USER DATA
 	and the USER TEXT segments from memory. 
-	This output is the loaded source file in memory as hexadecimal values.
+	This output is the loaded source file in memory as hexadecimal 
+	values.
 
 	After the USER TEXT segment is when the simulator starts
 	to run. While the simulator is running, there is no feedback
@@ -100,7 +107,9 @@ Testing -------------------------------------------------------------
 
 	The total clock cycles, total instructions executed, and the
 	number of NOPs are also displayed at the end of the run and
-	here:
+	below.
+
+	The program cleans up memory and closes.
 
 	lab3a.s Results
 	Instruction Count: 140
@@ -108,17 +117,19 @@ Testing -------------------------------------------------------------
 	NOP Count: 75
 
 
-	lab3b.s Results (using "racecar") => Y(it is a palindrome)
+	lab3b.s Results (using "racecar") 
+	cout => Y (i.e., it is a palindrome)
 	Instruction Count: 140
 	Cycle Count: 143
 	NOP Count: 75
 	
 
-	lab3c.s Results => 32768
+	lab3c.s Results 
+	cout => 32768
 	Instruction Count: 61
 	Cycle Count: 63
 	NOP Count: 10
 	
-	The program cleans up memory and closes.
+	
 
 ---------------------------------------------------------------------

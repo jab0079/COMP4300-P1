@@ -2,7 +2,7 @@
 #define PIPELINE_HH
 /*
  * 
- *      Pipeline.hh
+ *      pipeSim.hh
  * 
  *      Contributors:   Adam Eichelkraut
  *                      Jared Brown
