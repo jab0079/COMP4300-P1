@@ -32,7 +32,8 @@
     li $5, 0x0400           # 1024
     li $2, 0x01             # load "read_string" code into $2.
     syscall
-
+    nop
+    
     la $8, 0x00200100       # A = S.
     la $9, 0x00200100       # we need to move B to the end
 
@@ -51,7 +52,7 @@
 
 #end_length_loop:
     subi $9, $9, 0x1        # subtract 2 to move B back past the '\0' and '\n'.
-
+    nop
 #test_loop:
     bge $8, $9, 0x0D        # if A >= B, it's a palindrome.
     nop
@@ -77,6 +78,7 @@
     la $4, 0x00200006
     li $2, 0x00
     syscall
+    nop
     b 0x03
     nop
 
@@ -84,7 +86,9 @@
     la $4, 0x00200008       # print the not_palin_msg, and exit.
     li $2, 0x00
     syscall
+    nop
 
 #exit:                      # exit the program
     li $2, 0x02             # load "exit" code into $2.
     syscall                 # make the system call.
+    nop

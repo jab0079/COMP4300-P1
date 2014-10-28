@@ -77,6 +77,7 @@ class Pipeline : public Simulator
         virtual void updateLatches();
         
     private:
+        virtual bool isRtype(const u_int8_t& opcode);
         virtual void delegateCycle(const u_int8_t& opcode,
                                    const CYCLE_DESCRIPTOR& c_desc);
         virtual void helpUnexpDescr(const std::string& method, 

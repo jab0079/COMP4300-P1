@@ -302,10 +302,12 @@ void Pipeline::gpr_beqz(const CYCLE_DESCRIPTOR& c_desc)
           // Get op A (checking for data hazards)
           op_A = (int32_t)m_register[r_src1];
           // Check for Mem Hazards
-          if (m_mem_wb->pull_rd() == r_src1)
+          if ((m_mem_wb->pull_rd() == r_src1)
+              && isRtype(m_mem_wb->pull_opcode()))
               op_A = (int32_t)m_mem_wb->pull_aluout();
           // Check for Exe Hazards
-          if (m_exe_mem->pull_rd() == r_src1)
+          if (m_exe_mem->pull_rd() == r_src1
+              && isRtype(m_exe_mem->pull_opcode()))
               op_A = (int32_t)m_exe_mem->pull_aluout();
           
           if (op_A == 0)
@@ -351,14 +353,22 @@ void Pipeline::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
             op_A = (int32_t)m_register[r_src1];
             op_B = (int32_t)m_register[r_src2];
             // Check for Mem Hazards
-            if (m_mem_wb->pull_rd() == r_src1)
+            if (m_mem_wb->pull_rd() == r_src1
+                && isRtype(m_mem_wb->pull_opcode())
+            )
                 op_A = (int32_t)m_mem_wb->pull_aluout();
-            if (m_mem_wb->pull_rd() == r_src2)
+            if (m_mem_wb->pull_rd() == r_src2
+                && isRtype(m_mem_wb->pull_opcode())
+            )
                 op_B = (int32_t)m_mem_wb->pull_aluout();
             // Check for Exe Hazards
-            if (m_exe_mem->pull_rd() == r_src1)
+            if (m_exe_mem->pull_rd() == r_src1
+                && isRtype(m_exe_mem->pull_opcode())
+            )
                 op_A = (int32_t)m_exe_mem->pull_aluout();
-            if (m_exe_mem->pull_rd() == r_src2)
+            if (m_exe_mem->pull_rd() == r_src2
+                && isRtype(m_exe_mem->pull_opcode())
+            )
                 op_B = (int32_t)m_exe_mem->pull_aluout();
             
             
@@ -405,14 +415,22 @@ void Pipeline::gpr_bne(const CYCLE_DESCRIPTOR& c_desc)
             op_A = (int32_t)m_register[r_src1];
             op_B = (int32_t)m_register[r_src2];
             // Check for Mem Hazards
-            if (m_mem_wb->pull_rd() == r_src1)
+            if (m_mem_wb->pull_rd() == r_src1
+                && isRtype(m_mem_wb->pull_opcode())
+            )
                 op_A = (int32_t)m_mem_wb->pull_aluout();
-            if (m_mem_wb->pull_rd() == r_src2)
+            if (m_mem_wb->pull_rd() == r_src2
+                && isRtype(m_mem_wb->pull_opcode())
+            )
                 op_B = (int32_t)m_mem_wb->pull_aluout();
             // Check for Exe Hazards
-            if (m_exe_mem->pull_rd() == r_src1)
+            if (m_exe_mem->pull_rd() == r_src1
+                && isRtype(m_exe_mem->pull_opcode())
+            )
                 op_A = (int32_t)m_exe_mem->pull_aluout();
-            if (m_exe_mem->pull_rd() == r_src2)
+            if (m_exe_mem->pull_rd() == r_src2
+                && isRtype(m_exe_mem->pull_opcode())
+            )
                 op_B = (int32_t)m_exe_mem->pull_aluout();
             
             
@@ -787,3 +805,15 @@ void Pipeline::helpUnexpDescr(const std::string& methodName,
     << desc
     << std::endl;
 }
+
+bool Pipeline::isRtype(const u_int8_t& opcode)
+{
+    if (opcode == GPR_INST_SET_VALS[GPR_SUBI]
+        || opcode == GPR_INST_SET_VALS[GPR_ADDI]
+        // or if opcode is ADD 
+        )
+        return true;
+
+    return false;
+}
+
