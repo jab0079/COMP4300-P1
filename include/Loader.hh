@@ -55,6 +55,7 @@ class Loader : private Uncopyable
         virtual addr parseAddress(const std::string& inst_str);
         virtual u_int32_t parseOffset(const std::string& inst_str);
         virtual u_int32_t parseValue(const std::string& hexStr, const u_int8_t& num_bits);
+        virtual inst parse3Reg(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
     private:

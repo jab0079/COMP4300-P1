@@ -52,6 +52,7 @@ class Simulator : private Uncopyable
         virtual addr getStackPointer() const;
         virtual u_int32_t getInstructionCount() const;
         virtual u_int32_t getCycleCount() const;
+        virtual u_int32_t getNOPCount() const;
         
     protected:
         
@@ -62,6 +63,7 @@ class Simulator : private Uncopyable
         
         u_int32_t m_ic; //instruction count
         u_int32_t m_cycles; //total number of cycles
+        u_int32_t m_nops; //total number of nops
         
         enum CYCLE_DESCRIPTOR
         {

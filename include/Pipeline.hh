@@ -45,6 +45,7 @@ class Pipeline : public Simulator
         virtual ~Pipeline();
         
         virtual void run();
+        
                 
     protected:
         reg m_register[REGISTER_COUNT]; //Utilities.hh
@@ -55,9 +56,11 @@ class Pipeline : public Simulator
         Latch_EXE_MEM* m_exe_mem;
         Latch_MEM_WB* m_mem_wb;
         
+        
         virtual void gpr_fetch();
         virtual void gpr_decode();
         
+        virtual void gpr_add(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_addi(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_b(const CYCLE_DESCRIPTOR& c);
         virtual void gpr_beqz(const CYCLE_DESCRIPTOR& c);
@@ -75,6 +78,7 @@ class Pipeline : public Simulator
         virtual void resetLatches();
         virtual void runPipeline();
         virtual void updateLatches();
+        
         
     private:
         virtual bool isRtype(const u_int8_t& opcode);
