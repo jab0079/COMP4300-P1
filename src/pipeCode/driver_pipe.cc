@@ -12,6 +12,10 @@
  *          executable.
  * 
  *      Change Log:
+ *          10/27/14 - In order to run, you now need to have
+ *                      the path to the file to run it with on
+ *                      the command line as an argument. For
+ *                      example, ./bin/pipeSim ./docs/lab3b.s
  *          10/23/14 - Initial creation.
  * 
  * 
@@ -34,26 +38,9 @@ int main(int argc, char* argv[])
     
     //Load program into memory
     Loader* loader = new Loader(memory);
-        
-    //Very much a kludge, but this is the only way I figured
-    //we could determine the path of the compiled sources without
-    //the user having to add in a commandline argument.
-    //NOTE: THIS IS COUPLED TO THE SOURCE TREE STRUCTURE
-    std::string path = "docs/lab3c.s";
-    std::string executePath = std::string(argv[0]);
-    std::string replaceStr = "bin/pipeSim";
-    if (executePath.compare(std::string("./pipeSim")) == 0)
-    { //if we are executing from within the bin directory
-        path.insert(0,"../"); //go up a directory...
-    }
-    else
-    { //otherwise, replace the qualified path, but insert the corrected directory
-        executePath = executePath.substr(0,executePath.length()-replaceStr.length());
-        path = executePath + path; //append qualified path...
-    }
 
     std::cout << "Loading source into memory..." << std::endl;
-    addr setpc = loader->load(path.c_str(), Loader::GPR_ISA);
+    addr setpc = loader->load(argv[1], Loader::GPR_ISA);
     
     //Put a null sentinel value at the end to buffer
     //if a syscall is at the end of file, it can read this
@@ -86,13 +73,13 @@ int main(int argc, char* argv[])
     std::cout << "Cycle Count: " << cy << std::endl;
     std::cout << "NOP Count: " << nc << std::endl;
     
-    std::ofstream output("../result.txt");
-    output << "Instruction Count: " << ic << std::endl;
-    output << "Cycle Count: " << cy << std::endl;
-    output << "NOP Count: " << nc << std::endl;
-    output.close();
+//     std::ofstream output("./result.txt");
+//     output << "Instruction Count: " << ic << std::endl;
+//     output << "Cycle Count: " << cy << std::endl;
+//     output << "NOP Count: " << nc << std::endl;
+//     output.close();
     
-    memory->outputSegment(USER_DATA);
+//     memory->outputSegment(USER_DATA);
     
     SAFE_DELETE(pipe); //see Utilities.hh
     SAFE_DELETE(loader);

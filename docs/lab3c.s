@@ -21,9 +21,11 @@
 	nop
 
 	add $4, $0, $1
-	li $2, 0x00
+	li $2, 0x02 # CHANGE THIS TO YOUR SYSCALL, JARED
 	syscall
+	nop
 
 	li $2, 0x02
 	syscall
+	nop
 	

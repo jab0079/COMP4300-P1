@@ -157,14 +157,22 @@ void Pipeline::gpr_add(const CYCLE_DESCRIPTOR& c_desc)
             op_A = m_id_exe->pull_opA();
             op_B = m_id_exe->pull_opB();
             // Check for Mem Hazards
-            if (m_mem_wb->pull_rd() == m_id_exe->pull_rs())
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rs()
+                && isRtype(m_mem_wb->pull_opcode())
+            )
                 op_A = (int32_t)m_mem_wb->pull_aluout();
-            if (m_mem_wb->pull_rd() == m_id_exe->pull_rt())
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rt()
+                && isRtype(m_mem_wb->pull_opcode())
+            )
                 op_B = (int32_t)m_mem_wb->pull_aluout();
             // Check for Exe Hazards
-            if (m_exe_mem->pull_rd() == m_id_exe->pull_rs())
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rs()
+                && isRtype(m_exe_mem->pull_opcode())
+            )
                 op_A = (int32_t)m_exe_mem->pull_aluout();            
-            if (m_exe_mem->pull_rd() == m_id_exe->pull_rt())
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rt()
+                && isRtype(m_exe_mem->pull_opcode())
+            )
                 op_B = (int32_t)m_exe_mem->pull_aluout();
             
             // Add op A & B, then push ALU_out
