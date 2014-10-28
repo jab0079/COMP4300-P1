@@ -59,18 +59,18 @@ void Latch_EXE_MEM::reset_old()
 
 void Latch_EXE_MEM::push_opcode(const inst& op)
 { m_opcode_new = op; }
-void Latch_EXE_MEM::push_aluout(const u_int32_t& aluout)
+void Latch_EXE_MEM::push_aluout(const int32_t& aluout)
 { m_aluout_new = aluout; }
-void Latch_EXE_MEM::push_opB(const u_int32_t& opB)
+void Latch_EXE_MEM::push_opB(const int32_t& opB)
 { m_opB_new = opB; }
 void Latch_EXE_MEM::push_rd(const u_int32_t& rd)
 { m_rd_new = rd; }
 
 inst Latch_EXE_MEM::pull_opcode() const
 { return m_opcode_old; }
-u_int32_t Latch_EXE_MEM::pull_aluout() const
+int32_t Latch_EXE_MEM::pull_aluout() const
 { return m_aluout_old; }
-u_int32_t Latch_EXE_MEM::pull_opB() const
+int32_t Latch_EXE_MEM::pull_opB() const
 { return m_opB_old; }
 u_int32_t Latch_EXE_MEM::pull_rd() const
 { return m_rd_old; }

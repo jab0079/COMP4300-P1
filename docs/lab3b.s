@@ -39,23 +39,29 @@
 #length_loop:               # length of the string
     lb $10, ($9)            # load the byte at addr B into $10.
     nop
+    nop
+    nop
+    nop
     beqz $10, 0x03          # if $10 == 0, branch out of loop.
     nop
 
     addi $9, $9, 0x01       # otherwise, increment B,
-    b 0xFFFFFFF9            # and repeat the loop.
+    b 0xFFFFFFF6            # and repeat the loop.
     nop
 
 #end_length_loop:
     subi $9, $9, 0x1        # subtract 2 to move B back past the '\0' and '\n'.
 
 #test_loop:
-    bge $8, $9, 0x0A        # if A >= B, it's a palindrome.
+    bge $8, $9, 0x0D        # if A >= B, it's a palindrome.
     nop
 
     lb $10, ($8)            # load the byte at addr A into $10,
     nop
     lb $11, ($9)            # load the byte at addr B into $11.
+    nop
+    nop
+    nop
     nop
     bne $10, $11, 0x09      # if $10 != $11, not a palindrome.
     nop
@@ -63,7 +69,7 @@
     # Otherwise,
     addi $8, $8, 0x01       # increment A,
     subi $9, $9, 0x01       # decrement B,
-    b 0xFFFFFFF4            # and repeat the loop.
+    b 0xFFFFFFF1            # and repeat the loop.
     nop
 	
 #is_palin:                  # print the is_palin_msg, and exit.
@@ -71,7 +77,7 @@
     la $4, 0x00200006
     li $2, 0x00
     syscall
-    b 0x05
+    b 0x03
     nop
 
 #not_palin:

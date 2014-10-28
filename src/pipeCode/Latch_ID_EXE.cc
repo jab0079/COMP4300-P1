@@ -76,11 +76,11 @@ void Latch_ID_EXE::push_rt(const u_int32_t& rt)
 { m_rt_new = rt; }
 void Latch_ID_EXE::push_rd(const u_int32_t& rd)
 { m_rd_new = rd; }
-void Latch_ID_EXE::push_opA(const u_int32_t& opA)
+void Latch_ID_EXE::push_opA(const int32_t& opA)
 { m_opA_new = opA; }
-void Latch_ID_EXE::push_opB(const u_int32_t& opB)
+void Latch_ID_EXE::push_opB(const int32_t& opB)
 { m_opB_new = opB; }
-void Latch_ID_EXE::push_val(const u_int32_t& val)
+void Latch_ID_EXE::push_val(const int32_t& val)
 { m_val_new = val; }
 void Latch_ID_EXE::push_newpc(const u_int32_t& newpc)
 { m_newpc_new = newpc; }
@@ -93,11 +93,11 @@ u_int32_t Latch_ID_EXE::pull_rt() const
 { return m_rt_old; }
 u_int32_t Latch_ID_EXE::pull_rd() const
 { return m_rd_old; }
-u_int32_t Latch_ID_EXE::pull_opA() const
+int32_t Latch_ID_EXE::pull_opA() const
 { return m_opA_old; }
-u_int32_t Latch_ID_EXE::pull_opB() const
+int32_t Latch_ID_EXE::pull_opB() const
 { return m_opB_old; }
-u_int32_t Latch_ID_EXE::pull_val() const
+int32_t Latch_ID_EXE::pull_val() const
 { return m_val_old; }
 u_int32_t Latch_ID_EXE::pull_newpc() const
 { return m_newpc_old; }

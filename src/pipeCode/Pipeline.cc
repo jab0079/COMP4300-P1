@@ -120,11 +120,77 @@ void Pipeline::gpr_decode()
     //delegate other decoding pieces to instruction method...
     delegateCycle(opcode, CYCLE_DECODE);
 }
+/*
+void Pipeline::gpr_add(const CYCLE_DESCRIPTOR& c_desc)
+{
+    inst curr_inst;
+    u_int8_t r_dest, r_src1;
+    int32_t value, op_A, op_B;
+  
+    switch (c_desc)
+    {
+        case CYCLE_DECODE:
+            //pull old instruction again...(should still be the same...)
+            curr_inst = m_if_id->pullInstruction();
+            
+            // Get and push r_dest number
+            r_dest = (curr_inst & 0x00F80000) >> 19;
+            m_id_exe->push_rd(r_dest); 
+            
+            // Get and push r_src1 number & operand A value
+            r_src1 = (curr_inst & 0x0007C000) >> 14;
+            m_id_exe->push_rs(r_src1);
+            m_id_exe->push_opA((int32_t)m_register[r_src1]);
+            
+            // Get and push r_src2 number & operand B value
+            r_src2 = (curr_inst & 0x0007C000) >> 9; //******** FIX
+            m_id_exe->push_rs(r_src1);
+            m_id_exe->push_opA((int32_t)m_register[r_src1]);
+            break;
+        
+        case CYCLE_EXECUTE:
+            // Forward opcode and r_dest
+            m_exe_mem->push_opcode(m_id_exe->pull_opcode());
+            m_exe_mem->push_rd(m_id_exe->pull_rd());
+            
+            // Get op A & B (checking for data hazards)
+            op_A = m_id_exe->pull_opA();
+            op_B = m_id_exe->pull_opB();
+            // Check for Mem Hazards
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_mem_wb->pull_aluout();
+            // Check for Exe Hazards
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_exe_mem->pull_aluout();            
+          
+            // Add op A & B, then push ALU_out
+            m_exe_mem->push_aluout(op_A + op_B);
+            break;
+            
+        case CYCLE_MEMORY:
+            // Forward opcode, r_dest, and ALU_out    
+            m_mem_wb->push_opcode(m_exe_mem->pull_opcode());
+            m_mem_wb->push_rd(m_exe_mem->pull_rd());
+            m_mem_wb->push_aluout(m_exe_mem->pull_aluout());
+            break;
+            
+        case CYCLE_WRITEBACK:
+            // Pull r_dest number & aluout, then write to r_dest
+            m_register[m_mem_wb->pull_rd()] = m_mem_wb->pull_aluout();
+            break;
+            
+        default:
+            helpUnexpDescr("GPR_ADD()", c_desc);
+            break;
+    }
+}
+// *****Counters (total clock cycles, total instr executed, total number of nops
+*/
 
 void Pipeline::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
-    u_int8_t r_dest, r_src1, r_forwarddest;
+    u_int8_t r_dest, r_src1;
     int32_t value, op_A, op_B;
   
     switch (c_desc)
@@ -188,8 +254,7 @@ void Pipeline::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 void Pipeline::gpr_b(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
-    int32_t value; 
-    u_int32_t aluout;
+    int32_t value, aluout;
     
     switch (c_desc)
     {
@@ -222,8 +287,7 @@ void Pipeline::gpr_beqz(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_src1;
-    int32_t value, op_A;
-    u_int32_t aluout;
+    int32_t value, op_A, aluout;
     
     switch (c_desc)
     {
@@ -269,8 +333,7 @@ void Pipeline::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_src1, r_src2;
-    int32_t value, op_A, op_B; 
-    u_int32_t aluout;
+    int32_t value, op_A, op_B, aluout;
     
     switch (c_desc)
     {
@@ -324,8 +387,7 @@ void Pipeline::gpr_bne(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_src1, r_src2;
-    int32_t value, op_A, op_B;
-    u_int32_t aluout;
+    int32_t value, op_A, op_B, aluout;
 
     switch (c_desc)
     {
@@ -424,8 +486,7 @@ void Pipeline::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
     u_int8_t r_dest, r_src1, mdr;
-    int32_t value;
-    u_int32_t aluout;
+    int32_t value, aluout, op_A;
     
     switch (c_desc)
     {
@@ -450,8 +511,16 @@ void Pipeline::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
             m_exe_mem->push_opcode(m_id_exe->pull_opcode());
             m_exe_mem->push_rd(m_id_exe->pull_rd());
             
+            op_A = (int32_t)m_register[m_id_exe->pull_rs()];
+            // Check for Mem Hazards
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_mem_wb->pull_aluout();
+            // Check for Exe Hazards
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rs())
+                op_A = (int32_t)m_exe_mem->pull_aluout();
+            
             // Correct target address and push to ALU_out
-            aluout = (MemSys::BaseUserDataSegmentAddress | m_register[m_id_exe->pull_rs()]) + m_id_exe->pull_val();
+            aluout = (MemSys::BaseUserDataSegmentAddress | op_A) + m_id_exe->pull_val();
             m_exe_mem->push_aluout(aluout);
             break;
           
@@ -718,4 +787,3 @@ void Pipeline::helpUnexpDescr(const std::string& methodName,
     << desc
     << std::endl;
 }
-
