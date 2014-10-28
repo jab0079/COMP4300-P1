@@ -81,6 +81,7 @@ void Pipeline::runPipeline()
         delegateCycle(m_mem_wb->pull_opcode(), CYCLE_WRITEBACK);
         
         updateLatches();
+        m_cycles++;
     }
 }
 
@@ -114,23 +115,22 @@ void Pipeline::gpr_decode()
     //decode it into opcode
     u_int8_t opcode = ((old_instr & 0xFF000000) >> 24);
     m_id_exe->push_opcode(opcode);
-    //increment pc and ic
-    m_ic++;
+    //increment pc
     m_pc += sizeof(inst);
     //delegate other decoding pieces to instruction method...
     delegateCycle(opcode, CYCLE_DECODE);
 }
-/*
+
 void Pipeline::gpr_add(const CYCLE_DESCRIPTOR& c_desc)
 {
     inst curr_inst;
-    u_int8_t r_dest, r_src1;
+    u_int8_t r_dest, r_src1, r_src2;
     int32_t value, op_A, op_B;
   
     switch (c_desc)
     {
         case CYCLE_DECODE:
-            //pull old instruction again...(should still be the same...)
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             
             // Get and push r_dest number
@@ -143,9 +143,9 @@ void Pipeline::gpr_add(const CYCLE_DESCRIPTOR& c_desc)
             m_id_exe->push_opA((int32_t)m_register[r_src1]);
             
             // Get and push r_src2 number & operand B value
-            r_src2 = (curr_inst & 0x0007C000) >> 9; //******** FIX
-            m_id_exe->push_rs(r_src1);
-            m_id_exe->push_opA((int32_t)m_register[r_src1]);
+            r_src2 = (curr_inst & 0x00003E00) >> 9;
+            m_id_exe->push_rt(r_src2);
+            m_id_exe->push_opB((int32_t)m_register[r_src2]);
             break;
         
         case CYCLE_EXECUTE:
@@ -159,10 +159,14 @@ void Pipeline::gpr_add(const CYCLE_DESCRIPTOR& c_desc)
             // Check for Mem Hazards
             if (m_mem_wb->pull_rd() == m_id_exe->pull_rs())
                 op_A = (int32_t)m_mem_wb->pull_aluout();
+            if (m_mem_wb->pull_rd() == m_id_exe->pull_rt())
+                op_B = (int32_t)m_mem_wb->pull_aluout();
             // Check for Exe Hazards
             if (m_exe_mem->pull_rd() == m_id_exe->pull_rs())
                 op_A = (int32_t)m_exe_mem->pull_aluout();            
-          
+            if (m_exe_mem->pull_rd() == m_id_exe->pull_rt())
+                op_B = (int32_t)m_exe_mem->pull_aluout();
+            
             // Add op A & B, then push ALU_out
             m_exe_mem->push_aluout(op_A + op_B);
             break;
@@ -184,8 +188,6 @@ void Pipeline::gpr_add(const CYCLE_DESCRIPTOR& c_desc)
             break;
     }
 }
-// *****Counters (total clock cycles, total instr executed, total number of nops
-*/
 
 void Pipeline::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
 {
@@ -196,6 +198,7 @@ void Pipeline::gpr_addi(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             //pull old instruction again...(should still be the same...)
             curr_inst = m_if_id->pullInstruction();
             
@@ -259,6 +262,7 @@ void Pipeline::gpr_b(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+          m_ic++;
           curr_inst = m_if_id->pullInstruction();
           // Get signed label offset value and calculate newpc
           value = decodeInstr(curr_inst, 24);
@@ -292,6 +296,7 @@ void Pipeline::gpr_beqz(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+          m_ic++;
           curr_inst = m_if_id->pullInstruction();
           // Get source 1 register number
           r_src1 = (curr_inst & 0x00F80000) >> 19;
@@ -338,6 +343,7 @@ void Pipeline::gpr_bge(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             // Get source 1 register number
             r_src1 = (curr_inst & 0x00F80000) >> 19;
@@ -392,6 +398,7 @@ void Pipeline::gpr_bne(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             // Get source 1 register number
             r_src1 = (curr_inst & 0x00F80000) >> 19;
@@ -446,6 +453,7 @@ void Pipeline::gpr_la(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             
             // Get and push r_dest number
@@ -491,6 +499,7 @@ void Pipeline::gpr_lb(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             
             // Get and push r_dest number
@@ -554,6 +563,7 @@ void Pipeline::gpr_li(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             
             // Get and push r_dest number
@@ -599,7 +609,7 @@ void Pipeline::gpr_subi(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
-            //pull old instruction again...(should still be the same...)
+            m_ic++;
             curr_inst = m_if_id->pullInstruction();
             
             // Get and push r_dest number
@@ -659,6 +669,7 @@ void Pipeline::gpr_syscall(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_DECODE:
+            m_ic++;
             //Psuedo-stop simulator here and jump to
             //"prearranged" exception handler code...  
             syscall_exception();
@@ -741,6 +752,8 @@ void Pipeline::gpr_nop(const CYCLE_DESCRIPTOR& c_desc)
     switch (c_desc)
     {
         case CYCLE_EXECUTE:
+            m_ic++;
+            m_nops++;
             m_exe_mem->push_opcode(m_id_exe->pull_opcode());
             break;
         case CYCLE_MEMORY:
@@ -755,7 +768,9 @@ void Pipeline::gpr_nop(const CYCLE_DESCRIPTOR& c_desc)
 void Pipeline::delegateCycle(const u_int8_t& opcode,
                              const CYCLE_DESCRIPTOR& c_desc)
 {
-    if (opcode == GPR_INST_SET_VALS[GPR_ADDI])
+    if (opcode == GPR_INST_SET_VALS[GPR_ADD])
+        gpr_add(c_desc);
+    else if (opcode == GPR_INST_SET_VALS[GPR_ADDI])
         gpr_addi(c_desc);
     else if (opcode == GPR_INST_SET_VALS[GPR_B])
         gpr_b(c_desc);

@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     //we could determine the path of the compiled sources without
     //the user having to add in a commandline argument.
     //NOTE: THIS IS COUPLED TO THE SOURCE TREE STRUCTURE
-    std::string path = "docs/lab3b.s";
+    std::string path = "docs/lab3c.s";
     std::string executePath = std::string(argv[0]);
     std::string replaceStr = "bin/pipeSim";
     if (executePath.compare(std::string("./pipeSim")) == 0)
@@ -80,19 +80,19 @@ int main(int argc, char* argv[])
     //Calculate and Print summary stats
     u_int32_t ic = pipe->getInstructionCount();
     u_int32_t cy = pipe->getCycleCount();
-    float su = (float)(8*ic)/cy;
+    u_int32_t nc = pipe->getNOPCount();
     
-//     std::cout << "Instruction Count: " << ic << std::endl;
-//     std::cout << "Cycle Count: " << cy << std::endl;
-//     std::cout << "Speed up: " << su << std::endl;
-//     
-//     std::ofstream output("../result.txt");
-//     output << "Instruction Count: " << ic << std::endl;
-//     output << "Cycle Count: " << cy << std::endl;
-//     output << "Speed up: " << su << std::endl;
-//     output.close();
+    std::cout << "Instruction Count: " << ic << std::endl;
+    std::cout << "Cycle Count: " << cy << std::endl;
+    std::cout << "NOP Count: " << nc << std::endl;
     
-//     memory->outputSegment(USER_DATA);
+    std::ofstream output("../result.txt");
+    output << "Instruction Count: " << ic << std::endl;
+    output << "Cycle Count: " << cy << std::endl;
+    output << "NOP Count: " << nc << std::endl;
+    output.close();
+    
+    memory->outputSegment(USER_DATA);
     
     SAFE_DELETE(pipe); //see Utilities.hh
     SAFE_DELETE(loader);

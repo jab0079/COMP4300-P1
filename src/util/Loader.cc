@@ -168,7 +168,11 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
     {
 	  inst_token[i]=toupper(inst_token[i]);
     }
-    if (inst_token.compare("ADDI")==0)
+    if (inst_token.compare("ADD")==0)
+        //ADD Rdest, Rsrc1, Rsrc2
+        //[8-bit op][5-bit dest][5-bit src1][5-bit src2][9-bit usused]
+        return parse3Reg(GPR_INST_SET_VALS[GPR_ADD], inst_str);
+    else if (inst_token.compare("ADDI")==0)
         //ADDI Rdest, Rsrc1, Imm
         //[8-bit op][5-bit dest][5-bit src][14-bit immediate]
         return parse2Reg1Val(GPR_INST_SET_VALS[GPR_ADDI], inst_str);
@@ -222,8 +226,8 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
         //SYSCALL
         //[8-bit op][24-bit unused]
         return (GPR_INST_SET_VALS[GPR_SYSCALL] << 24);
-	else if (inst_token.compare("NOP") == 0)
-		return (GPR_INST_SET_VALS[GPR_NOP] << 24);
+    else if (inst_token.compare("NOP") == 0)
+	return (GPR_INST_SET_VALS[GPR_NOP] << 24);
 }
 
 addr Loader::parseAddress(const std::string& inst_str)
@@ -256,6 +260,32 @@ u_int32_t Loader::parseOffset(const std::string& inst_str)
 {
     int hex_loc = inst_str.find("x");
     return parseValue(inst_str.substr(hex_loc-1,inst_str.length()),24);
+}
+
+inst Loader::parse3Reg(const u_int8_t& opcode, const std::string& inst_str)
+{
+    std::stringstream s;
+    inst instruction = 0;
+    std::string token_str = inst_str; //we will modify this so copy it
+    instruction = instruction | (opcode << 24);
+    
+    //parse registers
+    for (int i = 0; i < 3; i++)
+    {
+        int reg_loc = token_str.find("$");
+        int comma_loc = token_str.find(",");
+        std::string reg_str = token_str.substr(reg_loc+1,comma_loc-reg_loc-1);
+        int register_num = 0;
+        s.clear();
+        s << reg_str;
+        s >> register_num;
+        instruction = instruction | (register_num << (19-i*5));
+        token_str = token_str.substr(comma_loc+1); //after the comma
+    }
+    
+    //instruction = instruction & 0xFFFF3E00;
+    
+    return instruction;
 }
 
 inst Loader::parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str)

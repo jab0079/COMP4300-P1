@@ -46,17 +46,18 @@ static const u_int8_t STK_INST_ADD = 0x04;
 static const u_int8_t STK_INST_END = 0x05;
 
 enum GPR_INST_SET {
-    GPR_ADDI, //1
-    GPR_B, //2
-    GPR_BEQZ, //3
-    GPR_BGE, //4
-    GPR_BNE, //5
-    GPR_LA, //6
-    GPR_LB, //7
-    GPR_LI, //8
-    GPR_SUBI, //9
-    GPR_SYSCALL, //10
-    GPR_NOP //11
+    GPR_ADD,    //1
+    GPR_ADDI,   //2
+    GPR_B,      //3
+    GPR_BEQZ,   //4
+    GPR_BGE,    //5
+    GPR_BNE,    //6
+    GPR_LA,     //7
+    GPR_LB,     //8
+    GPR_LI,     //9
+    GPR_SUBI,   //10
+    GPR_SYSCALL,//11
+    GPR_NOP     //12
 };
 
 enum SYSCALL_CODES {
@@ -66,7 +67,7 @@ enum SYSCALL_CODES {
 };
 
 static const u_int8_t GPR_INST_SET_VALS[] =
-{ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B};
+{ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C};
 static const u_int8_t GPR_INST_SET_CYCLES[] =
 {6,4,5,5,6,3,6,8};
 

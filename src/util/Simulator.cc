@@ -33,6 +33,7 @@ Simulator::Simulator(MemSys* mem)
     m_sp = MemSys::BaseStackSegmentAddress;
     m_ic = 0;
     m_cycles = 0;
+    m_nops = 0;
 }
 
 Simulator::~Simulator()
@@ -51,6 +52,7 @@ addr Simulator::getProgramCounter() const {return m_pc;}
 addr Simulator::getStackPointer() const {return m_sp;}
 u_int32_t Simulator::getInstructionCount() const {return m_ic;}
 u_int32_t Simulator::getCycleCount() const {return m_cycles;}
+u_int32_t Simulator::getNOPCount() const {return m_nops;}
 
 
 
