@@ -765,6 +765,16 @@ void Pipeline::syscall_exception()
         }
         break;
         
+        case SYSCALL_PRINT_INT:
+        {
+            u_int32_t int_print = m_register[REG_ARG_1]; // Read integer
+            std::ostringstream os;
+            os << int_print;
+            std::string str = os.str();
+            std::cout << str << std::endl; 
+        }
+        break;
+        
         case SYSCALL_EXIT:
             m_usermode = false;
             break;

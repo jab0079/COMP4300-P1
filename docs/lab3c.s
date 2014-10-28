@@ -21,11 +21,11 @@
 	nop
 
 	add $4, $0, $1
-	li $2, 0x02 # CHANGE THIS TO YOUR SYSCALL, JARED
+	li $2, 0x03             # print_int
 	syscall
 	nop
 
-	li $2, 0x02
+	li $2, 0x02             # exit
 	syscall
 	nop
 	

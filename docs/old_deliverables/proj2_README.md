@@ -1,4 +1,4 @@
-COMP4300 - Computer Architecture - Project 3
+COMP4300 - Computer Architecture - Project 2
 
 ===============================================================================
 
@@ -12,8 +12,8 @@ Authors -------------------------------------------------------------
 
 Synopsis------------------------------------------------------------
     
-	This project extended the previous General Purpose Register (GPR) 
-	multi-cycle machine into a scalar piped architecture with 5 stages. 
+	This project extended the previous accumulator-based machine 
+	into a General Purpose Register (GPR) multi-cycle machine. 
 	Along with simulating these units, this project also emulates a 
 	memory unit and a loading unit. The memory unit is a centralized 
 	array-based segmented memory. The loader loads the accompanied
@@ -22,21 +22,17 @@ Synopsis------------------------------------------------------------
 	in binary representation, following the binary encoding scheme
 	shown below.
 
-
-	GENERAL PURPOSE REGISTER MACHINE INSTRUCTION SET (Modified for the Pipeline) 
-		
-		ADD  -  | 0x01 | 5-bit dest | 5-bit src1 | 5-bit src2 | 9-bit unused |
-		ADDI -  | 0x02 | 5-bit dest | 5-bit src1 | 14-bit immediate value... |
-		B    -  | 0x03 | 24-bit relative offset ............................ |
-		BEQZ -  | 0x04 | 5-bit src1 | 19-bit relative offset ............... |
-		BGE  -  | 0x05 | 5-bit src1 | 5-bit src2 | 14-bit offset ........... |
-		BNE  -  | 0x06 | 5-bit src1 | 5-bit src2 | 14-bit offset ........... |
-		LA   -  | 0x07 | 5-bit src1 | 19-bit relative offset ............... |
-		LB   -  | 0x08 | 5-bit src1 | 5-bit src2 | 14-bit offset ........... |
-		LI   -  | 0x09 | 5-bit dest | 19-bit immediate value ............... |
-		SUBI -  | 0x0A | 5-bit dest | 5-bit src1 | 14-bit immediate value .. |
-		NOP  -  | 0x0B | 24-bits usused .................................... |
-		SYSCALL | 0x0C | 24-bits usused .................................... |
+	GENERAL PURPOSE REGISTER MACHINE INSTRUCTION SET
+		ADDI -  | 0x01 | ... 5-bit dest | 5-bit src1 | 14-bit imm |
+		B    -  | 0x02 | ... 24-bit relative offset		  |
+		BEQZ -  | 0x03 | ... 5-bit src1 | 19-bit relative offset  |
+		BGE  -  | 0x04 | ... 5-bit src1 | 5-bit src2 | 14-bit off |
+		BNE  -  | 0x05 | ... 5-bit src1 | 5-bit src2 | 14-bit off |
+		LA   -  | 0x06 | ... 5-bit dest | 19-bit relative offset  |
+		LB   -  | 0x07 | ... 5-bit dest | 5-bit src1 | 14-bit off |
+		LI   -  | 0x08 | ... 5-bit dest | 19-bit immediate value  |
+		SUBI -  | 0x09 | ... 5-bit dest | 5-bit src1 | 14-bit imm |
+		SYSCALL | 0x0A | N/A (24-bits) -------------------------- |
  
 Compilation ---------------------------------------------------------
 	
@@ -70,8 +66,6 @@ Source Tree ---------------------------------------------------------
 	src/accumCode - contains all source files for the accumSim
 
 	src/gprCode - contains all source files for the gprSim
-
-	src/pipeCode - contains all source files for the pipeSim
     
 	src/utils     - contains all utility source files 
 			            used by all executables
@@ -97,27 +91,6 @@ Testing -------------------------------------------------------------
 	When the simulator finishes, each sample file records their
 	output into the USER DATA segment, therefore, we will print
 	out that segment to show the user the correct answer.
-
-	The total clock cycles, total instructions executed, and the
-	number of NOPs are also displayed at the end of the run and
-	here:
-
-	lab3a.s Results
-	Instruction Count: 140
-	Cycle Count: 143
-	NOP Count: 75
-
-
-	lab3b.s Results (using "racecar") => Y(it is a palindrome)
-	Instruction Count: 140
-	Cycle Count: 143
-	NOP Count: 75
-	
-
-	lab3c.s Results => 32768
-	Instruction Count: 61
-	Cycle Count: 63
-	NOP Count: 10
 	
 	The program cleans up memory and closes.
 

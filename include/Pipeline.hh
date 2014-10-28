@@ -26,6 +26,7 @@
  */
 
 #include<iostream>
+#include<sstream>
 #include<bitset>
 
 #include "Simulator.hh"

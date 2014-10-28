@@ -63,7 +63,8 @@ enum GPR_INST_SET {
 enum SYSCALL_CODES {
     SYSCALL_PRINT_STR,
     SYSCALL_READ_STR,
-    SYSCALL_EXIT
+    SYSCALL_EXIT,
+    SYSCALL_PRINT_INT
 };
 
 static const u_int8_t GPR_INST_SET_VALS[] =
