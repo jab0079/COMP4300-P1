@@ -27,3 +27,4 @@ obj/*
 core*
 *~
 *.kdev*
+*.kate-swp
