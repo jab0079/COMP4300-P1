@@ -1,6 +1,6 @@
 /*
  * 
- *      driver_pipe.cc
+ *      driver_sco.cc
  * 
  *      Contributors:   Adam Eichelkraut
  *                      Jared Brown
@@ -8,7 +8,7 @@
  *                      jab0079@tigermail.auburn.edu
  * 
  *      Description: 
- *          This source file defines the driver for the Pipeline Simulator
+ *          This source file defines the driver for the Scoreboard Simulator
  *          executable.
  * 
  *      Change Log:

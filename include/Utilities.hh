@@ -14,6 +14,7 @@
  *          to all sources in the project
  * 
  *      Change Log:
+ *          12/2/14 - Added Scoreboard Simulator inital item
  *          10/26/14 - Changed values of GPR instructions to be 
  *                      incremented by one in order to solve issue
  *                      of "bubbled" instructions in pipeline (skipped)
@@ -73,6 +74,7 @@ static const u_int8_t GPR_INST_SET_CYCLES[] =
 {6,4,5,5,6,3,6,8};
 
 typedef u_int32_t reg; //32-bit registers
+typedef float reg_d; //32-bit float registers
 typedef u_int32_t addr;
 typedef u_int32_t inst;
 
