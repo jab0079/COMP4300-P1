@@ -21,7 +21,9 @@
  * 
  * 
  */
+#include "MemSys.hh"
 #include "Utilities.hh"
+#include <bitset>
 
 class Instruction
 {
@@ -38,6 +40,7 @@ class Instruction
         virtual inst getInstruction() const;
         
     protected:
+        int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
         
     private:
         inst m_instruction;

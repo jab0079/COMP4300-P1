@@ -28,22 +28,23 @@ Inst_NOP::~Inst_NOP() {}
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_NOP::decode(ScoreboardSimulator& sim)
 {
-    
+    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim.setNOPCount(sim.getNOPCount() + 1);
 }
 
 void Inst_NOP::execute(ScoreboardSimulator& sim)
 {
-    
+    //blank for NOP
 }
 
 void Inst_NOP::memory(ScoreboardSimulator& sim)
 {
-    
+    //blank for NOP
 }
 
 void Inst_NOP::write_back(ScoreboardSimulator& sim)
 {
-    
+    //blank for NOP
 }
 
 

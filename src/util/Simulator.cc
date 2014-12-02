@@ -48,6 +48,15 @@ void Simulator::setProgramCounter(const addr& in)
 void Simulator::setStackPointer(const addr& in)
 { m_sp = in; }
 
+void Simulator::setInstructionCount(const u_int32_t& new_ic)
+{ m_ic = new_ic; }
+
+void Simulator::setCycleCount(const u_int32_t& new_cy)
+{ m_cycles = new_cy; }
+
+void Simulator::setNOPCount(const u_int32_t& new_nop)
+{ m_nops = new_nop; }
+
 addr Simulator::getProgramCounter() const {return m_pc;}
 addr Simulator::getStackPointer() const {return m_sp;}
 u_int32_t Simulator::getInstructionCount() const {return m_ic;}

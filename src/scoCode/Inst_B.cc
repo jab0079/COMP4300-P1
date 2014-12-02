@@ -28,22 +28,30 @@ Inst_B::~Inst_B() {}
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_B::decode(ScoreboardSimulator& sim)
 {
+    sim.setInstructionCount(sim.getInstructionCount() + 1);
     
+    inst curr_inst = this->getInstruction();
+    // Get signed label offset value and calculate newpc
+    int32_t value = decodeInstr(curr_inst, 24);
+    int32_t aluout = sim.getProgramCounter() + value * 4;
+
+    // Branch (update PC)
+    sim.setProgramCounter(aluout);
 }
 
 void Inst_B::execute(ScoreboardSimulator& sim)
 {
-    
+    //blank for B
 }
 
 void Inst_B::memory(ScoreboardSimulator& sim)
 {
-    
+    //blank for B
 }
 
 void Inst_B::write_back(ScoreboardSimulator& sim)
 {
-    
+    //blank for B
 }
 
 

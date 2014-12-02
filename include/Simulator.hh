@@ -16,6 +16,7 @@
  *          class that should simply be a template for simulators
  * 
  *      Change Log:
+ *          12/2/14 - Added few more accessor methods
  *          10/26/14 - Moved register constants to here
  *          10/18/14 - Added CYCLE_DESCRIPTOR enumeration
  *          10/3/14 - Added instruction counting
@@ -48,6 +49,10 @@ class Simulator : private Uncopyable
         // Gets and Sets-------------------------------------------------------
         virtual void setProgramCounter(const addr& in);
         virtual void setStackPointer(const addr& in);
+        virtual void setInstructionCount(const u_int32_t& new_ic);
+        virtual void setCycleCount(const u_int32_t& new_cy);
+        virtual void setNOPCount(const u_int32_t& new_nop);
+
         virtual addr getProgramCounter() const;
         virtual addr getStackPointer() const;
         virtual u_int32_t getInstructionCount() const;

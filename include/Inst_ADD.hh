@@ -38,6 +38,12 @@ class Inst_ADD : public Instruction
     protected:
         
     private:
+        int32_t m_dest;
+        u_int8_t m_rsrc1;
+        u_int8_t m_rsrc2;
+        
+        int32_t m_aluout;
+        
         
 };
 

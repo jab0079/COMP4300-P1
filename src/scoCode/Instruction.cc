@@ -27,3 +27,17 @@ Instruction::~Instruction() {}
 inst Instruction::getInstruction() const
 {return m_instruction; }
 
+int32_t Instruction::decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits)
+{
+    std::bitset<32> val32(instr);
+    std::bitset<32> val;
+    
+    for (int i = 0; i < num_bits - 1; i++)      // Copy all bits up to msb
+        val.set(i, val32[i]);
+      
+    for (int i = num_bits - 1; i < 32; i++)     // Sign extend msb
+        val.set(i, val32[num_bits - 1]);
+    
+    return val.to_ulong();
+}
+

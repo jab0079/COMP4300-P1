@@ -28,22 +28,29 @@ Inst_LA::~Inst_LA() {}
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_LA::decode(ScoreboardSimulator& sim)
 {
-    
+    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    inst curr_inst = this->getInstruction();
+
+    // Get r_dest number
+    m_rdest = (curr_inst & 0x00F80000) >> 19;
+    // Get signed label offset value
+    m_value = decodeInstr(curr_inst, 19);
 }
 
 void Inst_LA::execute(ScoreboardSimulator& sim)
 {
-    
+    //blank for la
 }
 
 void Inst_LA::memory(ScoreboardSimulator& sim)
 {
-    
+    //blank for la
 }
 
 void Inst_LA::write_back(ScoreboardSimulator& sim)
 {
-    
+    // Load signed label offset address into r_dest
+    sim.setRegister(m_rdest, m_value);
 }
 
 
