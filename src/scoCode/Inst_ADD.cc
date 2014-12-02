@@ -26,23 +26,25 @@ Inst_ADD::Inst_ADD(inst the_instruction)
 Inst_ADD::~Inst_ADD() {}
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_ADD::decode()
+void Inst_ADD::decode(ScoreboardSimulator& sim)
 {
     
 }
 
-void Inst_ADD::execute()
+void Inst_ADD::execute(ScoreboardSimulator& sim)
 {
     
 }
 
-void Inst_ADD::memory()
+void Inst_ADD::memory(ScoreboardSimulator& sim)
 {
     
 }
 
-void Inst_ADD::write_back()
+void Inst_ADD::write_back(ScoreboardSimulator& sim)
 {
     
 }
+
+
 

@@ -30,15 +30,14 @@ class Inst_ADD : public Instruction
         virtual ~Inst_ADD();
         
         //Implemented stage methods
-        virtual void decode();
-        virtual void execute();
-        virtual void memory();
-        virtual void write_back();
+        virtual void decode(ScoreboardSimulator& sim);
+        virtual void execute(ScoreboardSimulator& sim);
+        virtual void memory(ScoreboardSimulator& sim);
+        virtual void write_back(ScoreboardSimulator& sim);
                 
     protected:
         
     private:
-        inst m_instruction;
         
 };
 
