@@ -35,16 +35,16 @@ class ScoreboardSimulator : public Simulator
         virtual void run();
         
         //Method to set the value of a register
-        virtual void setRegister(const int& regnum, const reg& val);
+        virtual void setRegister(const u_int8_t& regnum, const reg& val);
         //Method for setting a floating point register
-        virtual void setFPRegister(const int& regnum, const reg_d& val);
+        virtual void setFPRegister(const u_int8_t& regnum, const reg_d& val);
         //Method for setting usermode flag
         virtual void setUserMode(const bool& isInUserMode);
         
         //Method to get the value of a register
-        virtual reg getRegister(const int& regnum) const;
+        virtual reg getRegister(const u_int8_t& regnum) const;
         //Method to get the value of a floating point register
-        virtual reg_d getFPRegister(const int& regnum) const;
+        virtual reg_d getFPRegister(const u_int8_t& regnum) const;
         //Method to determine whether or not simulator is in user mode
         virtual bool isInUserMode() const;
                 

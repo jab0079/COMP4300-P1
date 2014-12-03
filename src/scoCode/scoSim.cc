@@ -37,13 +37,13 @@ void ScoreboardSimulator::run()
 }
 
 /* SETS ---------------------------------------------------------------------*/
-void ScoreboardSimulator::setRegister(const int& regnum, const reg& val)
+void ScoreboardSimulator::setRegister(const u_int8_t& regnum, const reg& val)
 {
     if (regnum >= 0 && regnum < REGISTER_COUNT)
         m_register[regnum] = val;
 }
 
-void ScoreboardSimulator::setFPRegister(const int& regnum, const reg_d& val)
+void ScoreboardSimulator::setFPRegister(const u_int8_t& regnum, const reg_d& val)
 {
     if (regnum >= 0 && regnum < FLOATING_POINT_REGISTERS)
         m_register_d[regnum] = val;
@@ -55,10 +55,10 @@ void ScoreboardSimulator::setUserMode(const bool& isInUserMode)
 }
 
 /* GETS ---------------------------------------------------------------------*/
-reg ScoreboardSimulator::getRegister(const int& regnum) const
+reg ScoreboardSimulator::getRegister(const u_int8_t& regnum) const
 { return m_register[regnum]; }
 
-reg_d ScoreboardSimulator::getFPRegister(const int& regnum) const
+reg_d ScoreboardSimulator::getFPRegister(const u_int8_t& regnum) const
 { return m_register_d[regnum]; }
 
 bool ScoreboardSimulator::isInUserMode() const

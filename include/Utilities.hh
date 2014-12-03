@@ -61,6 +61,26 @@ enum GPR_INST_SET {
     GPR_NOP     //12
 };
 
+enum SCOB_INST_SET {
+    SCOB_ADD,    //1
+    SCOB_ADDI,   //2
+    SCOB_B,      //3
+    SCOB_BEQZ,   //4
+    SCOB_BGE,    //5
+    SCOB_BNE,    //6
+    SCOB_LA,     //7
+    SCOB_LB,     //8
+    SCOB_LI,     //9
+    SCOB_SUBI,   //10
+    SCOB_SYSCALL,//11
+    SCOB_NOP,    //12
+    SCOB_FADD,   //13
+    SCOB_FMUL,   //14
+    SCOB_FSUB,   //15
+    SCOB_LD,     //16
+    SCOB_SD,     //17
+};
+
 enum SYSCALL_CODES {
     SYSCALL_PRINT_STR,
     SYSCALL_READ_STR,
@@ -72,6 +92,14 @@ static const u_int8_t GPR_INST_SET_VALS[] =
 { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C};
 static const u_int8_t GPR_INST_SET_CYCLES[] =
 {6,4,5,5,6,3,6,8};
+
+static const u_int8_t SCOB_INST_SET_VALS[] =
+{   0x01, 0x02, 0x03, 0x04, 
+    0x05, 0x06, 0x07, 0x08, 
+    0x09, 0x0A, 0x0B, 0x0C,
+    0x0D, 0x0E, 0x0F, 0x10,
+    0x11
+};
 
 typedef u_int32_t reg; //32-bit registers
 typedef float reg_d; //32-bit float registers

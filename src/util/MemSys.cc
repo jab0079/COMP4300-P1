@@ -145,6 +145,8 @@ throw(std::range_error)
     {
         std::cerr << e.what() << std::endl;
     }
+    
+    return 0x0;
 }
 
 bool MemSys::write(const addr& address, const void* data, const unsigned int& size)
@@ -227,6 +229,8 @@ throw(std::range_error)
     {
         std::cerr << e.what() << std::endl;
     }
+    
+    return false;
 }
 
 addr MemSys::getUserTextTop() const { return m_usertext_top; }

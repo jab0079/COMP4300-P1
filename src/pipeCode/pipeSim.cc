@@ -755,7 +755,7 @@ void Pipeline::syscall_exception()
         {
             std::string input;
             std::cin >> input;
-            for (int i = 0; i < input.length(); i++)    // Write each char to memory
+            for (u_int32_t i = 0; i < input.length(); i++)    // Write each char to memory
             {
                 m_memory->write(str_addr, &input[i], sizeof(u_int8_t));
                 str_addr++;

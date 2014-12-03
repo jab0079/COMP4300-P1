@@ -110,6 +110,9 @@ addr Loader::load(const std::string& file_path, const INST_SET& set)
                 case GPR_ISA:
                     instruction = parseInstructionGPR(line);
                     break;
+                case SCOB_ISA:
+                    instruction = parseInstructionSCOB(line);
+                    break;
             }
             
             m_memory->write(MemSys::BaseUserTextSegmentAddress+text_offset, 
@@ -140,6 +143,8 @@ inst Loader::parseInstructionStack(const std::string& inst_str)
         return (STK_INST_MULT << 24);
     else if (containsStr(inst_str,"END"))
         return (STK_INST_END << 24);
+    
+    return -1;
 }
 
 inst Loader::parseInstructionAccum(const std::string& inst_str)
@@ -154,17 +159,19 @@ inst Loader::parseInstructionAccum(const std::string& inst_str)
         return (ACC_INST_MULT << 24) | parseAddress(inst_str);
     else if (containsStr(inst_str,"END"))
         return (ACC_INST_END << 24);
+    
+    return -1;
 }
 
 inst Loader::parseInstructionGPR(const std::string& inst_str)
 {
     std::string inst_token;
-    int dollar_loc=inst_str.find("$");
+    u_int32_t dollar_loc=inst_str.find("$");
     if (dollar_loc!=std::string::npos)
 	  inst_token = inst_str.substr(0,inst_str.find("$"));
     else
 	  inst_token = inst_str.substr(0,inst_str.find("0x"));   
-    for(int i=0;i<inst_token.length();i++)
+    for(u_int32_t i=0;i<inst_token.length();i++)
     {
 	  inst_token[i]=toupper(inst_token[i]);
     }
@@ -227,7 +234,93 @@ inst Loader::parseInstructionGPR(const std::string& inst_str)
         //[8-bit op][24-bit unused]
         return (GPR_INST_SET_VALS[GPR_SYSCALL] << 24);
     else if (inst_token.compare("NOP") == 0)
-	return (GPR_INST_SET_VALS[GPR_NOP] << 24);
+        return (GPR_INST_SET_VALS[GPR_NOP] << 24);
+    
+    return -1;
+}
+
+inst Loader::parseInstructionSCOB(const std::string& inst_str)
+{
+    std::string inst_token;
+    u_int32_t dollar_loc=inst_str.find("$");
+    if (dollar_loc!=std::string::npos)
+      inst_token = inst_str.substr(0,inst_str.find("$"));
+    else
+      inst_token = inst_str.substr(0,inst_str.find("0x"));   
+    for(u_int32_t i=0;i<inst_token.length();i++)
+    {
+      inst_token[i]=toupper(inst_token[i]);
+    }
+    if (inst_token.compare("ADD")==0)
+        //ADD Rdest, Rsrc1, Rsrc2
+        //[8-bit op][5-bit dest][5-bit src1][5-bit src2][9-bit usused]
+        return parse3Reg(SCOB_INST_SET_VALS[SCOB_ADD], inst_str);
+    else if (inst_token.compare("ADDI")==0)
+        //ADDI Rdest, Rsrc1, Imm
+        //[8-bit op][5-bit dest][5-bit src][14-bit immediate]
+        return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_ADDI], inst_str);
+    else if (inst_token.compare("B")==0)
+        //B label
+        //[8-bit op][24-bit relative offset]
+        return (SCOB_INST_SET_VALS[SCOB_B] << 24) | parseOffset(inst_str);
+    else if (inst_token.compare("BEQZ")==0)
+        //BEGZ Rsrc1, label
+        //[8-bit op][5-bit src][19-bit relative offset]
+        return parse1Reg1Val(SCOB_INST_SET_VALS[SCOB_BEQZ], inst_str);
+    else if (inst_token.compare("BGE")==0)
+        //BGE Rsrc1, Rsrc2, label
+        //[8-bit op][5-bit src1][5-bit src2][14-bit offset]
+        return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_BGE], inst_str);
+    else if (inst_token.compare("BNE")==0)
+        //BNE Rsrc1, Rsrc2, label
+        //[8-bit op][5-bit src1][5-bit src2][14-bit offset]
+        return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_BNE], inst_str);
+    else if (inst_token.compare("LA")==0)
+        //LA Rdest, label
+        //[8-bit op][5-bit dest][19-bit address]
+        return parse1Reg1Val(SCOB_INST_SET_VALS[SCOB_LA], inst_str);
+    else if (inst_token.compare("LB")==0)
+        //LB Rdest, offset(Rsrc1)
+        //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
+        return parseRegisterOffset(SCOB_INST_SET_VALS[SCOB_LB], inst_str);
+    else if (inst_token.compare("LI")==0)
+        //LI Rdest, Imm
+        //[8-bit op][5-bit Rsrc1][19-bit immediate]
+        return parse1Reg1Val(SCOB_INST_SET_VALS[SCOB_LI], inst_str);
+    else if (inst_token.compare("SUBI")==0)
+        //SUBI Rdest, Rsrc1, Imm
+        //[8-bit op][5-bit dest][5-bit src][14-bit immediate]
+        return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_SUBI], inst_str);
+    else if (inst_token.compare("SYSCALL")==0)
+        //SYSCALL
+        //[8-bit op][24-bit unused]
+        return (SCOB_INST_SET_VALS[SCOB_SYSCALL] << 24);
+    else if (inst_token.compare("NOP") == 0)
+        //NOP
+        //[8-bit op][24-bit usused]
+        return (SCOB_INST_SET_VALS[SCOB_NOP] << 24);
+    else if (inst_token.compare("FADD") == 0)
+        //FADD Rdest, Rsrc1, Rsrc2
+        //[8-bit op][5-bit dest][5-bit src1][5-bit src2][9-bit usused]
+        return parse3Reg(SCOB_INST_SET_VALS[SCOB_FADD], inst_str);
+    else if (inst_token.compare("FMUL") == 0)
+        //FMUL Rdest, Rsrc1, Rsrc2
+        //[8-bit op][5-bit dest][5-bit src1][5-bit src2][9-bit usused]
+        return parse3Reg(SCOB_INST_SET_VALS[SCOB_FMUL], inst_str);
+    else if (inst_token.compare("FSUB") == 0)
+        //FSUB Rdest, Rsrc1, Rsrc2
+        //[8-bit op][5-bit dest][5-bit src1][5-bit src2][9-bit usused]
+        return parse3Reg(SCOB_INST_SET_VALS[SCOB_FSUB], inst_str);
+    else if (inst_token.compare("L.D") == 0)
+        //L.D Rdest, offset(Rsrc1)
+        //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
+        return parseRegisterOffset(SCOB_INST_SET_VALS[SCOB_LD], inst_str);
+    else if (inst_token.compare("S.D") == 0)
+        //S.D Rdest, offset(Rsrc1)
+        //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
+        return parseRegisterOffset(SCOB_INST_SET_VALS[SCOB_SD], inst_str);
+        
+    return -1;
 }
 
 addr Loader::parseAddress(const std::string& inst_str)
@@ -334,6 +427,27 @@ inst Loader::parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str)
 
     return instruction;
 }
+
+inst Loader::parseRegisterOffset(const u_int8_t& opcode, const std::string& inst_str)
+{
+    int comma_loc = inst_str.find(",");
+    int open_paren_loc = inst_str.find("(");
+    int close_paren_loc = inst_str.find(")");
+    std::string offset_str = inst_str.substr(comma_loc+2,open_paren_loc-comma_loc-2);
+    std::string rsrc1_str = inst_str.substr(open_paren_loc+1,close_paren_loc-open_paren_loc-1);
+    std::string inst_str_modified = inst_str.substr(1,comma_loc);
+    std::stringstream s;
+    if (offset_str.compare("") == 0)
+        offset_str = "0";
+    s << offset_str;
+    int off_val;
+    s >> off_val;
+    inst_str_modified += rsrc1_str + "," + int_to_hex(off_val);
+    return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_LB], inst_str_modified);
+}
+
+
+
 
 
 

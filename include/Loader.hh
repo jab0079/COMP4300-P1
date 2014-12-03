@@ -40,7 +40,8 @@ class Loader : private Uncopyable
         {
             STACK_ISA,
             ACCUM_ISA,
-            GPR_ISA
+            GPR_ISA,
+            SCOB_ISA
         };
         
         Loader(MemSys* mem);
@@ -51,13 +52,15 @@ class Loader : private Uncopyable
         virtual inst parseInstructionAccum(const std::string& inst_str);
         virtual inst parseInstructionStack(const std::string& inst_str);
         virtual inst parseInstructionGPR(const std::string& inst_str);
-        
+        virtual inst parseInstructionSCOB(const std::string& inst_str);
+
         virtual addr parseAddress(const std::string& inst_str);
         virtual u_int32_t parseOffset(const std::string& inst_str);
         virtual u_int32_t parseValue(const std::string& hexStr, const u_int8_t& num_bits);
         virtual inst parse3Reg(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
+        virtual inst parseRegisterOffset(const u_int8_t& opcode, const std::string& inst_str);
     private:
         MemSys* m_memory;
         

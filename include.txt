@@ -1,7 +1,7 @@
 # Top-level include.txt
 
 CC=g++
-CFLAGS=-g -D_REENTRANT -Wall
+CFLAGS=-g -D_REENTRANT -Wall -Wno-unused-function -Wno-unused-variable
 
 SOURCE_DIR=src/
 INCLUDE_DIR=include/
