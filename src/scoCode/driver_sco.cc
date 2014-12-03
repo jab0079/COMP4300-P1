@@ -21,7 +21,7 @@
 
 #include "MemSys.hh"
 #include "Loader.hh"
-#include "pipeSim.hh"
+#include "scoSim.hh"
 #include "Utilities.hh"
 
 int main(int argc, char* argv[])
@@ -34,9 +34,8 @@ int main(int argc, char* argv[])
     
     //Load program into memory
     Loader* loader = new Loader(memory);
-
     std::cout << "Loading source into memory..." << std::endl;
-    addr setpc = loader->load(argv[1], Loader::GPR_ISA);
+    addr setpc = loader->load(argv[1], Loader::SCOB_ISA);
     
     //Put a null sentinel value at the end to buffer
     //if a syscall is at the end of file, it can read this
@@ -52,22 +51,22 @@ int main(int argc, char* argv[])
     memory->outputSegment(USER_TEXT);
     
     //Create simulator with memory system
-//     Simulator* pipe = new Pipeline(memory);
+    Simulator* scob = new ScoreboardSimulator(memory);
     
     //Set up the program counter...
-//     pipe->setProgramCounter(setpc);
+    scob->setProgramCounter(setpc);
     
     //Run the simulator
-//     pipe->run();
+    scob->run();
     
     //Calculate and Print summary stats
-//     u_int32_t ic = pipe->getInstructionCount();
-//     u_int32_t cy = pipe->getCycleCount();
-//     u_int32_t nc = pipe->getNOPCount();
+    u_int32_t ic = scob->getInstructionCount();
+    u_int32_t cy = scob->getCycleCount();
+    u_int32_t nc = scob->getNOPCount();
     
-//     std::cout << "Instruction Count: " << ic << std::endl;
-//     std::cout << "Cycle Count: " << cy << std::endl;
-//     std::cout << "NOP Count: " << nc << std::endl;
+    std::cout << "Instruction Count: " << ic << std::endl;
+    std::cout << "Cycle Count: " << cy << std::endl;
+    std::cout << "NOP Count: " << nc << std::endl;
     
 //     std::ofstream output("./result.txt");
 //     output << "Instruction Count: " << ic << std::endl;
@@ -77,11 +76,11 @@ int main(int argc, char* argv[])
     
 //     memory->outputSegment(USER_DATA);
     
-//     SAFE_DELETE(pipe); //see Utilities.hh
+    SAFE_DELETE(scob); //see Utilities.hh
     SAFE_DELETE(loader);
     SAFE_DELETE(memory);
     
     std::cout << "...Scoreboard Simulation Ended\n" << std::endl;
-//     
+
     return 0;
 }
