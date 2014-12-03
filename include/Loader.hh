@@ -14,6 +14,7 @@
  *          files and inserts the correct instructions into memory.
  * 
  *      Change Log:
+ *          12/3/14 - Added SCOB_ISA
  *          9/29/14 - Added GPR_ISA to enumeration
  *          9/17/14 - Made class and derived classes Uncopyable
  *          9/10/14 - Created two separate methods for the different ISAs
@@ -61,6 +62,8 @@ class Loader : private Uncopyable
         virtual inst parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parseRegisterOffset(const u_int8_t& opcode, const std::string& inst_str);
+        virtual u_int8_t parseRegister(std::string& inst_str);
+        
     private:
         MemSys* m_memory;
         

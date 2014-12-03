@@ -364,19 +364,7 @@ inst Loader::parse3Reg(const u_int8_t& opcode, const std::string& inst_str)
     
     //parse registers
     for (int i = 0; i < 3; i++)
-    {
-        int reg_loc = token_str.find("$");
-        int comma_loc = token_str.find(",");
-        std::string reg_str = token_str.substr(reg_loc+1,comma_loc-reg_loc-1);
-        int register_num = 0;
-        s.clear();
-        s << reg_str;
-        s >> register_num;
-        instruction = instruction | (register_num << (19-i*5));
-        token_str = token_str.substr(comma_loc+1); //after the comma
-    }
-    
-    //instruction = instruction & 0xFFFF3E00;
+        instruction = instruction | (parseRegister(token_str) << (19-i*5));
     
     return instruction;
 }
@@ -390,17 +378,7 @@ inst Loader::parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str)
     
     //parse registers
     for (int i = 0; i < 2; i++)
-    {
-        int reg_loc = token_str.find("$");
-        int comma_loc = token_str.find(",");
-        std::string reg_str = token_str.substr(reg_loc+1,comma_loc-reg_loc-1);
-        int register_num = 0;
-        s.clear();
-        s << reg_str;
-        s >> register_num;
-        instruction = instruction | (register_num << (19-i*5));
-        token_str = token_str.substr(comma_loc+1); //after the comma
-    }
+        instruction = instruction | (parseRegister(token_str) << (19-i*5));
     
     instruction = instruction | parseValue(token_str, 14);
     
@@ -413,16 +391,7 @@ inst Loader::parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str)
     inst instruction = 0;
     std::string token_str = inst_str; //we will modify this so copy it
     instruction = instruction | (opcode << 24);
-    
-    int reg_loc = token_str.find("$");
-    int comma_loc = token_str.find(",");
-    std::string reg_str = token_str.substr(reg_loc+1,comma_loc-reg_loc-1);
-    int register_num = 0;
-    s << reg_str;
-    s >> register_num;
-    instruction = instruction | (register_num << 19);
-    token_str = token_str.substr(comma_loc+1); //after the comma
-    
+    instruction = instruction | (parseRegister(token_str) << 19);    
     instruction = instruction | parseValue(token_str, 19);
 
     return instruction;
@@ -446,6 +415,28 @@ inst Loader::parseRegisterOffset(const u_int8_t& opcode, const std::string& inst
     return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_LB], inst_str_modified);
 }
 
+//inst_str will be modified!
+u_int8_t Loader::parseRegister(std::string& inst_str)
+{
+    u_int32_t reg_loc = inst_str.find("$");
+    bool isFP = false;
+    if (inst_str.at(reg_loc) + 1 == 'f')
+    {
+        isFP = true;
+        reg_loc++; //skip the f
+    }
+    u_int32_t comma_loc = inst_str.find(",");
+    std::string reg_str = inst_str.substr(reg_loc+1,comma_loc-reg_loc-1);
+    u_int8_t register_num = 0;
+    std::stringstream s;
+    s.clear();
+    s << reg_str;
+    s >> register_num;
+    if (isFP)
+        register_num + 32; //skip 32 non floating point registers
+    inst_str = inst_str.substr(comma_loc+1); //after the comma
+    return register_num;
+}
 
 
 
