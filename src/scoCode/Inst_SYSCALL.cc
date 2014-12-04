@@ -80,6 +80,11 @@ void Inst_SYSCALL::decode(ScoreboardSimulator& sim)
     }
 }
 
+void Inst_SYSCALL::fetch_operands(ScoreboardSimulator& sim)
+{
+    //blank for syscall
+}
+
 void Inst_SYSCALL::execute(ScoreboardSimulator& sim)
 {
     //blank for syscall

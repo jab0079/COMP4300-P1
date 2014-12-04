@@ -40,10 +40,16 @@ void Inst_ADD::decode(ScoreboardSimulator& sim)
     m_rsrc2 = (curr_inst & 0x00003E00) >> 9;
 }
 
+void Inst_ADD::fetch_operands(ScoreboardSimulator& sim)
+{
+    m_opA = sim.getRegister(m_rsrc1);
+    m_opB = sim.getRegister(m_rsrc2);
+}
+
 void Inst_ADD::execute(ScoreboardSimulator& sim)
 {
     // Add op A & B
-    m_aluout = sim.getRegister(m_rsrc1) + sim.getRegister(m_rsrc2);
+    m_aluout =  m_opA + m_opB;
 }
 
 void Inst_ADD::memory(ScoreboardSimulator& sim)
@@ -55,7 +61,6 @@ void Inst_ADD::write_back(ScoreboardSimulator& sim)
 {
     // Write to r_dest
     sim.setRegister(m_dest, m_aluout);
-         
 }
 
 

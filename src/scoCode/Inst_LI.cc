@@ -37,6 +37,11 @@ void Inst_LI::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 19);
 }
 
+void Inst_LI::fetch_operands(ScoreboardSimulator& sim)
+{
+    //blank for li
+}
+
 void Inst_LI::execute(ScoreboardSimulator& sim)
 {
     //blank for li

@@ -21,6 +21,7 @@
  * 
  * 
  */
+#include "scoSim.hh"
 #include "MemSys.hh"
 #include "Utilities.hh"
 #include <bitset>
@@ -32,10 +33,11 @@ class Instruction
         virtual ~Instruction();
         
         //Pure virtual stage methods
-        virtual void decode() = 0;
-        virtual void execute() = 0;
-        virtual void memory() = 0;
-        virtual void write_back() = 0;
+        virtual void decode(ScoreboardSimulator& sim) = 0;
+        virtual void fetch_operands(ScoreboardSimulator& sim) = 0;
+        virtual void execute(ScoreboardSimulator& sim) = 0;
+        virtual void memory(ScoreboardSimulator& sim) = 0;
+        virtual void write_back(ScoreboardSimulator& sim) = 0;
         
         virtual inst getInstruction() const;
         

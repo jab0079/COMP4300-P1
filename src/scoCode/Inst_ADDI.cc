@@ -39,10 +39,15 @@ void Inst_ADDI::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 14);
 }
 
+void Inst_ADDI::fetch_operands(ScoreboardSimulator& sim)
+{
+    m_opA = sim.getRegister(m_rsrc1);
+}
+
 void Inst_ADDI::execute(ScoreboardSimulator& sim)
 {
     // Add op A & B
-    m_aluout = sim.getRegister(m_rsrc1) + m_value;
+    m_aluout = m_opA + m_value;
 }
 
 void Inst_ADDI::memory(ScoreboardSimulator& sim)

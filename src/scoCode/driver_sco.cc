@@ -47,7 +47,6 @@ int main(int argc, char* argv[])
     memory->write(topText, &sentinel, sizeof(inst));
     memory->write(topText+4, &sentinel, sizeof(inst));
 
-    
     memory->outputSegment(USER_DATA);
     memory->outputSegment(USER_TEXT);
     

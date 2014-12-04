@@ -28,22 +28,39 @@ Inst_FSUB::~Inst_FSUB() {}
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_FSUB::decode(ScoreboardSimulator& sim)
 {
+    sim.setInstructionCount(sim.getInstructionCount() + 1);
     
+    inst curr_inst = this->getInstruction();
+    
+    // Get r_dest number
+    m_dest = (curr_inst & 0x00F80000) >> 19;
+    // Get r_src1 number
+    m_rsrc1 = (curr_inst & 0x0007C000) >> 14;
+    m_rsrc1 -= 16;
+    // Get r_src2 number
+    m_rsrc2 = (curr_inst & 0x00003E00) >> 9;
+    m_rsrc2 -= 16;
+}
+
+void Inst_FSUB::fetch_operands(ScoreboardSimulator& sim)
+{
+    m_opA = (float)sim.getFPRegister(m_rsrc1);
+    m_opB = (float)sim.getFPRegister(m_rsrc2);
 }
 
 void Inst_FSUB::execute(ScoreboardSimulator& sim)
 {
-    
+    m_aluout = m_opA - m_opB;
 }
 
 void Inst_FSUB::memory(ScoreboardSimulator& sim)
 {
-    
+    //blank for FSUB
 }
 
 void Inst_FSUB::write_back(ScoreboardSimulator& sim)
 {
-    
+    sim.setFPRegister(m_dest, m_aluout);
 }
 
 

@@ -62,6 +62,7 @@ addr Simulator::getStackPointer() const {return m_sp;}
 u_int32_t Simulator::getInstructionCount() const {return m_ic;}
 u_int32_t Simulator::getCycleCount() const {return m_cycles;}
 u_int32_t Simulator::getNOPCount() const {return m_nops;}
+MemSys* Simulator::getMemorySystem() const {return m_memory; }
 
 
 

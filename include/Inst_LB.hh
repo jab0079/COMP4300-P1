@@ -31,6 +31,7 @@ class Inst_LB : public Instruction
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);
+        virtual void fetch_operands(ScoreboardSimulator& sim);
         virtual void execute(ScoreboardSimulator& sim);
         virtual void memory(ScoreboardSimulator& sim);
         virtual void write_back(ScoreboardSimulator& sim);
@@ -39,7 +40,7 @@ class Inst_LB : public Instruction
         
     private:
         u_int8_t m_rdest, m_rsrc1;
-        addr m_aluout;
+        int32_t m_aluout, m_opA;
         int32_t m_value;
         u_int8_t m_mdr;
         

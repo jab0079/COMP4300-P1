@@ -31,6 +31,7 @@ class Inst_SYSCALL : public Instruction
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);
+        virtual void fetch_operands(ScoreboardSimulator& sim);
         virtual void execute(ScoreboardSimulator& sim);
         virtual void memory(ScoreboardSimulator& sim);
         virtual void write_back(ScoreboardSimulator& sim);

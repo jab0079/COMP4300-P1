@@ -31,6 +31,7 @@ class Inst_SD : public Instruction
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);
+        virtual void fetch_operands(ScoreboardSimulator& sim);
         virtual void execute(ScoreboardSimulator& sim);
         virtual void memory(ScoreboardSimulator& sim);
         virtual void write_back(ScoreboardSimulator& sim);
@@ -38,6 +39,10 @@ class Inst_SD : public Instruction
     protected:
         
     private:
+        u_int8_t m_rsrc1, m_rsrc2;
+        int32_t m_aluout, m_opA, m_opB;
+        int32_t m_value;
+        float m_mdr;
         
 };
 

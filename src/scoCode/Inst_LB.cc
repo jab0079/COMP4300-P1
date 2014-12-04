@@ -39,17 +39,21 @@ void Inst_LB::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 14);
 }
 
+void Inst_LB::fetch_operands(ScoreboardSimulator& sim)
+{
+    m_opA = (int32_t)sim.getRegister(m_rsrc1);
+}
+
 void Inst_LB::execute(ScoreboardSimulator& sim)
 {
-    int32_t op_A = (int32_t)sim.getRegister(m_rsrc1);
     // Correct target address and push to ALU_out
-    m_aluout = (MemSys::BaseUserDataSegmentAddress | op_A) + m_value;
+    m_aluout = (MemSys::BaseUserDataSegmentAddress | m_opA) + m_value;
 }
 
 void Inst_LB::memory(ScoreboardSimulator& sim)
 {
     // Read from memory at corrected target address into MDR
-    //m_mdr = *((u_int8_t*)m_memory->read(m_exe_mem->pull_aluout(), sizeof(u_int8_t)));
+    m_mdr = *((u_int8_t*)sim.getMemorySystem()->read(m_aluout, sizeof(u_int8_t)));
 }
 
 void Inst_LB::write_back(ScoreboardSimulator& sim)

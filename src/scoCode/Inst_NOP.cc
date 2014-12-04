@@ -32,6 +32,11 @@ void Inst_NOP::decode(ScoreboardSimulator& sim)
     sim.setNOPCount(sim.getNOPCount() + 1);
 }
 
+void Inst_NOP::fetch_operands(ScoreboardSimulator& sim)
+{
+    //blank for NOP
+}
+
 void Inst_NOP::execute(ScoreboardSimulator& sim)
 {
     //blank for NOP

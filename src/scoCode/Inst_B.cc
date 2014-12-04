@@ -32,16 +32,20 @@ void Inst_B::decode(ScoreboardSimulator& sim)
     
     inst curr_inst = this->getInstruction();
     // Get signed label offset value and calculate newpc
-    int32_t value = decodeInstr(curr_inst, 24);
-    int32_t aluout = sim.getProgramCounter() + value * 4;
+    m_value = decodeInstr(curr_inst, 24);
 
-    // Branch (update PC)
-    sim.setProgramCounter(aluout);
+}
+
+void Inst_B::fetch_operands(ScoreboardSimulator& sim)
+{
+    //blank for B
 }
 
 void Inst_B::execute(ScoreboardSimulator& sim)
 {
-    //blank for B
+    int32_t aluout = sim.getProgramCounter() + m_value * 4;
+    // Branch (update PC)
+    sim.setProgramCounter(aluout);
 }
 
 void Inst_B::memory(ScoreboardSimulator& sim)

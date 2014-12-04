@@ -31,6 +31,7 @@ class Inst_ADDI : public Instruction
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);
+        virtual void fetch_operands(ScoreboardSimulator& sim);
         virtual void execute(ScoreboardSimulator& sim);
         virtual void memory(ScoreboardSimulator& sim);
         virtual void write_back(ScoreboardSimulator& sim);
@@ -39,8 +40,7 @@ class Inst_ADDI : public Instruction
         
     private:
         u_int8_t m_rdest, m_rsrc1;
-        int32_t m_value;
-        int32_t m_aluout;
+        int32_t m_value, m_aluout, m_opA;
         
 };
 

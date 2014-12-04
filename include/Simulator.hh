@@ -58,6 +58,7 @@ class Simulator : private Uncopyable
         virtual u_int32_t getInstructionCount() const;
         virtual u_int32_t getCycleCount() const;
         virtual u_int32_t getNOPCount() const;
+        virtual MemSys* getMemorySystem() const;
         
     protected:
         
