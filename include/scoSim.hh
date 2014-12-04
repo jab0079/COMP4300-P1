@@ -22,6 +22,9 @@
 
 #include "Simulator.hh"
 #include "Utilities.hh"
+#include "Instruction.hh"
+
+class Instruction;
 
 static const u_int32_t REGISTER_COUNT = 16;
 static const u_int32_t FLOATING_POINT_REGISTERS = 16;
@@ -33,6 +36,7 @@ class ScoreboardSimulator : public Simulator
         virtual ~ScoreboardSimulator();
         
         virtual void run();
+        virtual void issue();
         
         //Method to set the value of a register
         virtual void setRegister(const u_int8_t& regnum, const reg& val);
@@ -47,7 +51,20 @@ class ScoreboardSimulator : public Simulator
         virtual reg_d getFPRegister(const u_int8_t& regnum) const;
         //Method to determine whether or not simulator is in user mode
         virtual bool isInUserMode() const;
-                
+               
+//         static Instruction* create_instruction(const inst& instruction)
+//         {
+//             //parse opcode
+//             u_int8_t opcode = ((instruction & 0xFF000000) >> 24);
+//             switch (opcode)
+//             {
+//                 case SCOB_ADD:      return new Inst_ADD(instruction);
+//                 case SCOB_ADDI:     return new Inst_ADDI(instruction);
+//                 default: return 0x0;
+//             }
+//         }
+        
+        
     protected:
         
     private:
@@ -56,6 +73,7 @@ class ScoreboardSimulator : public Simulator
         reg_d m_register_d[FLOATING_POINT_REGISTERS]; //Utilities.hh
 
         bool m_usermode;
+        Instruction* m_fetch_buffer;
 
 };
 

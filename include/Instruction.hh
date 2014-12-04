@@ -21,10 +21,13 @@
  * 
  * 
  */
+
 #include "scoSim.hh"
 #include "MemSys.hh"
 #include "Utilities.hh"
 #include <bitset>
+
+class ScoreboardSimulator;
 
 class Instruction
 {

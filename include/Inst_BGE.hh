@@ -21,7 +21,6 @@
  */
 #include "Instruction.hh"
 #include "Utilities.hh"
-#include "scoSim.hh" //ScoreboardSimulator.hh
 
 class Inst_BGE : public Instruction
 {
