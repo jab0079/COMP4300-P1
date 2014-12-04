@@ -62,7 +62,7 @@ class Loader : private Uncopyable
         virtual inst parse2Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parse1Reg1Val(const u_int8_t& opcode, const std::string& inst_str);
         virtual inst parseRegisterOffset(const u_int8_t& opcode, const std::string& inst_str);
-        virtual u_int8_t parseRegister(std::string& inst_str);
+        virtual u_int32_t parseRegister(std::string& inst_str);
         
     private:
         MemSys* m_memory;

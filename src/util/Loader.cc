@@ -416,24 +416,25 @@ inst Loader::parseRegisterOffset(const u_int8_t& opcode, const std::string& inst
 }
 
 //inst_str will be modified!
-u_int8_t Loader::parseRegister(std::string& inst_str)
+u_int32_t Loader::parseRegister(std::string& inst_str)
 {
     u_int32_t reg_loc = inst_str.find("$");
     bool isFP = false;
-    if (inst_str.at(reg_loc) + 1 == 'f')
+    if (inst_str.at(reg_loc + 1) == (char)'f')
     {
         isFP = true;
         reg_loc++; //skip the f
     }
     u_int32_t comma_loc = inst_str.find(",");
     std::string reg_str = inst_str.substr(reg_loc+1,comma_loc-reg_loc-1);
-    u_int8_t register_num = 0;
+    u_int32_t register_num = 0;
     std::stringstream s;
     s.clear();
     s << reg_str;
     s >> register_num;
-    if (isFP)
-        register_num + 32; //skip 32 non floating point registers
+    if (isFP) {
+        register_num += 16; //skip 16 non floating point registers
+    }
     inst_str = inst_str.substr(comma_loc+1); //after the comma
     return register_num;
 }

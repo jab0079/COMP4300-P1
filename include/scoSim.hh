@@ -23,8 +23,8 @@
 #include "Simulator.hh"
 #include "Utilities.hh"
 
-static const u_int32_t REGISTER_COUNT = 32;
-static const u_int32_t FLOATING_POINT_REGISTERS = 32;
+static const u_int32_t REGISTER_COUNT = 16;
+static const u_int32_t FLOATING_POINT_REGISTERS = 16;
 
 class ScoreboardSimulator : public Simulator
 {

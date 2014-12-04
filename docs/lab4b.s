@@ -1,5 +1,5 @@
 
-#.text
+.text
 
 #main:
     li $5, 0x07 #7

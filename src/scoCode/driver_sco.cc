@@ -35,7 +35,8 @@ int main(int argc, char* argv[])
     //Load program into memory
     Loader* loader = new Loader(memory);
     std::cout << "Loading source into memory..." << std::endl;
-    addr setpc = loader->load(argv[1], Loader::SCOB_ISA);
+    std::string forNow = "/home/adam/COMP4300-P1.git/docs/lab4b.s";
+    addr setpc = loader->load(forNow, Loader::SCOB_ISA);
     
     //Put a null sentinel value at the end to buffer
     //if a syscall is at the end of file, it can read this
