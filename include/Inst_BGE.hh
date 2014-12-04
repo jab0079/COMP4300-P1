@@ -39,8 +39,6 @@ class Inst_BGE : public Instruction
     protected:
         
     private:
-        u_int8_t m_rsrc1, m_rsrc2;
-        int32_t m_value, m_opA, m_opB;
         
 };
 

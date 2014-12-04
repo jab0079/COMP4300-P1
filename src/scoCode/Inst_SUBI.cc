@@ -32,7 +32,7 @@ void Inst_SUBI::decode(ScoreboardSimulator& sim)
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
-    m_rdest = (curr_inst & 0x00F80000) >> 19;
+    m_dest = (curr_inst & 0x00F80000) >> 19;
     // Get r_src1 number
     m_rsrc1 = (curr_inst & 0x0007C000) >> 14;
     // Get signed immediate value
@@ -57,7 +57,7 @@ void Inst_SUBI::memory(ScoreboardSimulator& sim)
 
 void Inst_SUBI::write_back(ScoreboardSimulator& sim)
 {
-    sim.setRegister(m_rdest, m_aluout);
+    sim.setRegister(m_dest, m_aluout);
 }
 
 

@@ -35,30 +35,32 @@ void Inst_SYSCALL::decode(ScoreboardSimulator& sim)
     {
         case SYSCALL_PRINT_STR:
         {
-            /*u_int8_t letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t))); // Read first char
+            u_int8_t letter = *((u_int8_t*)sim.getMemorySystem()
+                ->read(str_addr, sizeof(u_int8_t))); // Read first char
             std::string str;
             str_addr++;
-            while (letter != '\0')      // Print each char in the string until NUL terminator
+            while (letter != '\0') // Print each char in the string until NUL terminator
             {
-            str += letter;
-            //letter = *((u_int8_t*)m_memory->read(str_addr, sizeof(u_int8_t)));
-            str_addr++;
+                str += letter;
+                letter = *((u_int8_t*)sim.getMemorySystem()
+                    ->read(str_addr, sizeof(u_int8_t)));
+                str_addr++;
             } 
-            std::cout << str << std::endl; */
+            std::cout << str << std::endl;
         }
         break;
     
         case SYSCALL_READ_STR:
         {
-            /*std::string input;
+            std::string input;
             std::cin >> input;
-            for (int i = 0; i < input.length(); i++)    // Write each char to memory
+            for (u_int32_t i = 0; i < input.length(); i++)    // Write each char to memory
             {
-                m_memory->write(str_addr, &input[i], sizeof(u_int8_t));
+                sim.getMemorySystem()->write(str_addr, &input[i], sizeof(u_int8_t));
                 str_addr++;
             }
             u_int8_t null_c = '\0';             // Add NUL terminator
-            m_memory->write(str_addr, &null_c, sizeof(u_int8_t));*/
+            sim.getMemorySystem()->write(str_addr, &null_c, sizeof(u_int8_t));
         }
         break;
         

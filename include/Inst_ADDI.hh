@@ -39,8 +39,6 @@ class Inst_ADDI : public Instruction
     protected:
         
     private:
-        u_int8_t m_rdest, m_rsrc1;
-        int32_t m_value, m_aluout, m_opA;
         
 };
 

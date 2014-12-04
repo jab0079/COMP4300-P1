@@ -39,8 +39,6 @@ class Inst_LI : public Instruction
     protected:
         
     private:
-        u_int8_t m_rdest;
-        int32_t m_value;
         
 };
 

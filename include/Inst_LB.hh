@@ -39,10 +39,6 @@ class Inst_LB : public Instruction
     protected:
         
     private:
-        u_int8_t m_rdest, m_rsrc1;
-        int32_t m_aluout, m_opA;
-        int32_t m_value;
-        u_int8_t m_mdr;
         
 };
 

@@ -39,7 +39,7 @@ class Inst_B : public Instruction
     protected:
         
     private:
-        int32_t m_value;
+        
 };
 
 

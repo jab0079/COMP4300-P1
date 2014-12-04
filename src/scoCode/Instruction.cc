@@ -24,8 +24,25 @@ Instruction::Instruction(inst the_instruction)
 
 Instruction::~Instruction() {}
 
+Instruction::Instruction(const Instruction& other)
+{
+    m_dest = other.m_dest;
+    m_rsrc1 = other.m_rsrc1;
+    m_rsrc2 = other.m_rsrc2;
+    m_mdr = other.m_mdr;
+    m_mdr_fp = other.m_mdr_fp;
+    m_aluout = other.m_aluout;
+    m_opA = other.m_opA;
+    m_opB = other.m_opB;
+    m_value = other.m_value;
+    m_aluout_fp = other.m_aluout_fp;
+    m_opA_fp = other.m_opA_fp;
+    m_opB_fp = other.m_opB_fp;
+    m_instruction = other.m_instruction;
+}
+
 inst Instruction::getInstruction() const
-{return m_instruction; }
+{ return m_instruction; }
 
 int32_t Instruction::decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits)
 {
@@ -40,4 +57,32 @@ int32_t Instruction::decodeInstr(const u_int32_t& instr, const u_int8_t& num_bit
     
     return val.to_ulong();
 }
+
+u_int8_t Instruction::getDestinationRegister() const
+{ return m_dest; }
+u_int8_t Instruction::getSourceRegister1() const
+{ return m_rsrc1; }
+u_int8_t Instruction::getSourceRegister2() const
+{ return m_rsrc2; }
+u_int8_t Instruction::getMDR() const
+{ return m_mdr; }
+float Instruction::getMDR_FP() const
+{ return m_mdr_fp; }
+int32_t Instruction::getALUOUT() const
+{ return m_aluout; }
+float Instruction::getALUOUT_FP() const
+{ return m_aluout_fp; }
+int32_t Instruction::getOPA() const
+{ return m_opA; }
+float Instruction::getOPA_FP() const
+{ return m_opA_fp; }
+int32_t Instruction::getOPB() const
+{ return m_opB; }
+float Instruction::getOPB_FP() const
+{ return m_opB_fp; }
+int32_t Instruction::getValue() const
+{ return m_value; }
+
+
+
 

@@ -32,7 +32,7 @@ void Inst_LA::decode(ScoreboardSimulator& sim)
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
-    m_rdest = (curr_inst & 0x00F80000) >> 19;
+    m_dest = (curr_inst & 0x00F80000) >> 19;
     // Get signed label offset value
     m_value = decodeInstr(curr_inst, 19);
 }
@@ -55,7 +55,7 @@ void Inst_LA::memory(ScoreboardSimulator& sim)
 void Inst_LA::write_back(ScoreboardSimulator& sim)
 {
     // Load signed label offset address into r_dest
-    sim.setRegister(m_rdest, m_value);
+    sim.setRegister(m_dest, m_value);
 }
 
 

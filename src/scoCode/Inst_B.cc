@@ -43,9 +43,9 @@ void Inst_B::fetch_operands(ScoreboardSimulator& sim)
 
 void Inst_B::execute(ScoreboardSimulator& sim)
 {
-    int32_t aluout = sim.getProgramCounter() + m_value * 4;
+    m_aluout = sim.getProgramCounter() + m_value * 4;
     // Branch (update PC)
-    sim.setProgramCounter(aluout);
+    sim.setProgramCounter(m_aluout);
 }
 
 void Inst_B::memory(ScoreboardSimulator& sim)

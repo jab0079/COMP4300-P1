@@ -32,7 +32,7 @@ void Inst_LB::decode(ScoreboardSimulator& sim)
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
-    m_rdest = (curr_inst & 0x00F80000) >> 19;
+    m_dest = (curr_inst & 0x00F80000) >> 19;
     // Get r_src1 number
     m_rsrc1 = (curr_inst & 0x0007C000) >> 14;
     // Get signed offset value
@@ -59,7 +59,7 @@ void Inst_LB::memory(ScoreboardSimulator& sim)
 void Inst_LB::write_back(ScoreboardSimulator& sim)
 {
     // Write MDR to r_dest
-    sim.setRegister(m_rdest, m_mdr);
+    sim.setRegister(m_dest, m_mdr);
 }
 
 

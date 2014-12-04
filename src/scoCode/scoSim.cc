@@ -31,9 +31,11 @@ ScoreboardSimulator::~ScoreboardSimulator()
 
 void ScoreboardSimulator::run()
 {
-    std::cout << "\tStarting Pipeline..." << std::endl;
+    std::cout << "\tStarting Scoreboard..." << std::endl;
+    
+    
 
-    std::cout << "\tEnding Pipeline..." << std::endl;
+    std::cout << "\tEnding Scoreboard..." << std::endl;
 }
 
 /* SETS ---------------------------------------------------------------------*/
@@ -47,6 +49,9 @@ void ScoreboardSimulator::setFPRegister(const u_int8_t& regnum, const reg_d& val
 {
     if (regnum >= 0 && regnum < FLOATING_POINT_REGISTERS)
         m_register_d[regnum] = val;
+    
+    if (regnum >= FLOATING_POINT_REGISTERS)
+        setFPRegister((regnum - FLOATING_POINT_REGISTERS), val);
 }
 
 void ScoreboardSimulator::setUserMode(const bool& isInUserMode)
@@ -59,7 +64,15 @@ reg ScoreboardSimulator::getRegister(const u_int8_t& regnum) const
 { return m_register[regnum]; }
 
 reg_d ScoreboardSimulator::getFPRegister(const u_int8_t& regnum) const
-{ return m_register_d[regnum]; }
+{ 
+    if (regnum >= 0 && regnum < FLOATING_POINT_REGISTERS)
+         return m_register_d[regnum];
+    
+    if (regnum >= FLOATING_POINT_REGISTERS)
+         return getFPRegister((regnum - FLOATING_POINT_REGISTERS));
+    
+    return -1;
+}
 
 bool ScoreboardSimulator::isInUserMode() const
 { return m_usermode; }

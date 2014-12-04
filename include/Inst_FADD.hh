@@ -39,8 +39,6 @@ class Inst_FADD : public Instruction
     protected:
         
     private:
-        u_int8_t m_dest, m_rsrc1, m_rsrc2;
-        float m_opA, m_opB, m_aluout;
         
 };
 

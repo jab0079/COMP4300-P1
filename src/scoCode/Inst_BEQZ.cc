@@ -45,10 +45,10 @@ void Inst_BEQZ::fetch_operands(ScoreboardSimulator& sim)
 
 void Inst_BEQZ::execute(ScoreboardSimulator& sim)
 {
-    int32_t aluout = sim.getProgramCounter() + m_value * 4;
+    m_aluout = sim.getProgramCounter() + m_value * 4;
     if (m_opA == 0)
     { // Branch (update PC), if equals zero
-        sim.setProgramCounter(aluout);
+        sim.setProgramCounter(m_aluout);
     }
 }
 

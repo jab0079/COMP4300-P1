@@ -39,8 +39,6 @@ class Inst_BEQZ : public Instruction
     protected:
         
     private:
-        u_int8_t m_rsrc1;
-        int32_t m_value, m_opA;
         
 };
 

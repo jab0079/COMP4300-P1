@@ -47,10 +47,10 @@ void Inst_BGE::fetch_operands(ScoreboardSimulator& sim)
 
 void Inst_BGE::execute(ScoreboardSimulator& sim)
 {
-    int32_t aluout = sim.getProgramCounter() + m_value * 4;
+    m_aluout = sim.getProgramCounter() + m_value * 4;
     if (m_opA >= m_opB)
     { // Branch (update PC), if value of r_src1(op_A) >= r_src2(op_B)
-        sim.setProgramCounter(aluout);
+        sim.setProgramCounter(m_aluout);
     }
 }
 

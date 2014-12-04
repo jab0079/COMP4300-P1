@@ -33,7 +33,6 @@ void Inst_SD::decode(ScoreboardSimulator& sim)
 
     // Get r_dest number
     m_rsrc1 = (curr_inst & 0x00F80000) >> 19;
-    m_rsrc1 -= 16;
     // Get r_src1 number
     m_rsrc2 = (curr_inst & 0x0007C000) >> 14;
     // Get signed offset value
@@ -42,7 +41,7 @@ void Inst_SD::decode(ScoreboardSimulator& sim)
 
 void Inst_SD::fetch_operands(ScoreboardSimulator& sim)
 {
-    m_opA = (float)sim.getFPRegister(m_rsrc1);
+    m_opA_fp = (float)sim.getFPRegister(m_rsrc1);
     m_opB = (int32_t)sim.getRegister(m_rsrc2);
 }
 
@@ -55,7 +54,7 @@ void Inst_SD::execute(ScoreboardSimulator& sim)
 void Inst_SD::memory(ScoreboardSimulator& sim)
 {
     // Write memory at corrected target address into MDR
-    bool result = *((float*)sim.getMemorySystem()->write(m_aluout, &m_opA ,sizeof(float)));
+    bool result = *((float*)sim.getMemorySystem()->write(m_aluout, &m_opA_fp ,sizeof(float)));
 }
 
 void Inst_SD::write_back(ScoreboardSimulator& sim)
