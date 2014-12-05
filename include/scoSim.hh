@@ -37,6 +37,7 @@ class ScoreboardSimulator : public Simulator
         
         virtual void run();
         virtual void issue();
+        virtual void read_operands();
         
         //Method to set the value of a register
         virtual void setRegister(const u_int8_t& regnum, const reg& val);
@@ -51,19 +52,6 @@ class ScoreboardSimulator : public Simulator
         virtual reg_d getFPRegister(const u_int8_t& regnum) const;
         //Method to determine whether or not simulator is in user mode
         virtual bool isInUserMode() const;
-               
-//         static Instruction* create_instruction(const inst& instruction)
-//         {
-//             //parse opcode
-//             u_int8_t opcode = ((instruction & 0xFF000000) >> 24);
-//             switch (opcode)
-//             {
-//                 case SCOB_ADD:      return new Inst_ADD(instruction);
-//                 case SCOB_ADDI:     return new Inst_ADDI(instruction);
-//                 default: return 0x0;
-//             }
-//         }
-        
         
     protected:
         

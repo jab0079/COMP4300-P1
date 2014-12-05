@@ -82,10 +82,10 @@ void ScoreboardSimulator::run()
         //TODO: print scoreboard
         
         this->issue();
+        this->read_operands();
         
     }
     
-
     std::cout << "\tEnding Scoreboard..." << std::endl;
 }
 
@@ -95,9 +95,38 @@ void ScoreboardSimulator::issue()
     { //nothing in the fetch buffer, read from PC
         inst next_inst = 0;
         next_inst = *((inst*)m_memory->read(m_pc,sizeof(inst)));
-        Instruction* next = create_instruction(next_inst);
+        //Go ahead and put it in the fetch buffer. If
+        //we don't stall, then we take it out...
+        m_fetch_buffer = create_instruction(next_inst);
+    }
+    
+    //TODO: check if functional unit is busy from scoreboard
+    
+    //TODO: check WAW hazard from scoreboard
+    
+    bool stall = true; //until todos above are done
+    
+    //if we need to stall, keep whatever is in the fetch
+    //buffer inside the buffer. Otherwise, take out the
+    //item in the fetch buffer and issue it to a functional unit
+    if (!stall)
+    {
+        //TODO: issue to functional unit
+        
+        SAFE_DELETE(m_fetch_buffer); //remove from buffer
     }
         
+}
+
+void ScoreboardSimulator::read_operands()
+{
+    //TODO: for each functional unit, ask scoreboard which stage
+    //the functional unit is in.
+    
+    //TODO: if the functional unit is in the read operands stage,
+    //ask scoreboard whether both operands are ready.
+    
+    //TODO: if both are ready, read the operands. Otherwise, skip   
 }
 
 /* SETS ---------------------------------------------------------------------*/
