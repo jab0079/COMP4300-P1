@@ -46,6 +46,8 @@ static const u_int8_t STK_INST_MULT = 0x03;
 static const u_int8_t STK_INST_ADD = 0x04;
 static const u_int8_t STK_INST_END = 0x05;
 
+static const u_int32_t FU_COUNT = 4;
+
 enum GPR_INST_SET {
     GPR_ADD,    //1
     GPR_ADDI,   //2
@@ -95,6 +97,14 @@ enum SYSCALL_CODES {
     SYSCALL_READ_STR,
     SYSCALL_EXIT,
     SYSCALL_PRINT_INT
+};
+
+enum SCO_CYCLE
+{
+    SCO_ISSUE,
+    SCO_READ_OP,
+    SCO_EXE_COMPLETE,
+    SCO_WRITE_RESULT,
 };
 
 static const u_int8_t GPR_INST_SET_VALS[] =
