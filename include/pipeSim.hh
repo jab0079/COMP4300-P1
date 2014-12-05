@@ -37,7 +37,7 @@
 #include "Latch_EXE_MEM.hh"
 #include "Latch_MEM_WB.hh"
 
-static const u_int32_t REGISTER_COUNT = 32;
+// static const u_int32_t REGISTER_COUNT = 32;
 
 class Pipeline : public Simulator
 {

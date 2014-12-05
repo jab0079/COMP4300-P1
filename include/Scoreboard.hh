@@ -21,10 +21,11 @@
 
 #include <iostream>
 #include <vector>
-#include "scoSim.hh"
 #include "Utilities.hh"
 #include "Instruction.hh"
 #include "FunctionalUnit.hh"
+
+class Instruction;
 
 static const u_int32_t FU_COUNT = 4;
 
@@ -81,13 +82,13 @@ class Scoreboard
        
         //Members -------------------------------------------------------------
        
-      enum SCO_CYCLE
-        {
-          SCO_ISSUE,
-          SCO_READ_OP,
-          SCO_EXE_COMPLETE,
-          SCO_WRITE_RESULT,
-        };
+//       enum SCO_CYCLE
+//         {
+//           SCO_ISSUE,
+//           SCO_READ_OP,
+//           SCO_EXE_COMPLETE,
+//           SCO_WRITE_RESULT,
+//         };
         
     private:
         //std::vector<FunctionalUnit*> funct_units;

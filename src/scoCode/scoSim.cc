@@ -112,20 +112,8 @@ void ScoreboardSimulator::issue()
     
     m_fetch_buffer->decode(); //decode instruction in buffer
     
+    FU_ID fu = getRespectiveFU(*m_fetch_buffer);
     //TODO: check if functional unit is busy from scoreboard
-    /*Thought:  
-    *       We need a way to figure out which functional
-    *       unit to use for each instruction.
-    * Possible Solutions:
-    *       1. Scoreboard has function that computes the correct
-    *       functional unit id (FU_ID) for the function
-    *       2. The functional units themselves know which set of
-    *       instructions they can handle
-    *       3. The separate instructions on instantiation know
-    *       which functional unit they go to. We can have a
-    *       variable in the instructions that specify which
-    *       functional unit ID they correspond to. 
-    */
     
     //TODO: check WAW hazard from scoreboard
     

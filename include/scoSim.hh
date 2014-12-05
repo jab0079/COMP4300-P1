@@ -24,13 +24,12 @@
 #include "Utilities.hh"
 #include "Instruction.hh"
 #include "FunctionalUnit.hh"
+#include "Scoreboard.hh"
 
 
 class FunctionalUnit;
 class Instruction;
-
-static const u_int32_t REGISTER_COUNT = 16;
-static const u_int32_t FLOATING_POINT_REGISTERS = 16;
+class Scoreboard;
 
 class ScoreboardSimulator : public Simulator
 {
@@ -65,6 +64,8 @@ class ScoreboardSimulator : public Simulator
         reg m_register[REGISTER_COUNT]; //Utilities.hh
         reg_d m_register_d[FLOATING_POINT_REGISTERS]; //Utilities.hh
 
+        Scoreboard* m_scob;
+        
         FunctionalUnit* m_integer_fu;
         FunctionalUnit* m_fpadd_fu;
         FunctionalUnit* m_fpmult_fu;

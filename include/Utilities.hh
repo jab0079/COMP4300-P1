@@ -110,6 +110,10 @@ static const u_int8_t SCOB_INST_SET_VALS[] =
     0x11
 };
 
+static const u_int32_t REGISTER_COUNT = 16;
+static const u_int32_t FLOATING_POINT_REGISTERS = 16;
+
+
 typedef u_int32_t reg; //32-bit registers
 typedef float reg_d; //32-bit float registers
 typedef u_int32_t addr;
