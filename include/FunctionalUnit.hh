@@ -40,9 +40,12 @@ class FunctionalUnit
         FunctionalUnit(const FunctionalUnit& other);
         virtual ~FunctionalUnit();
         
+        virtual FU_ID getFU_ID() const;
         
     protected:
     private:
+        
+        FU_ID m_id;
         
 //         //Busy, Op, Fi, Fj, Fk, Qj, Qk, Rj, Rk
 //         bool m_busy;    //Is functional unit busy 

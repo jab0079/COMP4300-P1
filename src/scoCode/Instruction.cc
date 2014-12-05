@@ -20,7 +20,12 @@
 
 Instruction::Instruction(inst the_instruction)
 : m_instruction(the_instruction)
-{}
+{
+    //decode opcode for ease of usage
+    //(not technically decoded here, we just the instruction
+    //to have it so we can retrieve it later in other components)
+    m_opcode = ((the_instruction & 0xFF000000) >> 24);
+}
 
 Instruction::~Instruction() {}
 
@@ -39,10 +44,13 @@ Instruction::Instruction(const Instruction& other)
     m_opA_fp = other.m_opA_fp;
     m_opB_fp = other.m_opB_fp;
     m_instruction = other.m_instruction;
+    m_opcode = other.m_opcode;
 }
 
 inst Instruction::getInstruction() const
 { return m_instruction; }
+u_int8_t Instruction::getOpCode() const
+{ return m_opcode; }
 
 int32_t Instruction::decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits)
 {

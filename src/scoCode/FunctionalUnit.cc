@@ -17,11 +17,17 @@
  */
 #include "FunctionalUnit.hh"
 
-FunctionalUnit::FunctionalUnit()
+FunctionalUnit::FunctionalUnit(FU_ID fu_type)
+: m_id(fu_type)
 {}
 
 FunctionalUnit::FunctionalUnit(const FunctionalUnit& other)
-{}
+: m_id(other.m_id)
+{
+}
 
 FunctionalUnit::~FunctionalUnit()
 {}
+
+FU_ID FunctionalUnit::getFU_ID() const
+{ return m_id; }

@@ -44,6 +44,7 @@ class Instruction
         virtual void write_back(ScoreboardSimulator& sim) = 0;
         
         virtual inst getInstruction() const;
+        virtual u_int8_t getOpCode() const;
         virtual u_int8_t getDestinationRegister() const;
         virtual u_int8_t getSourceRegister1() const;
         virtual u_int8_t getSourceRegister2() const;
@@ -79,6 +80,7 @@ class Instruction
         
     private:
         inst m_instruction;
+        u_int8_t m_opcode;
         
 };
 
