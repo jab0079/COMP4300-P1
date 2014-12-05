@@ -115,17 +115,22 @@ void ScoreboardSimulator::issue()
     FU_ID fu = getRespectiveFU(*m_fetch_buffer);
     
     //Check if functional unit is busy
-    bool stallFUBusy = m_scob->check_FU_busy(fu, *m_fetch_buffer);
+    bool stallFUBusy = m_scob->check_FU_busy(fu);
     
     //Check WAW hazard from scoreboard
-    bool stallWAW = m_scob->check_WAW(fu, m_fetch_buffer->getDestinationRegister());
-    
-    
+    bool stallWAW = m_scob->check_WAW(m_fetch_buffer->getDestinationRegister());
+     
     //if we need to stall, keep whatever is in the fetch
     //buffer inside the buffer. Otherwise, take out the
     //item in the fetch buffer and issue it to a functional unit
     if (!stallFUBusy && !stallWAW)
     {
+        //Sigh.
+        m_fetch_buffer->setInstr_id(this->getInstructionCount());
+        //Set scoreboard statuses
+        m_scob->add_instr_status(m_fetch_buffer->getInstr_id(), this->getCycleCount());
+        m_scob->set_fu_status(fu, *m_fetch_buffer);
+        m_scob->set_reg_result(m_fetch_buffer->getDestinationRegister(), fu);
         switch (fu)
         {
             case FU_INTEGER:
@@ -144,23 +149,29 @@ void ScoreboardSimulator::issue()
                 break;
         }
         SAFE_DELETE(m_fetch_buffer); //remove from buffer
-    }
-    else
-    {
-        
-    }
-        
+    }   
 }
 
 void ScoreboardSimulator::read_operands()
 {
-    //TODO: for each functional unit, ask scoreboard which stage
-    //the functional unit is in.
+    read_operands_helper(m_integer_fu);
+    read_operands_helper(m_fpadd_fu);
+    read_operands_helper(m_fpmult_fu);
+    read_operands_helper(m_mem_fu);
     
-    //TODO: if the functional unit is in the read operands stage,
-    //ask scoreboard whether both operands are ready.
-    
-    //TODO: if both are ready, read the operands. Otherwise, skip   
+}
+
+void ScoreboardSimulator::read_operands_helper(FunctionalUnit* fu)
+{
+    FunctionalUnitStatus fus = m_scob->get_fu_status(fu->getFU_ID());
+    //Have the functional unit update it's status in scoreboard
+    if (fus.src1_rdy && fus.src2_rdy)
+    {
+        fu->read_operands();
+        m_scob->set_instr_status(fu->getInstr_id(), 
+                                SCO_READ_OP, 
+                                this->getCycleCount());
+    }
 }
 
 /* SETS ---------------------------------------------------------------------*/

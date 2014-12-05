@@ -59,6 +59,7 @@ class Instruction
         virtual int32_t getOPB() const;
         virtual float getOPB_FP() const;
         virtual int32_t getValue() const;
+        virtual void setInstr_id(const u_int32_t& id);
         virtual u_int32_t getInstr_id() const;
         
     protected:
@@ -76,7 +77,6 @@ class Instruction
         int32_t m_aluout, m_opA, m_opB, m_value;
         float m_aluout_fp, m_opA_fp, m_opB_fp;
         
-        //TODO set these when creating instr (m_instr_id = m_ic?)
         u_int32_t m_instr_id;
         
     private:

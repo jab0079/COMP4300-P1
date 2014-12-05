@@ -39,6 +39,7 @@ class FunctionalUnit
         virtual void execute();
         virtual void setFU_ID(FU_ID fu_type);
         virtual FU_ID getFU_ID() const;
+        virtual u_int32_t getInstr_id() const;
         
     protected:
         
@@ -48,18 +49,7 @@ class FunctionalUnit
         Instruction* m_instruction;
         u_int32_t m_stagesLeft;
         u_int32_t m_numstages;
-
         
-//         //Busy, Op, Fi, Fj, Fk, Qj, Qk, Rj, Rk
-//         bool m_busy;    //Is functional unit busy 
-//         bool m_rj;      //Is left operand ready   
-//         bool m_rk;      //Is right operand ready
-//         u_int8_t m_op;  //Operation
-//         u_int8_t m_fi;  //Destination
-//         u_int8_t m_fj;  //Left Operand
-//         u_int8_t m_fk;  //Right Operand
-//         FU_ID m_qj;     //Functional Unit producing left operand
-//         FU_ID m_qk;     //Functional Unit producing right operand
 };
 
 #endif //FUNCTIONAL_UNIT_HH

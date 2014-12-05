@@ -59,7 +59,8 @@ class ScoreboardSimulator : public Simulator
         
     private:
         FU_ID getRespectiveFU(const Instruction& i) const;
-        
+        void read_operands_helper(FunctionalUnit* fu);
+
         //Registers
         reg m_register[REGISTER_COUNT]; //Utilities.hh
         reg_d m_register_d[FLOATING_POINT_REGISTERS]; //Utilities.hh

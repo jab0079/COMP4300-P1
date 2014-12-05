@@ -57,3 +57,9 @@ void FunctionalUnit::setFU_ID(FU_ID fu_type)
 { m_id = fu_type; }
 FU_ID FunctionalUnit::getFU_ID() const
 { return m_id; }
+u_int32_t FunctionalUnit::getInstr_id() const
+{ 
+    if (m_instruction != 0x0) 
+        return m_instruction->getInstr_id(); 
+    return -1;
+}
