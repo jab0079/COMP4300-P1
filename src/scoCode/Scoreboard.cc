@@ -75,6 +75,21 @@ bool Scoreboard::check_WAW(u_int8_t r_dest)
   return false;
 }
 
+bool Scoreboard::check_WAR(FU_ID fu_id, u_int8_t r_dest)
+{
+  // check if any other funct unit has the same r_dest as a src reg
+  u_int32_t i;
+  for(i = 0; i < FU_COUNT; i++)
+  {
+    if (fu_status[i].src1 == r_dest || fu_status[i].src2 == r_dest)
+      if (i != fu_id)
+        return true;
+  }
+  
+  // otherwise return false for no hazard
+  return false;
+}
+
 bool Scoreboard::check_reg_result(u_int8_t r_dest_num)
 {
   // if reg_status not set, return true since reg is available
