@@ -67,6 +67,57 @@ Scoreboard::~Scoreboard()
     
 }
 
+void Scoreboard::print_scoreboard()
+{
+  u_int32_t i;
+  
+  std::cout << "SCOREBOARD----------------------------\n" 
+            << "Instruction Status--------------------\n" 
+            << "Instr_ID\tCurr_Status\tISSUE\tREAD_OP\tEXE_COMP\tWRITE_RES" << std::endl;
+  for (i = 0; i < instr_status.size(); i++)
+  {
+    InstructionStatus instr_stat = instr_status.at(i);
+    std::cout << instr_stat.instr_id << "\t"
+    << instr_stat.curr_status << "\t"
+    << instr_stat.issue << "\t"
+    << instr_stat.read_op << "\t"
+    << instr_stat.exe_complete << "\t"
+    << instr_stat.write_result <<"\t" << std::endl;
+  }
+
+  std::cout << "\n\nFU Status--------------------\n" 
+            << "FU_ID\tBUSY\tInstr_ID\tR_DEST\tR_SRC1\tR_SRC2\tFU_SRC1\tFU_SRC2\tSRC1_RDY?\tSRC2_RDY?" << std::endl;
+  for (i = 0; i < FU_COUNT; i++)
+  {
+    FunctionalUnitStatus fu_stat = fu_status[i];
+    std::cout << i << "\t"
+    << fu_stat.busy << "\t"
+    << fu_stat.instr_id << "\t"
+    << fu_stat.dest << "\t"
+    << fu_stat.src1 << "\t"
+    << fu_stat.src2 << "\t"
+    << fu_stat.fu_src1 << "\t"
+    << fu_stat.fu_src2 << "\t"
+    << fu_stat.src1_rdy << "\t"
+    << fu_stat.src2_rdy << "\t" << std::endl;
+  }
+  
+  std::cout << "\n\nRegister Result Status--------------------\n" 
+            << "FU_IDs for General Registers $0-$15" << std::endl;
+  for(i = 0; i < REGISTER_COUNT; i++)
+  {
+    std::cout << reg_status[i] << "\t";
+  }
+  
+  std::cout << "\n\nFU_IDs for FP Registers $16-$31" << std::endl;
+  for(i = REGISTER_COUNT; i < REGISTER_COUNT + FLOATING_POINT_REGISTERS; i++)
+  {
+    std::cout << reg_status[i] << "\t";
+  }
+  
+  std::cout << "\n\n" << std::endl;
+}
+
 void Scoreboard::add_instr_status(const u_int32_t& id, const int32_t& cycle)
 {
   InstructionStatus instr_stat;

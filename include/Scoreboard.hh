@@ -60,6 +60,8 @@ class Scoreboard
         virtual ~Scoreboard();
         
         // Methods ------------------------------------------------------------
+        virtual void print_scoreboard();
+        
         virtual void add_instr_status(const u_int32_t& id, const int32_t& cycle); 
         
         virtual bool check_FU_busy(FU_ID fu_id);
