@@ -25,6 +25,12 @@ Inst_SYSCALL::Inst_SYSCALL(inst the_instruction)
 
 Inst_SYSCALL::~Inst_SYSCALL() {}
 
+Inst_SYSCALL::Inst_SYSCALL(const Inst_SYSCALL& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_SYSCALL::clone() const { return new Inst_SYSCALL(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_SYSCALL::decode(ScoreboardSimulator& sim)
 {

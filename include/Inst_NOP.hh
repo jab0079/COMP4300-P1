@@ -26,7 +26,10 @@ class Inst_NOP : public Instruction
 {
     public:
         Inst_NOP(inst the_instruction);
+        Inst_NOP(const Inst_NOP& other);
         virtual ~Inst_NOP();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

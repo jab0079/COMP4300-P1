@@ -26,7 +26,10 @@ class Inst_ADDI : public Instruction
 {
     public:
         Inst_ADDI(inst the_instruction);
+        Inst_ADDI(const Inst_ADDI& other);
         virtual ~Inst_ADDI();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

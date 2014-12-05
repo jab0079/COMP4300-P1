@@ -26,7 +26,10 @@ class Inst_FADD : public Instruction
 {
     public:
         Inst_FADD(inst the_instruction);
+        Inst_FADD(const Inst_FADD& other);
         virtual ~Inst_FADD();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

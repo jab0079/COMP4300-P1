@@ -26,7 +26,10 @@ class Inst_FSUB : public Instruction
 {
     public:
         Inst_FSUB(inst the_instruction);
+        Inst_FSUB(const Inst_FSUB& other);
         virtual ~Inst_FSUB();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

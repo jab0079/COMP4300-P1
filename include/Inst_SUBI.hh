@@ -26,7 +26,10 @@ class Inst_SUBI : public Instruction
 {
     public:
         Inst_SUBI(inst the_instruction);
+        Inst_SUBI(const Inst_SUBI& other);
         virtual ~Inst_SUBI();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

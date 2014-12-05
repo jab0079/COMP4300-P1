@@ -25,6 +25,12 @@ Inst_BNE::Inst_BNE(inst the_instruction)
 
 Inst_BNE::~Inst_BNE() {}
 
+Inst_BNE::Inst_BNE(const Inst_BNE& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_BNE::clone() const { return new Inst_BNE(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_BNE::decode(ScoreboardSimulator& sim)
 {

@@ -25,6 +25,12 @@ Inst_BEQZ::Inst_BEQZ(inst the_instruction)
 
 Inst_BEQZ::~Inst_BEQZ() {}
 
+Inst_BEQZ::Inst_BEQZ(const Inst_BEQZ& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_BEQZ::clone() const { return new Inst_BEQZ(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_BEQZ::decode(ScoreboardSimulator& sim)
 {

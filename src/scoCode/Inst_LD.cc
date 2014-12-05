@@ -25,6 +25,12 @@ Inst_LD::Inst_LD(inst the_instruction)
 
 Inst_LD::~Inst_LD() {}
 
+Inst_LD::Inst_LD(const Inst_LD& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_LD::clone() const { return new Inst_LD(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_LD::decode(ScoreboardSimulator& sim)
 {

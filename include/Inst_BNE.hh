@@ -26,7 +26,10 @@ class Inst_BNE : public Instruction
 {
     public:
         Inst_BNE(inst the_instruction);
+        Inst_BNE(const Inst_BNE& other);
         virtual ~Inst_BNE();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

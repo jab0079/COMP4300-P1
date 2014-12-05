@@ -25,6 +25,12 @@ Inst_BGE::Inst_BGE(inst the_instruction)
 
 Inst_BGE::~Inst_BGE() {}
 
+Inst_BGE::Inst_BGE(const Inst_BGE& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_BGE::clone() const { return new Inst_BGE(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_BGE::decode(ScoreboardSimulator& sim)
 {

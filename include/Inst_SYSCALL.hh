@@ -26,7 +26,10 @@ class Inst_SYSCALL : public Instruction
 {
     public:
         Inst_SYSCALL(inst the_instruction);
+        Inst_SYSCALL(const Inst_SYSCALL& other);
         virtual ~Inst_SYSCALL();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

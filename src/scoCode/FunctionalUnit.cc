@@ -29,5 +29,12 @@ FunctionalUnit::FunctionalUnit(const FunctionalUnit& other)
 FunctionalUnit::~FunctionalUnit()
 {}
 
+void FunctionalUnit::issue(const Instruction& i)
+{
+    m_instruction = i.clone();
+}
+
+void FunctionalUnit::setFU_ID(FU_ID fu_type)
+{ m_id = fu_type; }
 FU_ID FunctionalUnit::getFU_ID() const
 { return m_id; }

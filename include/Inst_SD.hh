@@ -26,7 +26,10 @@ class Inst_SD : public Instruction
 {
     public:
         Inst_SD(inst the_instruction);
+        Inst_SD(const Inst_SD& other);
         virtual ~Inst_SD();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

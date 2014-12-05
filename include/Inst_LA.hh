@@ -26,7 +26,10 @@ class Inst_LA : public Instruction
 {
     public:
         Inst_LA(inst the_instruction);
+        Inst_LA(const Inst_LA& other);
         virtual ~Inst_LA();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

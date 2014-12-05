@@ -23,6 +23,7 @@
  * 
  */
 #include <iostream>
+#include "Instruction.hh"
 
 enum FU_ID
 {
@@ -36,15 +37,18 @@ enum FU_ID
 class FunctionalUnit
 {
     public:
-        FunctionalUnit();
+        FunctionalUnit(FU_ID fu_type);
         FunctionalUnit(const FunctionalUnit& other);
         virtual ~FunctionalUnit();
         
+        virtual void issue(const Instruction& i);
+        virtual void setFU_ID(FU_ID fu_type);
         virtual FU_ID getFU_ID() const;
         
     protected:
     private:
         
+        Instruction* m_instruction;
         FU_ID m_id;
         
 //         //Busy, Op, Fi, Fj, Fk, Qj, Qk, Rj, Rk

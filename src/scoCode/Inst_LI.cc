@@ -25,6 +25,12 @@ Inst_LI::Inst_LI(inst the_instruction)
 
 Inst_LI::~Inst_LI() {}
 
+Inst_LI::Inst_LI(const Inst_LI& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_LI::clone() const { return new Inst_LI(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_LI::decode(ScoreboardSimulator& sim)
 {

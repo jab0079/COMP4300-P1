@@ -26,7 +26,10 @@ class Inst_BEQZ : public Instruction
 {
     public:
         Inst_BEQZ(inst the_instruction);
+        Inst_BEQZ(const Inst_BEQZ& other);
         virtual ~Inst_BEQZ();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

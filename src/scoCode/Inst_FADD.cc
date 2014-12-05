@@ -25,6 +25,12 @@ Inst_FADD::Inst_FADD(inst the_instruction)
 
 Inst_FADD::~Inst_FADD() {}
 
+Inst_FADD::Inst_FADD(const Inst_FADD& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_FADD::clone() const { return new Inst_FADD(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_FADD::decode(ScoreboardSimulator& sim)
 {

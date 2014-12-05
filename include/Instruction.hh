@@ -36,6 +36,8 @@ class Instruction
         Instruction(const Instruction& other);
         virtual ~Instruction();
         
+        virtual Instruction* clone() const = 0;
+        
         //Pure virtual stage methods
         virtual void decode(ScoreboardSimulator& sim) = 0;
         virtual void fetch_operands(ScoreboardSimulator& sim) = 0;

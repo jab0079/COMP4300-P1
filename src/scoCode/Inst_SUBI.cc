@@ -25,6 +25,12 @@ Inst_SUBI::Inst_SUBI(inst the_instruction)
 
 Inst_SUBI::~Inst_SUBI() {}
 
+Inst_SUBI::Inst_SUBI(const Inst_SUBI& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_SUBI::clone() const { return new Inst_SUBI(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_SUBI::decode(ScoreboardSimulator& sim)
 {

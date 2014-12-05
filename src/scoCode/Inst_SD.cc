@@ -25,6 +25,12 @@ Inst_SD::Inst_SD(inst the_instruction)
 
 Inst_SD::~Inst_SD() {}
 
+Inst_SD::Inst_SD(const Inst_SD& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_SD::clone() const { return new Inst_SD(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_SD::decode(ScoreboardSimulator& sim)
 {

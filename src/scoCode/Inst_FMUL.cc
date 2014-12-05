@@ -25,6 +25,12 @@ Inst_FMUL::Inst_FMUL(inst the_instruction)
 
 Inst_FMUL::~Inst_FMUL() {}
 
+Inst_FMUL::Inst_FMUL(const Inst_FMUL& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_FMUL::clone() const { return new Inst_FMUL(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_FMUL::decode(ScoreboardSimulator& sim)
 {

@@ -23,7 +23,13 @@ Inst_ADD::Inst_ADD(inst the_instruction)
 : Instruction(the_instruction)
 {}
 
+Inst_ADD::Inst_ADD(const Inst_ADD& other)
+: Instruction(other)
+{}
+
 Inst_ADD::~Inst_ADD() {}
+
+Instruction* Inst_ADD::clone() const { return new Inst_ADD(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_ADD::decode(ScoreboardSimulator& sim)

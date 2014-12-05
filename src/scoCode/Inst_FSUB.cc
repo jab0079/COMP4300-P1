@@ -25,6 +25,12 @@ Inst_FSUB::Inst_FSUB(inst the_instruction)
 
 Inst_FSUB::~Inst_FSUB() {}
 
+Inst_FSUB::Inst_FSUB(const Inst_FSUB& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_FSUB::clone() const { return new Inst_FSUB(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_FSUB::decode(ScoreboardSimulator& sim)
 {

@@ -25,6 +25,12 @@ Inst_NOP::Inst_NOP(inst the_instruction)
 
 Inst_NOP::~Inst_NOP() {}
 
+Inst_NOP::Inst_NOP(const Inst_NOP& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_NOP::clone() const { return new Inst_NOP(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_NOP::decode(ScoreboardSimulator& sim)
 {

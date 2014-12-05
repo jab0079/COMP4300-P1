@@ -26,7 +26,10 @@ class Inst_FMUL : public Instruction
 {
     public:
         Inst_FMUL(inst the_instruction);
+        Inst_FMUL(const Inst_FMUL& other);
         virtual ~Inst_FMUL();
+        
+        virtual Instruction* clone() const;
         
         //Implemented stage methods
         virtual void decode(ScoreboardSimulator& sim);

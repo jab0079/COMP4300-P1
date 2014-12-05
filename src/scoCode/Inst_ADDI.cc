@@ -25,6 +25,12 @@ Inst_ADDI::Inst_ADDI(inst the_instruction)
 
 Inst_ADDI::~Inst_ADDI() {}
 
+Inst_ADDI::Inst_ADDI(const Inst_ADDI& other)
+: Instruction(other)
+{}
+
+Instruction* Inst_ADDI::clone() const { return new Inst_ADDI(*this); }
+
 /* Stage Methods ------------------------------------------------------------*/
 void Inst_ADDI::decode(ScoreboardSimulator& sim)
 {
