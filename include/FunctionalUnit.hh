@@ -36,7 +36,8 @@ class FunctionalUnit
         
         virtual void issue(const Instruction& i);
         virtual void read_operands();
-        virtual void execute();
+        virtual bool execute();
+        virtual void write_back();
         virtual void setFU_ID(FU_ID fu_type);
         virtual FU_ID getFU_ID() const;
         virtual u_int32_t getInstr_id() const;

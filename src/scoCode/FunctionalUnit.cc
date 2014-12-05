@@ -44,13 +44,20 @@ void FunctionalUnit::read_operands()
     m_instruction->fetch_operands();
 }
 
-void FunctionalUnit::execute()
+bool FunctionalUnit::execute()
 {
     m_stagesLeft--;
     if (m_stagesLeft == 0)
     {
         m_instruction->execute();
+        return true;
     }
+    return false;
+}
+
+void FunctionalUnit::write_back()
+{
+    m_instruction->write_back();
 }
 
 void FunctionalUnit::setFU_ID(FU_ID fu_type)

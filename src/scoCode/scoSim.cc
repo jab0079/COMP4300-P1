@@ -93,6 +93,20 @@ void ScoreboardSimulator::run()
         this->issue();
         this->read_operands();
         
+        execute(m_integer_fu);
+        execute(m_fpadd_fu);
+        execute(m_fpmult_fu);
+        execute(m_mem_fu);
+        
+        if (!m_scob->check_WAR(m_integer_fu->getFU_ID()))
+            write_back(m_integer_fu);
+        if (!m_scob->check_WAR(m_fpadd_fu->getFU_ID()))
+            write_back(m_fpadd_fu);
+        if (!m_scob->check_WAR(m_fpmult_fu->getFU_ID()))
+            write_back(m_fpmult_fu);
+        if (!m_scob->check_WAR(m_mem_fu->getFU_ID()))
+            write_back(m_mem_fu);
+        
     }
     
     std::cout << "\tEnding Scoreboard..." << std::endl;
@@ -158,13 +172,13 @@ void ScoreboardSimulator::read_operands()
     read_operands_helper(m_fpadd_fu);
     read_operands_helper(m_fpmult_fu);
     read_operands_helper(m_mem_fu);
-    
 }
 
 void ScoreboardSimulator::read_operands_helper(FunctionalUnit* fu)
 {
     FunctionalUnitStatus fus = m_scob->get_fu_status(fu->getFU_ID());
     //Have the functional unit update it's status in scoreboard
+    m_scob->update_fu_status_flags(fu->getFU_ID());
     if (fus.src1_rdy && fus.src2_rdy)
     {
         fu->read_operands();
@@ -172,6 +186,29 @@ void ScoreboardSimulator::read_operands_helper(FunctionalUnit* fu)
                                 SCO_READ_OP, 
                                 this->getCycleCount());
     }
+}
+
+void ScoreboardSimulator::execute(FunctionalUnit* fu)
+{
+    //if the functional unit is done executing...
+    if(fu->execute())
+    {
+        m_scob->set_instr_status(fu->getInstr_id(), 
+                                    SCO_EXE_COMPLETE, 
+                                    this->getCycleCount());
+    }
+}
+
+void ScoreboardSimulator::write_back(FunctionalUnit* fu)
+{
+    fu->write_back();
+    //set the instruction status
+    m_scob->set_instr_status(fu->getInstr_id(), 
+                                SCO_WRITE_RESULT, 
+                                this->getCycleCount());
+    //reset the register result to undefined
+    FunctionalUnitStatus fus = m_scob->get_fu_status(fu->getFU_ID());
+    m_scob->set_reg_result(fus.dest, FU_UNDEFINED);
 }
 
 /* SETS ---------------------------------------------------------------------*/

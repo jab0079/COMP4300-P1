@@ -56,6 +56,7 @@ class Scoreboard
         
         //Constructors / Destructor -------------------------------------------
         Scoreboard();
+        Scoreboard(const Scoreboard& other);
         virtual ~Scoreboard();
         
         // Methods ------------------------------------------------------------

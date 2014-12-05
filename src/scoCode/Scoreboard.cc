@@ -41,6 +41,11 @@ Scoreboard::Scoreboard()
   }
 }
 
+Scoreboard::Scoreboard(const Scoreboard& other)
+{
+    
+}
+
 Scoreboard::~Scoreboard()
 {
     
