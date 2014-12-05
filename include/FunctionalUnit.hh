@@ -34,6 +34,8 @@ enum FU_ID
     FU_UNDEFINED
 };
 
+class Instruction;
+
 class FunctionalUnit
 {
     public:

@@ -65,7 +65,12 @@ static Instruction* create_instruction(const inst& instruction)
 
 ScoreboardSimulator::ScoreboardSimulator(MemSys* mem) 
 : Simulator(mem), m_usermode(false), m_fetch_buffer(0x0)
-{}
+{
+    m_integer_fu = new FunctionalUnit(FU_INTEGER);
+    m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER);
+    m_fpmult_fu = new FunctionalUnit(FU_FP_MULT);
+    m_mem_fu = new FunctionalUnit(FU_MEMORY);
+}
 
 ScoreboardSimulator::~ScoreboardSimulator()
 {
@@ -95,10 +100,13 @@ void ScoreboardSimulator::issue()
     { //nothing in the fetch buffer, read from PC
         inst next_inst = 0;
         next_inst = *((inst*)m_memory->read(m_pc,sizeof(inst)));
+        this->setProgramCounter(this->getProgramCounter() + sizeof(inst));
         //Go ahead and put it in the fetch buffer. If
         //we don't stall, then we take it out...
         m_fetch_buffer = create_instruction(next_inst);
     }
+    
+    m_fetch_buffer->decode(*this); //decode instruction in buffer
     
     //TODO: check if functional unit is busy from scoreboard
     /*Thought:  
@@ -127,6 +135,11 @@ void ScoreboardSimulator::issue()
         //TODO: issue to functional unit
         
         SAFE_DELETE(m_fetch_buffer); //remove from buffer
+        
+    }
+    else
+    {
+        
     }
         
 }
