@@ -56,6 +56,8 @@ class Instruction
         virtual int32_t getOPB() const;
         virtual float getOPB_FP() const;
         virtual int32_t getValue() const;
+        virtual u_int32_t getInstr_id() const;
+        virtual bool getIsFP() const;
         
     protected:
         int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
@@ -70,6 +72,10 @@ class Instruction
         
         int32_t m_aluout, m_opA, m_opB, m_value;
         float m_aluout_fp, m_opA_fp, m_opB_fp;
+        
+        //TODO set these when creating instr (m_instr_id = m_ic?)
+        u_int32_t m_instr_id;
+        bool m_is_fp; // flag for fp instr
         
     private:
         inst m_instruction;

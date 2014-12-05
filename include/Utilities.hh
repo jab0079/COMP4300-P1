@@ -105,6 +105,7 @@ typedef u_int32_t reg; //32-bit registers
 typedef float reg_d; //32-bit float registers
 typedef u_int32_t addr;
 typedef u_int32_t inst;
+typedef u_int8_t fu_id;
 
 static std::string removeWhiteSpace(const std::string& str)
 {
