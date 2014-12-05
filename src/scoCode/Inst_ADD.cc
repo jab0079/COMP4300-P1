@@ -19,8 +19,8 @@
  */
 #include "Inst_ADD.hh"
 
-Inst_ADD::Inst_ADD(inst the_instruction)
-: Instruction(the_instruction)
+Inst_ADD::Inst_ADD(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_ADD::Inst_ADD(const Inst_ADD& other)
@@ -32,9 +32,9 @@ Inst_ADD::~Inst_ADD() {}
 Instruction* Inst_ADD::clone() const { return new Inst_ADD(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_ADD::decode(ScoreboardSimulator& sim)
+void Inst_ADD::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     
     inst curr_inst = this->getInstruction();
     
@@ -46,27 +46,27 @@ void Inst_ADD::decode(ScoreboardSimulator& sim)
     m_rsrc2 = (curr_inst & 0x00003E00) >> 9;
 }
 
-void Inst_ADD::fetch_operands(ScoreboardSimulator& sim)
+void Inst_ADD::fetch_operands()
 {
-    m_opA = sim.getRegister(m_rsrc1);
-    m_opB = sim.getRegister(m_rsrc2);
+    m_opA = sim->getRegister(m_rsrc1);
+    m_opB = sim->getRegister(m_rsrc2);
 }
 
-void Inst_ADD::execute(ScoreboardSimulator& sim)
+void Inst_ADD::execute()
 {
     // Add op A & B
     m_aluout =  m_opA + m_opB;
 }
 
-void Inst_ADD::memory(ScoreboardSimulator& sim)
+void Inst_ADD::memory()
 {
     //blank for ADD
 }
 
-void Inst_ADD::write_back(ScoreboardSimulator& sim)
+void Inst_ADD::write_back()
 {
     // Write to r_dest
-    sim.setRegister(m_dest, m_aluout);
+    sim->setRegister(m_dest, m_aluout);
 }
 
 

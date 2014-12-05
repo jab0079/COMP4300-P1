@@ -25,18 +25,18 @@
 class Inst_FADD : public Instruction
 {
     public:
-        Inst_FADD(inst the_instruction);
+        Inst_FADD(ScoreboardSimulator* simu, inst the_instruction);
         Inst_FADD(const Inst_FADD& other);
         virtual ~Inst_FADD();
         
         virtual Instruction* clone() const;
         
         //Implemented stage methods
-        virtual void decode(ScoreboardSimulator& sim);
-        virtual void fetch_operands(ScoreboardSimulator& sim);
-        virtual void execute(ScoreboardSimulator& sim);
-        virtual void memory(ScoreboardSimulator& sim);
-        virtual void write_back(ScoreboardSimulator& sim);
+        virtual void decode();
+        virtual void fetch_operands();
+        virtual void execute();
+        virtual void memory();
+        virtual void write_back();
                 
     protected:
         

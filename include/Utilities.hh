@@ -81,6 +81,15 @@ enum SCOB_INST_SET {
     SCOB_SD,     //17
 };
 
+enum FU_ID
+{
+    FU_INTEGER,
+    FU_FP_ADDER,
+    FU_FP_MULT,
+    FU_MEMORY,
+    FU_UNDEFINED
+};
+
 enum SYSCALL_CODES {
     SYSCALL_PRINT_STR,
     SYSCALL_READ_STR,

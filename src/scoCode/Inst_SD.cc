@@ -19,8 +19,8 @@
  */
 #include "Inst_SD.hh"
 
-Inst_SD::Inst_SD(inst the_instruction)
-: Instruction(the_instruction)
+Inst_SD::Inst_SD(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_SD::~Inst_SD() {}
@@ -32,9 +32,9 @@ Inst_SD::Inst_SD(const Inst_SD& other)
 Instruction* Inst_SD::clone() const { return new Inst_SD(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_SD::decode(ScoreboardSimulator& sim)
+void Inst_SD::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
@@ -45,25 +45,25 @@ void Inst_SD::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 14);
 }
 
-void Inst_SD::fetch_operands(ScoreboardSimulator& sim)
+void Inst_SD::fetch_operands()
 {
-    m_opA_fp = (float)sim.getFPRegister(m_rsrc1);
-    m_opB = (int32_t)sim.getRegister(m_rsrc2);
+    m_opA_fp = (float)sim->getFPRegister(m_rsrc1);
+    m_opB = (int32_t)sim->getRegister(m_rsrc2);
 }
 
-void Inst_SD::execute(ScoreboardSimulator& sim)
+void Inst_SD::execute()
 {
     // Correct target address and push to ALU_out
     m_aluout = (MemSys::BaseUserDataSegmentAddress | m_opB) + m_value;
 }
 
-void Inst_SD::memory(ScoreboardSimulator& sim)
+void Inst_SD::memory()
 {
     // Write memory at corrected target address into MDR
-    bool result = *((float*)sim.getMemorySystem()->write(m_aluout, &m_opA_fp ,sizeof(float)));
+    bool result = *((float*)sim->getMemorySystem()->write(m_aluout, &m_opA_fp ,sizeof(float)));
 }
 
-void Inst_SD::write_back(ScoreboardSimulator& sim)
+void Inst_SD::write_back()
 {
     //Blank for SD
 }

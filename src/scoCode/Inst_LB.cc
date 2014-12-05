@@ -19,8 +19,8 @@
  */
 #include "Inst_LB.hh"
 
-Inst_LB::Inst_LB(inst the_instruction)
-: Instruction(the_instruction)
+Inst_LB::Inst_LB(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_LB::~Inst_LB() {}
@@ -32,9 +32,9 @@ Inst_LB::Inst_LB(const Inst_LB& other)
 Instruction* Inst_LB::clone() const { return new Inst_LB(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_LB::decode(ScoreboardSimulator& sim)
+void Inst_LB::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
@@ -45,27 +45,27 @@ void Inst_LB::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 14);
 }
 
-void Inst_LB::fetch_operands(ScoreboardSimulator& sim)
+void Inst_LB::fetch_operands()
 {
-    m_opA = (int32_t)sim.getRegister(m_rsrc1);
+    m_opA = (int32_t)sim->getRegister(m_rsrc1);
 }
 
-void Inst_LB::execute(ScoreboardSimulator& sim)
+void Inst_LB::execute()
 {
     // Correct target address and push to ALU_out
     m_aluout = (MemSys::BaseUserDataSegmentAddress | m_opA) + m_value;
 }
 
-void Inst_LB::memory(ScoreboardSimulator& sim)
+void Inst_LB::memory()
 {
     // Read from memory at corrected target address into MDR
-    m_mdr = *((u_int8_t*)sim.getMemorySystem()->read(m_aluout, sizeof(u_int8_t)));
+    m_mdr = *((u_int8_t*)sim->getMemorySystem()->read(m_aluout, sizeof(u_int8_t)));
 }
 
-void Inst_LB::write_back(ScoreboardSimulator& sim)
+void Inst_LB::write_back()
 {
     // Write MDR to r_dest
-    sim.setRegister(m_dest, m_mdr);
+    sim->setRegister(m_dest, m_mdr);
 }
 
 

@@ -107,19 +107,21 @@ void Scoreboard::set_fu_status(const int8_t& fu_id, const Instruction& instr)
   fu_stat.src1_rdy = check_reg_result(fu_stat.src1);
   if (!fu_stat.src1_rdy)
   {
-    if (instr.getIsFP())
-      fu_stat.fu_src1 = get_reg_d_result(fu_stat.src1);
-    else 
-      fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
+      //TODO
+//     if (instr.getIsFP())
+//       fu_stat.fu_src1 = get_reg_d_result(fu_stat.src1);
+//     else 
+//       fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
   }
     
   fu_stat.src2_rdy = check_reg_result(fu_stat.src2);
   if (!fu_stat.src2_rdy)
   {
-    if (instr.getIsFP())
-      fu_stat.fu_src2 = get_reg_d_result(fu_stat.src2);
-    else 
-      fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
+      //TODO
+//     if (instr.getIsFP())
+//       fu_stat.fu_src2 = get_reg_d_result(fu_stat.src2);
+//     else 
+//       fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
   }
 }
 

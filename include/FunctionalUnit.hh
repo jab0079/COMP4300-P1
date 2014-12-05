@@ -25,33 +25,30 @@
 #include <iostream>
 #include "Instruction.hh"
 
-enum FU_ID
-{
-    FU_INTEGER,
-    FU_FP_ADDER,
-    FU_FP_MULT,
-    FU_MEMORY,
-    FU_UNDEFINED
-};
-
 class Instruction;
 
 class FunctionalUnit
 {
     public:
-        FunctionalUnit(FU_ID fu_type);
+        FunctionalUnit(FU_ID fu_type, u_int32_t stages);
         FunctionalUnit(const FunctionalUnit& other);
         virtual ~FunctionalUnit();
         
         virtual void issue(const Instruction& i);
+        virtual void read_operands();
+        virtual void execute();
         virtual void setFU_ID(FU_ID fu_type);
         virtual FU_ID getFU_ID() const;
         
     protected:
+        
     private:
         
-        Instruction* m_instruction;
         FU_ID m_id;
+        Instruction* m_instruction;
+        u_int32_t m_stagesLeft;
+        u_int32_t m_numstages;
+
         
 //         //Busy, Op, Fi, Fj, Fk, Qj, Qk, Rj, Rk
 //         bool m_busy;    //Is functional unit busy 

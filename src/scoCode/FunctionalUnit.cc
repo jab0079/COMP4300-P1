@@ -17,21 +17,40 @@
  */
 #include "FunctionalUnit.hh"
 
-FunctionalUnit::FunctionalUnit(FU_ID fu_type)
-: m_id(fu_type)
+FunctionalUnit::FunctionalUnit(FU_ID fu_type, u_int32_t stages)
+: m_id(fu_type), m_instruction(0x0), 
+m_stagesLeft(0), m_numstages(stages)
 {}
 
 FunctionalUnit::FunctionalUnit(const FunctionalUnit& other)
-: m_id(other.m_id)
-{}
+: m_id(other.m_id), m_stagesLeft(other.m_stagesLeft),
+m_numstages(other.m_numstages)
+{
+    m_instruction = other.m_instruction->clone();
+}
 
 FunctionalUnit::~FunctionalUnit()
-{}
+{
+    SAFE_DELETE(m_instruction);
+}
 
 void FunctionalUnit::issue(const Instruction& i)
 {
     m_instruction = i.clone();
-    
+}
+
+void FunctionalUnit::read_operands()
+{
+    m_instruction->fetch_operands();
+}
+
+void FunctionalUnit::execute()
+{
+    m_stagesLeft--;
+    if (m_stagesLeft == 0)
+    {
+        m_instruction->execute();
+    }
 }
 
 void FunctionalUnit::setFU_ID(FU_ID fu_type)

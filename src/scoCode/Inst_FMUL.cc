@@ -19,8 +19,8 @@
  */
 #include "Inst_FMUL.hh"
 
-Inst_FMUL::Inst_FMUL(inst the_instruction)
-: Instruction(the_instruction)
+Inst_FMUL::Inst_FMUL(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_FMUL::~Inst_FMUL() {}
@@ -32,9 +32,9 @@ Inst_FMUL::Inst_FMUL(const Inst_FMUL& other)
 Instruction* Inst_FMUL::clone() const { return new Inst_FMUL(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_FMUL::decode(ScoreboardSimulator& sim)
+void Inst_FMUL::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     
     inst curr_inst = this->getInstruction();
     
@@ -46,25 +46,25 @@ void Inst_FMUL::decode(ScoreboardSimulator& sim)
     m_rsrc2 = (curr_inst & 0x00003E00) >> 9;
 }
 
-void Inst_FMUL::fetch_operands(ScoreboardSimulator& sim)
+void Inst_FMUL::fetch_operands()
 {
-    m_opA_fp = (float)sim.getFPRegister(m_rsrc1);
-    m_opB_fp = (float)sim.getFPRegister(m_rsrc2);
+    m_opA_fp = (float)sim->getFPRegister(m_rsrc1);
+    m_opB_fp = (float)sim->getFPRegister(m_rsrc2);
 }
 
-void Inst_FMUL::execute(ScoreboardSimulator& sim)
+void Inst_FMUL::execute()
 {
     m_aluout_fp = m_opA_fp * m_opB_fp;
 }
 
-void Inst_FMUL::memory(ScoreboardSimulator& sim)
+void Inst_FMUL::memory()
 {
     //blank for FMUL
 }
 
-void Inst_FMUL::write_back(ScoreboardSimulator& sim)
+void Inst_FMUL::write_back()
 {
-    sim.setFPRegister(m_dest, m_aluout_fp);
+    sim->setFPRegister(m_dest, m_aluout_fp);
 }
 
 

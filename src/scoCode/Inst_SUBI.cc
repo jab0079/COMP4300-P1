@@ -19,8 +19,8 @@
  */
 #include "Inst_SUBI.hh"
 
-Inst_SUBI::Inst_SUBI(inst the_instruction)
-: Instruction(the_instruction)
+Inst_SUBI::Inst_SUBI(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_SUBI::~Inst_SUBI() {}
@@ -32,9 +32,9 @@ Inst_SUBI::Inst_SUBI(const Inst_SUBI& other)
 Instruction* Inst_SUBI::clone() const { return new Inst_SUBI(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_SUBI::decode(ScoreboardSimulator& sim)
+void Inst_SUBI::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
@@ -45,25 +45,25 @@ void Inst_SUBI::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 14);
 }
 
-void Inst_SUBI::fetch_operands(ScoreboardSimulator& sim)
+void Inst_SUBI::fetch_operands()
 {
-    m_opA = sim.getRegister(m_rsrc1);
+    m_opA = sim->getRegister(m_rsrc1);
 }
 
-void Inst_SUBI::execute(ScoreboardSimulator& sim)
+void Inst_SUBI::execute()
 {
     // Subtract op A & B
     m_aluout = m_opA - m_value;
 }
 
-void Inst_SUBI::memory(ScoreboardSimulator& sim)
+void Inst_SUBI::memory()
 {
     //blank for subi
 }
 
-void Inst_SUBI::write_back(ScoreboardSimulator& sim)
+void Inst_SUBI::write_back()
 {
-    sim.setRegister(m_dest, m_aluout);
+    sim->setRegister(m_dest, m_aluout);
 }
 
 

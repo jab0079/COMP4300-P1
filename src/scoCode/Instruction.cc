@@ -18,8 +18,8 @@
  */
 #include "Instruction.hh"
 
-Instruction::Instruction(inst the_instruction)
-: m_instruction(the_instruction)
+Instruction::Instruction(ScoreboardSimulator* simu, inst the_instruction)
+: sim(simu), m_instruction(the_instruction)
 {
     //decode opcode for ease of usage
     //(not technically decoded here, we just the instruction
@@ -45,6 +45,8 @@ Instruction::Instruction(const Instruction& other)
     m_opB_fp = other.m_opB_fp;
     m_instruction = other.m_instruction;
     m_opcode = other.m_opcode;
+    m_instr_id = other.m_instr_id;
+    sim = other.sim;
 }
 
 inst Instruction::getInstruction() const
@@ -92,8 +94,6 @@ int32_t Instruction::getValue() const
 { return m_value; }
 u_int32_t Instruction::getInstr_id() const
 { return m_instr_id; }
-bool Instruction::getIsFP() const
-{ return m_is_fp; }
 
 
 

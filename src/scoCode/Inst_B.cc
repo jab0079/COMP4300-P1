@@ -19,8 +19,8 @@
  */
 #include "Inst_B.hh"
 
-Inst_B::Inst_B(inst the_instruction)
-: Instruction(the_instruction)
+Inst_B::Inst_B(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_B::~Inst_B() {}
@@ -32,9 +32,9 @@ Inst_B::Inst_B(const Inst_B& other)
 Instruction* Inst_B::clone() const { return new Inst_B(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_B::decode(ScoreboardSimulator& sim)
+void Inst_B::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     
     inst curr_inst = this->getInstruction();
     // Get signed label offset value and calculate newpc
@@ -42,24 +42,24 @@ void Inst_B::decode(ScoreboardSimulator& sim)
 
 }
 
-void Inst_B::fetch_operands(ScoreboardSimulator& sim)
+void Inst_B::fetch_operands()
 {
     //blank for B
 }
 
-void Inst_B::execute(ScoreboardSimulator& sim)
+void Inst_B::execute()
 {
-    m_aluout = sim.getProgramCounter() + m_value * 4;
+    m_aluout = sim->getProgramCounter() + m_value * 4;
     // Branch (update PC)
-    sim.setProgramCounter(m_aluout);
+    sim->setProgramCounter(m_aluout);
 }
 
-void Inst_B::memory(ScoreboardSimulator& sim)
+void Inst_B::memory()
 {
     //blank for B
 }
 
-void Inst_B::write_back(ScoreboardSimulator& sim)
+void Inst_B::write_back()
 {
     //blank for B
 }

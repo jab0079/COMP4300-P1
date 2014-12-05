@@ -19,8 +19,8 @@
  */
 #include "Inst_FADD.hh"
 
-Inst_FADD::Inst_FADD(inst the_instruction)
-: Instruction(the_instruction)
+Inst_FADD::Inst_FADD(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_FADD::~Inst_FADD() {}
@@ -32,9 +32,9 @@ Inst_FADD::Inst_FADD(const Inst_FADD& other)
 Instruction* Inst_FADD::clone() const { return new Inst_FADD(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_FADD::decode(ScoreboardSimulator& sim)
+void Inst_FADD::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     
     inst curr_inst = this->getInstruction();
     
@@ -46,25 +46,25 @@ void Inst_FADD::decode(ScoreboardSimulator& sim)
     m_rsrc2 = (curr_inst & 0x00003E00) >> 9;
 }
 
-void Inst_FADD::fetch_operands(ScoreboardSimulator& sim)
+void Inst_FADD::fetch_operands()
 {
-    m_opA_fp = (float)sim.getFPRegister(m_rsrc1);
-    m_opB_fp = (float)sim.getFPRegister(m_rsrc2);
+    m_opA_fp = (float)sim->getFPRegister(m_rsrc1);
+    m_opB_fp = (float)sim->getFPRegister(m_rsrc2);
 }
 
-void Inst_FADD::execute(ScoreboardSimulator& sim)
+void Inst_FADD::execute()
 {
     m_aluout_fp = m_opA_fp + m_opB_fp;
 }
 
-void Inst_FADD::memory(ScoreboardSimulator& sim)
+void Inst_FADD::memory()
 {
     //blank for FADD
 }
 
-void Inst_FADD::write_back(ScoreboardSimulator& sim)
+void Inst_FADD::write_back()
 {
-    sim.setFPRegister(m_dest, m_aluout_fp);
+    sim->setFPRegister(m_dest, m_aluout_fp);
 }
 
 

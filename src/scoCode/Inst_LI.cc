@@ -19,8 +19,8 @@
  */
 #include "Inst_LI.hh"
 
-Inst_LI::Inst_LI(inst the_instruction)
-: Instruction(the_instruction)
+Inst_LI::Inst_LI(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_LI::~Inst_LI() {}
@@ -32,9 +32,9 @@ Inst_LI::Inst_LI(const Inst_LI& other)
 Instruction* Inst_LI::clone() const { return new Inst_LI(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_LI::decode(ScoreboardSimulator& sim)
+void Inst_LI::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     inst curr_inst = this->getInstruction();
 
     // Get r_dest number
@@ -43,25 +43,25 @@ void Inst_LI::decode(ScoreboardSimulator& sim)
     m_value = decodeInstr(curr_inst, 19);
 }
 
-void Inst_LI::fetch_operands(ScoreboardSimulator& sim)
+void Inst_LI::fetch_operands()
 {
     //blank for li
 }
 
-void Inst_LI::execute(ScoreboardSimulator& sim)
+void Inst_LI::execute()
 {
     //blank for li
 }
 
-void Inst_LI::memory(ScoreboardSimulator& sim)
+void Inst_LI::memory()
 {
     //blank for li
 }
 
-void Inst_LI::write_back(ScoreboardSimulator& sim)
+void Inst_LI::write_back()
 {
     // Load signed label offset address into r_dest
-    sim.setRegister(m_dest, m_value);
+    sim->setRegister(m_dest, m_value);
 }
 
 

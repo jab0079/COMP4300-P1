@@ -19,8 +19,8 @@
  */
 #include "Inst_NOP.hh"
 
-Inst_NOP::Inst_NOP(inst the_instruction)
-: Instruction(the_instruction)
+Inst_NOP::Inst_NOP(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_NOP::~Inst_NOP() {}
@@ -32,28 +32,28 @@ Inst_NOP::Inst_NOP(const Inst_NOP& other)
 Instruction* Inst_NOP::clone() const { return new Inst_NOP(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_NOP::decode(ScoreboardSimulator& sim)
+void Inst_NOP::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
-    sim.setNOPCount(sim.getNOPCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
+    sim->setNOPCount(sim->getNOPCount() + 1);
 }
 
-void Inst_NOP::fetch_operands(ScoreboardSimulator& sim)
-{
-    //blank for NOP
-}
-
-void Inst_NOP::execute(ScoreboardSimulator& sim)
+void Inst_NOP::fetch_operands()
 {
     //blank for NOP
 }
 
-void Inst_NOP::memory(ScoreboardSimulator& sim)
+void Inst_NOP::execute()
 {
     //blank for NOP
 }
 
-void Inst_NOP::write_back(ScoreboardSimulator& sim)
+void Inst_NOP::memory()
+{
+    //blank for NOP
+}
+
+void Inst_NOP::write_back()
 {
     //blank for NOP
 }

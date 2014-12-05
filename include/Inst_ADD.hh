@@ -25,18 +25,18 @@
 class Inst_ADD : public Instruction
 {
     public:
-        Inst_ADD(inst the_instruction);
+        Inst_ADD(ScoreboardSimulator* simu, inst the_instruction);
         Inst_ADD(const Inst_ADD& other);
         virtual ~Inst_ADD();
         
         virtual Instruction* clone() const;
         
         //Implemented stage methods
-        virtual void decode(ScoreboardSimulator& sim);
-        virtual void fetch_operands(ScoreboardSimulator& sim);
-        virtual void execute(ScoreboardSimulator& sim);
-        virtual void memory(ScoreboardSimulator& sim);
-        virtual void write_back(ScoreboardSimulator& sim);
+        virtual void decode();
+        virtual void fetch_operands();
+        virtual void execute();
+        virtual void memory();
+        virtual void write_back();
                 
     protected:
         

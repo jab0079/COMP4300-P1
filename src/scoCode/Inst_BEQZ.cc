@@ -19,8 +19,8 @@
  */
 #include "Inst_BEQZ.hh"
 
-Inst_BEQZ::Inst_BEQZ(inst the_instruction)
-: Instruction(the_instruction)
+Inst_BEQZ::Inst_BEQZ(ScoreboardSimulator* simu, inst the_instruction)
+: Instruction(simu, the_instruction)
 {}
 
 Inst_BEQZ::~Inst_BEQZ() {}
@@ -32,9 +32,9 @@ Inst_BEQZ::Inst_BEQZ(const Inst_BEQZ& other)
 Instruction* Inst_BEQZ::clone() const { return new Inst_BEQZ(*this); }
 
 /* Stage Methods ------------------------------------------------------------*/
-void Inst_BEQZ::decode(ScoreboardSimulator& sim)
+void Inst_BEQZ::decode()
 {
-    sim.setInstructionCount(sim.getInstructionCount() + 1);
+    sim->setInstructionCount(sim->getInstructionCount() + 1);
     inst curr_inst = this->getInstruction();
     
     // Get source 1 register number
@@ -44,26 +44,26 @@ void Inst_BEQZ::decode(ScoreboardSimulator& sim)
 
 }
 
-void Inst_BEQZ::fetch_operands(ScoreboardSimulator& sim)
+void Inst_BEQZ::fetch_operands()
 {
-    m_opA = (int32_t)sim.getRegister(m_rsrc1);
+    m_opA = (int32_t)sim->getRegister(m_rsrc1);
 }
 
-void Inst_BEQZ::execute(ScoreboardSimulator& sim)
+void Inst_BEQZ::execute()
 {
-    m_aluout = sim.getProgramCounter() + m_value * 4;
+    m_aluout = sim->getProgramCounter() + m_value * 4;
     if (m_opA == 0)
     { // Branch (update PC), if equals zero
-        sim.setProgramCounter(m_aluout);
+        sim->setProgramCounter(m_aluout);
     }
 }
 
-void Inst_BEQZ::memory(ScoreboardSimulator& sim)
+void Inst_BEQZ::memory()
 {
     //blank for beqz
 }
 
-void Inst_BEQZ::write_back(ScoreboardSimulator& sim)
+void Inst_BEQZ::write_back()
 {
     //blank for beqz
 }

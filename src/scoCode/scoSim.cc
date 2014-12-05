@@ -35,29 +35,29 @@
 #include "Inst_SUBI.hh"
 #include "Inst_SYSCALL.hh"
 
-static Instruction* create_instruction(const inst& instruction)
+static Instruction* create_instruction(ScoreboardSimulator* simu, inst& instruction)
 {
     //parse opcode
     u_int8_t opcode = ((instruction & 0xFF000000) >> 24);
     switch (opcode)
     {
-        case SCOB_ADD:      return new Inst_ADD(instruction);
-        case SCOB_ADDI:     return new Inst_ADDI(instruction);
-        case SCOB_B:        return new Inst_B(instruction);
-        case SCOB_BEQZ:     return new Inst_BEQZ(instruction);
-        case SCOB_BGE:      return new Inst_BGE(instruction);
-        case SCOB_BNE:      return new Inst_BNE(instruction);
-        case SCOB_FADD:     return new Inst_FADD(instruction);
-        case SCOB_FMUL:     return new Inst_FMUL(instruction);
-        case SCOB_FSUB:     return new Inst_FSUB(instruction);
-        case SCOB_LA:       return new Inst_LA(instruction);
-        case SCOB_LB:       return new Inst_LB(instruction);
-        case SCOB_LD:       return new Inst_LD(instruction);
-        case SCOB_LI:       return new Inst_LI(instruction);
-        case SCOB_NOP:      return new Inst_NOP(instruction);
-        case SCOB_SD:       return new Inst_SD(instruction);
-        case SCOB_SUBI:     return new Inst_SUBI(instruction);
-        case SCOB_SYSCALL:  return new Inst_SYSCALL(instruction);
+        case SCOB_ADD:      return new Inst_ADD(simu, instruction);
+        case SCOB_ADDI:     return new Inst_ADDI(simu, instruction);
+        case SCOB_B:        return new Inst_B(simu, instruction);
+        case SCOB_BEQZ:     return new Inst_BEQZ(simu, instruction);
+        case SCOB_BGE:      return new Inst_BGE(simu, instruction);
+        case SCOB_BNE:      return new Inst_BNE(simu, instruction);
+        case SCOB_FADD:     return new Inst_FADD(simu, instruction);
+        case SCOB_FMUL:     return new Inst_FMUL(simu, instruction);
+        case SCOB_FSUB:     return new Inst_FSUB(simu, instruction);
+        case SCOB_LA:       return new Inst_LA(simu, instruction);
+        case SCOB_LB:       return new Inst_LB(simu, instruction);
+        case SCOB_LD:       return new Inst_LD(simu, instruction);
+        case SCOB_LI:       return new Inst_LI(simu, instruction);
+        case SCOB_NOP:      return new Inst_NOP(simu, instruction);
+        case SCOB_SD:       return new Inst_SD(simu, instruction);
+        case SCOB_SUBI:     return new Inst_SUBI(simu, instruction);
+        case SCOB_SYSCALL:  return new Inst_SYSCALL(simu, instruction);
         default: return 0x0;
     }
     return 0x0;
@@ -66,15 +66,19 @@ static Instruction* create_instruction(const inst& instruction)
 ScoreboardSimulator::ScoreboardSimulator(MemSys* mem) 
 : Simulator(mem), m_usermode(false), m_fetch_buffer(0x0)
 {
-    m_integer_fu = new FunctionalUnit(FU_INTEGER);
-    m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER);
-    m_fpmult_fu = new FunctionalUnit(FU_FP_MULT);
-    m_mem_fu = new FunctionalUnit(FU_MEMORY);
+    m_integer_fu = new FunctionalUnit(FU_INTEGER, 2);
+    m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER, 2);
+    m_fpmult_fu = new FunctionalUnit(FU_FP_MULT, 6);
+    m_mem_fu = new FunctionalUnit(FU_MEMORY, 1);
 }
 
 ScoreboardSimulator::~ScoreboardSimulator()
 {
     SAFE_DELETE(m_fetch_buffer);
+    SAFE_DELETE(m_integer_fu);
+    SAFE_DELETE(m_fpadd_fu);
+    SAFE_DELETE(m_fpmult_fu);
+    SAFE_DELETE(m_mem_fu);
 }
 
 void ScoreboardSimulator::run()
@@ -103,14 +107,14 @@ void ScoreboardSimulator::issue()
         this->setProgramCounter(this->getProgramCounter() + sizeof(inst));
         //Go ahead and put it in the fetch buffer. If
         //we don't stall, then we take it out...
-        m_fetch_buffer = create_instruction(next_inst);
+        m_fetch_buffer = create_instruction(this, next_inst);
     }
     
-    m_fetch_buffer->decode(*this); //decode instruction in buffer
+    m_fetch_buffer->decode(); //decode instruction in buffer
     
     //TODO: check if functional unit is busy from scoreboard
     /*Thought:  
-     *      We need a way to figure out which functional
+    *       We need a way to figure out which functional
     *       unit to use for each instruction.
     * Possible Solutions:
     *       1. Scoreboard has function that computes the correct

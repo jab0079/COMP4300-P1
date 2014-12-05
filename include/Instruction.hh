@@ -32,18 +32,18 @@ class ScoreboardSimulator;
 class Instruction
 {
     public:
-        Instruction(inst the_instruction);
+        Instruction(ScoreboardSimulator* simu, inst the_instruction);
         Instruction(const Instruction& other);
         virtual ~Instruction();
         
         virtual Instruction* clone() const = 0;
         
         //Pure virtual stage methods
-        virtual void decode(ScoreboardSimulator& sim) = 0;
-        virtual void fetch_operands(ScoreboardSimulator& sim) = 0;
-        virtual void execute(ScoreboardSimulator& sim) = 0;
-        virtual void memory(ScoreboardSimulator& sim) = 0;
-        virtual void write_back(ScoreboardSimulator& sim) = 0;
+        virtual void decode() = 0;
+        virtual void fetch_operands() = 0;
+        virtual void execute() = 0;
+        virtual void memory() = 0;
+        virtual void write_back() = 0;
         
         virtual inst getInstruction() const;
         virtual u_int8_t getOpCode() const;
@@ -60,13 +60,13 @@ class Instruction
         virtual float getOPB_FP() const;
         virtual int32_t getValue() const;
         virtual u_int32_t getInstr_id() const;
-        virtual bool getIsFP() const;
         
     protected:
         int32_t decodeInstr(const u_int32_t& instr, const u_int8_t& num_bits);
         
         //Easier to just put these as protected members rather than have derived
         //classes call accessor functions to get to these...
+        ScoreboardSimulator* sim;
         u_int8_t m_dest;
         u_int8_t m_rsrc1;
         u_int8_t m_rsrc2;
@@ -78,7 +78,6 @@ class Instruction
         
         //TODO set these when creating instr (m_instr_id = m_ic?)
         u_int32_t m_instr_id;
-        bool m_is_fp; // flag for fp instr
         
     private:
         inst m_instruction;

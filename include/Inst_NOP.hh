@@ -25,18 +25,18 @@
 class Inst_NOP : public Instruction
 {
     public:
-        Inst_NOP(inst the_instruction);
+        Inst_NOP(ScoreboardSimulator* simu, inst the_instruction);
         Inst_NOP(const Inst_NOP& other);
         virtual ~Inst_NOP();
         
         virtual Instruction* clone() const;
         
         //Implemented stage methods
-        virtual void decode(ScoreboardSimulator& sim);
-        virtual void fetch_operands(ScoreboardSimulator& sim);
-        virtual void execute(ScoreboardSimulator& sim);
-        virtual void memory(ScoreboardSimulator& sim);
-        virtual void write_back(ScoreboardSimulator& sim);
+        virtual void decode();
+        virtual void fetch_operands();
+        virtual void execute();
+        virtual void memory();
+        virtual void write_back();
                 
     protected:
         
