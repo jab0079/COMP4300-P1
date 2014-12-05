@@ -40,7 +40,6 @@ class ScoreboardSimulator : public Simulator
         virtual void run();
         virtual void issue();
         virtual void read_operands();
-        virtual void execute(FunctionalUnit* fu);
         
         //Method to set the value of a register
         virtual void setRegister(const u_int8_t& regnum, const reg& val);
@@ -68,7 +67,8 @@ class ScoreboardSimulator : public Simulator
         reg m_register[REGISTER_COUNT]; //Utilities.hh
         reg_d m_register_d[FLOATING_POINT_REGISTERS]; //Utilities.hh
 
-        Scoreboard* m_scob;
+        Scoreboard* m_scob_new;
+        Scoreboard* m_scob_old;
         
         FunctionalUnit* m_integer_fu;
         FunctionalUnit* m_fpadd_fu;

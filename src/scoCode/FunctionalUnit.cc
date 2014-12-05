@@ -36,28 +36,35 @@ FunctionalUnit::~FunctionalUnit()
 
 void FunctionalUnit::issue(const Instruction& i)
 {
+    SAFE_DELETE(m_instruction);
     m_instruction = i.clone();
 }
 
 void FunctionalUnit::read_operands()
 {
-    m_instruction->fetch_operands();
+    if (m_instruction != 0x0)
+        m_instruction->fetch_operands();
 }
 
 bool FunctionalUnit::execute()
 {
-    m_stagesLeft--;
-    if (m_stagesLeft == 0)
+    if (m_instruction != 0x0)
     {
-        m_instruction->execute();
-        return true;
+        m_stagesLeft--;
+        if (m_stagesLeft == 0)
+        {
+            m_instruction->execute();
+            return true;
+        }
     }
     return false;
 }
 
 void FunctionalUnit::write_back()
 {
-    m_instruction->write_back();
+    if (m_instruction != 0x0)
+        m_instruction->write_back();
+    SAFE_DELETE(m_instruction);
 }
 
 void FunctionalUnit::setFU_ID(FU_ID fu_type)

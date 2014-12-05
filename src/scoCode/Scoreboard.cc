@@ -46,7 +46,20 @@ Scoreboard::Scoreboard()
 
 Scoreboard::Scoreboard(const Scoreboard& other)
 {
-    
+    for(u_int32_t i = 0; i < FU_COUNT; i++)
+    {
+        fu_status[i] = other.fu_status[i];
+    }
+
+    for(u_int32_t i = 0; i < REGISTER_COUNT + FLOATING_POINT_REGISTERS; i++)
+    {
+        reg_status[i] = other.reg_status[i];
+    }
+
+    for (u_int32_t i = 0; i < other.instr_status.size(); i++)
+    {
+        instr_status.push_back(other.instr_status.at(i));
+    }
 }
 
 Scoreboard::~Scoreboard()
@@ -190,19 +203,26 @@ void Scoreboard::set_reg_result(const u_int8_t& r_dest_num, const FU_ID& fu_id)
 }
 
 
-InstructionStatus Scoreboard::get_instr_status(const Instruction& instr) const
+InstructionStatus Scoreboard::get_instr_status(const u_int32_t& inst_id) const
 {
-  return instr_status[instr.getInstr_id()];
+    InstructionStatus blank;
+    if (inst_id >= 0 && inst_id <= instr_status.size())
+        return instr_status[inst_id];
+    return blank;
 }
 
 FunctionalUnitStatus Scoreboard::get_fu_status(const FU_ID& fu_id) const
 {
-  return fu_status[fu_id];
+    FunctionalUnitStatus blank;
+    if (fu_id >= 0 && fu_id < FU_COUNT)
+        return fu_status[fu_id];
+    return blank;
 }
 
 FU_ID Scoreboard::get_reg_result(const u_int8_t& r_dest_num) const
 {
-  return reg_status[r_dest_num];
+    if (r_dest_num >= 0 && r_dest_num <= REGISTER_COUNT + FLOATING_POINT_REGISTERS)
+        return reg_status[r_dest_num];
 }
 
 
