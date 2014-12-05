@@ -65,6 +65,8 @@ class Scoreboard
         virtual bool check_WAW(u_int8_t r_dest);
         virtual bool check_reg_result(u_int8_t r_dest_num);
         
+        virtual void update_fu_status_flags(const FU_ID& fu_id);
+        
         // Gets and Sets-------------------------------------------------------
         virtual void set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle);
         virtual void set_fu_status(const FU_ID& fu_id, const Instruction& instr);

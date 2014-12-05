@@ -88,9 +88,7 @@ bool Scoreboard::check_reg_result(u_int8_t r_dest_num)
 
 void Scoreboard::set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle)
 {
-  SCO_CYCLE curr_stat = instr_status.at(id).curr_status;
-  
-  switch(curr_stat)
+  switch(new_status)
   {
     case SCO_ISSUE:
       instr_status.at(id).issue = cycle;
@@ -124,6 +122,16 @@ void Scoreboard::set_fu_status(const FU_ID& fu_id, const Instruction& instr)
   fu_stat.src1 = instr.getSourceRegister1();
   fu_stat.src2 = instr.getSourceRegister2();
   
+  // update fu src reg flags
+  update_fu_status_flags(fu_id);
+  
+  fu_status[fu_id] = fu_stat;
+}
+
+void Scoreboard::update_fu_status_flags(const FU_ID& fu_id)
+{
+  FunctionalUnitStatus fu_stat = fu_status[fu_id];
+
   // check src reg results & set fu if not ready
   fu_stat.src1_rdy = check_reg_result(fu_stat.src1);
   if (!fu_stat.src1_rdy)
@@ -132,6 +140,8 @@ void Scoreboard::set_fu_status(const FU_ID& fu_id, const Instruction& instr)
   fu_stat.src2_rdy = check_reg_result(fu_stat.src2);
   if (!fu_stat.src2_rdy)
     fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
+  
+  fu_status[fu_id] = fu_stat;
 }
 
 void Scoreboard::set_reg_result(const u_int8_t& r_dest_num, const FU_ID& fu_id)
