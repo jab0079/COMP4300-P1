@@ -32,6 +32,9 @@ Scoreboard::Scoreboard()
     fu_stat.dest = -1;
     fu_stat.src1 = -1;
     fu_stat.src2 = -1;
+    fu_stat.fu_src1 = FU_UNDEFINED;
+    fu_stat.fu_src2 = FU_UNDEFINED;
+    
     fu_status[i] = fu_stat;
   }
   
@@ -105,6 +108,39 @@ bool Scoreboard::check_reg_result(u_int8_t r_dest_num)
   return false;
 }
 
+void Scoreboard::update_fu_status_flags(const FU_ID& fu_id)
+{
+  FunctionalUnitStatus fu_stat = fu_status[fu_id];
+
+  // check src reg results & set fu if not ready
+  fu_stat.src1_rdy = check_reg_result(fu_stat.src1);
+  if (!fu_stat.src1_rdy)
+    fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
+    
+  fu_stat.src2_rdy = check_reg_result(fu_stat.src2);
+  if (!fu_stat.src2_rdy)
+    fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
+  
+  fu_status[fu_id] = fu_stat;
+}
+
+void Scoreboard::reset_fu_status(const FU_ID& fu_id)
+{
+  FunctionalUnitStatus fu_stat = fu_status[fu_id];
+  
+  fu_stat.busy = false;
+  fu_stat.src1_rdy = true;
+  fu_stat.src2_rdy = true;
+  fu_stat.instr_id = -1;
+  fu_stat.dest = -1;
+  fu_stat.src1 = -1;
+  fu_stat.src2 = -1;
+  fu_stat.fu_src1 = FU_UNDEFINED;
+  fu_stat.fu_src2 = FU_UNDEFINED;
+  
+  fu_status[fu_id] = fu_stat;
+}
+
 
 void Scoreboard::set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle)
 {
@@ -144,22 +180,6 @@ void Scoreboard::set_fu_status(const FU_ID& fu_id, const Instruction& instr)
   
   // update fu src reg flags
   update_fu_status_flags(fu_id);
-  
-  fu_status[fu_id] = fu_stat;
-}
-
-void Scoreboard::update_fu_status_flags(const FU_ID& fu_id)
-{
-  FunctionalUnitStatus fu_stat = fu_status[fu_id];
-
-  // check src reg results & set fu if not ready
-  fu_stat.src1_rdy = check_reg_result(fu_stat.src1);
-  if (!fu_stat.src1_rdy)
-    fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
-    
-  fu_stat.src2_rdy = check_reg_result(fu_stat.src2);
-  if (!fu_stat.src2_rdy)
-    fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
   
   fu_status[fu_id] = fu_stat;
 }
