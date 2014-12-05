@@ -113,21 +113,37 @@ void ScoreboardSimulator::issue()
     m_fetch_buffer->decode(); //decode instruction in buffer
     
     FU_ID fu = getRespectiveFU(*m_fetch_buffer);
-    //TODO: check if functional unit is busy from scoreboard
     
-    //TODO: check WAW hazard from scoreboard
+    //Check if functional unit is busy
+    bool stallFUBusy = m_scob->check_FU_busy(fu, *m_fetch_buffer);
     
-    bool stall = true; //until todos above are done
+    //Check WAW hazard from scoreboard
+    bool stallWAW = m_scob->check_WAW(fu, m_fetch_buffer->getDestinationRegister());
+    
     
     //if we need to stall, keep whatever is in the fetch
     //buffer inside the buffer. Otherwise, take out the
     //item in the fetch buffer and issue it to a functional unit
-    if (!stall)
+    if (!stallFUBusy && !stallWAW)
     {
-        //TODO: issue to functional unit
-        
+        switch (fu)
+        {
+            case FU_INTEGER:
+                m_integer_fu->issue(*m_fetch_buffer);
+                break;
+            case FU_FP_ADDER:
+                m_fpadd_fu->issue(*m_fetch_buffer);
+                break;
+            case FU_FP_MULT:
+                m_fpmult_fu->issue(*m_fetch_buffer);
+                break;
+            case FU_MEMORY:
+                m_mem_fu->issue(*m_fetch_buffer);
+                break;
+            default:
+                break;
+        }
         SAFE_DELETE(m_fetch_buffer); //remove from buffer
-        
     }
     else
     {
