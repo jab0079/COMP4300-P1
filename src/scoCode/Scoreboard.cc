@@ -26,12 +26,12 @@ Scoreboard::Scoreboard()
   {
     FunctionalUnitStatus fu_stat;
     fu_stat.busy = false;
-    fu_stat.src1_rdy = false;
-    fu_stat.src2_rdy = false;
+    fu_stat.src1_rdy = true;
+    fu_stat.src2_rdy = true;
     fu_stat.instr_id = -1;
-    fu_stat.dest = 0;
-    fu_stat.src1 = 0;
-    fu_stat.src2 = 0;
+    fu_stat.dest = -1;
+    fu_stat.src1 = -1;
+    fu_stat.src2 = -1;
     fu_status[i] = fu_stat;
   }
   

@@ -92,6 +92,8 @@ float Instruction::getOPB_FP() const
 { return m_opB_fp; }
 int32_t Instruction::getValue() const
 { return m_value; }
+void Instruction::setInstr_id(const u_int32_t& id)
+{ m_instr_id = id; }
 u_int32_t Instruction::getInstr_id() const
 { return m_instr_id; }
 
