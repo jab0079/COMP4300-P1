@@ -61,8 +61,8 @@ class Scoreboard
         // Methods ------------------------------------------------------------
         virtual void add_instr_status(const u_int32_t& id, const int32_t& cycle); 
         
-        virtual bool check_FU_busy(FU_ID fu_id, Instruction& instr);
-        virtual bool check_WAW(FU_ID fu_id, u_int8_t r_dest);
+        virtual bool check_FU_busy(FU_ID fu_id);
+        virtual bool check_WAW(u_int8_t r_dest);
         virtual bool check_reg_result(u_int8_t r_dest_num);
         
         // Gets and Sets-------------------------------------------------------

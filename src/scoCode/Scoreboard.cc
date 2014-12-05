@@ -60,13 +60,18 @@ void Scoreboard::add_instr_status(const u_int32_t& id, const int32_t& cycle)
   instr_status.push_back(instr_stat);
 }
 
-bool Scoreboard::check_FU_busy(FU_ID fu_id, Instruction& instr)
+bool Scoreboard::check_FU_busy(FU_ID fu_id)
 {
-  return false;
+  return fu_status[fu_id].busy;
 }
 
-bool Scoreboard::check_WAW(FU_ID fu_id, u_int8_t r_dest)
+bool Scoreboard::check_WAW(u_int8_t r_dest)
 {
+  // check if any other funct unit has the same r_dest
+  if (reg_status[r_dest] != FU_UNDEFINED)
+    return true;
+  
+  // otherwise return false for no hazard
   return false;
 }
 
