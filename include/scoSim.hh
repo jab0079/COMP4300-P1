@@ -59,6 +59,8 @@ class ScoreboardSimulator : public Simulator
     protected:
         
     private:
+        FU_ID getRespectiveFU(const Instruction& i) const;
+        
         //Registers
         reg m_register[REGISTER_COUNT]; //Utilities.hh
         reg_d m_register_d[FLOATING_POINT_REGISTERS]; //Utilities.hh

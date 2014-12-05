@@ -198,5 +198,37 @@ reg_d ScoreboardSimulator::getFPRegister(const u_int8_t& regnum) const
 bool ScoreboardSimulator::isInUserMode() const
 { return m_usermode; }
 
+FU_ID ScoreboardSimulator::getRespectiveFU(const Instruction& i) const
+{
+    u_int8_t op = i.getOpCode();
+    if (op == SCOB_INST_SET_VALS[SCOB_ADD]
+        || op == SCOB_INST_SET_VALS[SCOB_ADDI]
+        || op == SCOB_INST_SET_VALS[SCOB_B]
+        || op == SCOB_INST_SET_VALS[SCOB_BEQZ]
+        || op == SCOB_INST_SET_VALS[SCOB_BGE]
+        || op == SCOB_INST_SET_VALS[SCOB_BNE]
+        || op == SCOB_INST_SET_VALS[SCOB_SUBI])
+    {
+        return FU_INTEGER;
+    }
+    else if (op == SCOB_INST_SET_VALS[SCOB_FADD]
+        || op == SCOB_INST_SET_VALS[SCOB_FSUB])
+    {
+        return FU_FP_ADDER;
+    }
+    else if (op == SCOB_INST_SET_VALS[SCOB_FMUL])
+    {
+        return FU_FP_MULT;
+    }
+    else if (op == SCOB_INST_SET_VALS[SCOB_LA]
+        || op == SCOB_INST_SET_VALS[SCOB_LB]
+        || op == SCOB_INST_SET_VALS[SCOB_LD]
+        || op == SCOB_INST_SET_VALS[SCOB_LI]
+        || op == SCOB_INST_SET_VALS[SCOB_SD])
+    {
+        return FU_MEMORY;
+    }
+    return FU_UNDEFINED;   
+}
 
 
