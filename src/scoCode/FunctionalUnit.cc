@@ -35,10 +35,9 @@ m_numstages(other.m_numstages), m_stage_queue(other.m_stage_queue)
 FunctionalUnit::~FunctionalUnit()
 {
     SAFE_DELETE(m_issued_inst);
-    Instruction* i;
-    while ((i = m_stage_queue.front()) != 0x0)
+    while (m_stage_queue.size() > 0)
     {
-        SAFE_DELETE(i);
+        SAFE_DELETE(m_stage_queue.front());
         m_stage_queue.pop();
     }
     SAFE_DELETE(m_write_back);
