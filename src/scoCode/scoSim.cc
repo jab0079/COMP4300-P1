@@ -84,8 +84,8 @@ ScoreboardSimulator::ScoreboardSimulator(MemSys* mem, bool pipelined)
     m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER, SCOB_FU_STAGES[FU_FP_ADDER]);
     m_fpmult_fu = new FunctionalUnit(FU_FP_MULT, SCOB_FU_STAGES[FU_FP_MULT]);
     m_mem_fu = new FunctionalUnit(FU_MEMORY, SCOB_FU_STAGES[FU_MEMORY]);
-    m_scob_new = new Scoreboard(false);  //bool for isPipelined?
-    m_scob_old = new Scoreboard(false);
+    m_scob_new = new Scoreboard(pipelined);
+    m_scob_old = new Scoreboard(pipelined);
 }
 
 ScoreboardSimulator::~ScoreboardSimulator()
@@ -108,21 +108,25 @@ void ScoreboardSimulator::run()
     {
 //         m_scob_old->print_scoreboard();
         
+        bool integerfu_canprop = false;
+        bool fpaddfu_canprop = false;
+        bool fpmultfu_canprop = false;
+        if (m_pipelined)
+        {
+            integerfu_canprop = check_can_propogate(m_integer_fu);
+            fpaddfu_canprop = check_can_propogate(m_fpadd_fu);
+            fpmultfu_canprop = check_can_propogate(m_fpmult_fu);
+        }
+        
         this->issue();
+                
+        simulate(m_integer_fu, integerfu_canprop);
+        simulate(m_fpadd_fu, fpaddfu_canprop);
+        simulate(m_fpmult_fu, fpmultfu_canprop);
         
-        read_operands(m_integer_fu);
-        read_operands(m_fpadd_fu);
-        read_operands(m_fpmult_fu);
+        //memory always simulates
         read_operands(m_mem_fu);
-        
-        execute(m_integer_fu);
-        execute(m_fpadd_fu);
-        execute(m_fpmult_fu);
         execute(m_mem_fu);
-        
-        write_back(m_integer_fu);
-        write_back(m_fpadd_fu);
-        write_back(m_fpmult_fu);
         write_back(m_mem_fu);
         
         this->setCycleCount(this->getCycleCount() + 1);
@@ -131,6 +135,28 @@ void ScoreboardSimulator::run()
     }
     
     std::cout << "\tEnding Scoreboard..." << std::endl;
+}
+
+void ScoreboardSimulator::simulate(FunctionalUnit* fu, bool canProp)
+{
+    if (m_pipelined && canProp)
+    {
+        read_operands(fu);
+        execute(fu);
+        write_back(fu);
+        
+        InstructionStatus is = m_scob_new->get_instr_status(fu->getInstr_id_issued());
+        if (is.curr_status == SCO_ISSUE)
+            m_scob_new->propagate_piped_fu_status(fu->getFU_ID(), true); //stall first
+        else
+            m_scob_new->propagate_piped_fu_status(fu->getFU_ID(), false); //propogate first
+    }
+    else if (!m_pipelined)
+    {
+        read_operands(fu);
+        execute(fu);
+        write_back(fu);
+    }
 }
 
 void ScoreboardSimulator::issue()
@@ -164,7 +190,9 @@ void ScoreboardSimulator::issue()
     bool stallFUBusy = m_scob_old->check_FU_busy(fu);
     
     //Check WAW hazard from scoreboard
-    bool stallWAW = m_scob_old->check_WAW(m_fetch_buffer->getDestinationRegister());
+    bool stallWAW = false;
+    if (!m_pipelined)
+        stallWAW = m_scob_old->check_WAW(m_fetch_buffer->getDestinationRegister());
      
     //if we need to stall, keep whatever is in the fetch
     //buffer inside the buffer. Otherwise, take out the
@@ -238,7 +266,9 @@ void ScoreboardSimulator::write_back(FunctionalUnit* fu)
 {
     FunctionalUnitStatus fus = m_scob_old->get_fu_status(fu->getFU_ID());
     InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id_writeback());
-    if (fus.busy && is.curr_status == SCO_EXE_COMPLETE)
+    if ((!m_pipelined && fus.busy && is.curr_status == SCO_EXE_COMPLETE)
+        || (m_pipelined && is.curr_status == SCO_EXE_COMPLETE)
+    )
     {
         u_int32_t id = -1;
         if (!m_scob_old->check_WAR(fu->getFU_ID(), fus.dest))
@@ -251,6 +281,7 @@ void ScoreboardSimulator::write_back(FunctionalUnit* fu)
         m_scob_new->set_reg_result(fus.dest, FU_UNDEFINED);
         m_scob_new->reset_fu_status(fu->getFU_ID());
     }
+    
 }
 
 /* SETS ---------------------------------------------------------------------*/
@@ -324,5 +355,15 @@ FU_ID ScoreboardSimulator::getRespectiveFU(const Instruction& i) const
     }
     return FU_UNDEFINED;   
 }
+
+bool ScoreboardSimulator::check_can_propogate(FunctionalUnit* fu)
+{
+    //We need to predetermine whether we need to stall
+    //the pipeline of a functional unit.
+    if (!m_scob_old->check_WAR(fu->getFU_ID(), fu->getInstr_writeback_dest()))
+        return true;
+    return false;
+}
+
 
 

@@ -47,6 +47,7 @@ class FunctionalUnit
         virtual u_int32_t getInstr_id_issued() const;
         virtual u_int32_t getInstr_id_executebuffer() const;
         virtual u_int32_t getInstr_id_writeback() const;
+        virtual u_int8_t getInstr_writeback_dest() const;
         
     protected:
         

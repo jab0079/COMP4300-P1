@@ -311,7 +311,7 @@ void Scoreboard::reset_fu_status(const FU_ID& fu_id)
   }
 }
 
-void Scoreboard::propagate_piped_fu_status(const FU_ID& fu_id)
+void Scoreboard::propagate_piped_fu_status(const FU_ID& fu_id, bool stallfirst)
 {
   FunctionalUnitStatus undef;
   undef.busy = 0;
@@ -324,7 +324,10 @@ void Scoreboard::propagate_piped_fu_status(const FU_ID& fu_id)
   undef.src1_rdy = true;
   undef.src2_rdy = true;
   
-  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(fu_id), undef);
+  if (stallfirst)
+    fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(fu_id) + 1, undef);
+  else
+    fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(fu_id), undef);
   
   switch (fu_id)
   {

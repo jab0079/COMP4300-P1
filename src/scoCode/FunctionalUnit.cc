@@ -137,4 +137,11 @@ u_int32_t FunctionalUnit::getInstr_id_writeback() const
         return m_write_back->getInstr_id(); 
     return -1;
 }
+u_int8_t FunctionalUnit::getInstr_writeback_dest() const
+{
+    if (m_write_back != 0x0)
+        return m_write_back->getDestinationRegister();
+    return -1;
+}
+
 

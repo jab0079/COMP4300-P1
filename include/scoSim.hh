@@ -59,8 +59,10 @@ class ScoreboardSimulator : public Simulator
     private:
         FU_ID getRespectiveFU(const Instruction& i) const;
         void read_operands(FunctionalUnit* fu);
+        void simulate(FunctionalUnit* fu, bool canProp);
         virtual void execute(FunctionalUnit* fu);
         virtual void write_back(FunctionalUnit* fu);
+        virtual bool check_can_propogate(FunctionalUnit* fu);
 
         //Registers
         reg m_register[REGISTER_COUNT]; //Utilities.hh
