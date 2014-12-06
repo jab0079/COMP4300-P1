@@ -106,7 +106,7 @@ void ScoreboardSimulator::run()
     m_usermode = true;
     while (m_usermode)
     {
-        //TODO: print scoreboard
+        m_scob_old->print_scoreboard();
         
         this->issue();
         this->read_operands();
@@ -139,10 +139,21 @@ void ScoreboardSimulator::issue()
         //Go ahead and put it in the fetch buffer. If
         //we don't stall, then we take it out...
         m_fetch_buffer = create_instruction(this, next_inst);
+        m_fetch_buffer->decode();
+        
+        if (m_fetch_buffer->getOpCode() == SCOB_INST_SET_VALS[SCOB_NOP]
+            || m_fetch_buffer->getOpCode() == SCOB_INST_SET_VALS[SCOB_SYSCALL]
+        )
+        {
+            //If a NOP or SYSCALL, we just wanted to take up this issue
+            //cycle slot. Just delete the buffer and move on...
+            m_fetch_buffer->setInstr_id(this->getInstructionCount()-1);
+            m_scob_new->add_instr_status(m_fetch_buffer->getInstr_id(), this->getCycleCount());
+            SAFE_DELETE(m_fetch_buffer);
+            return;
+        }
     }
-    
-    m_fetch_buffer->decode(); //decode instruction in buffer
-    
+        
     FU_ID fu = getRespectiveFU(*m_fetch_buffer);
     
     //Check if functional unit is busy
@@ -194,7 +205,8 @@ void ScoreboardSimulator::read_operands()
 void ScoreboardSimulator::read_operands_helper(FunctionalUnit* fu)
 {
     FunctionalUnitStatus fus = m_scob_old->get_fu_status(fu->getFU_ID());
-    if (fus.busy)
+    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id());
+    if (fus.busy && is.curr_status == SCO_ISSUE)
     {
         //Have the functional unit update it's status in scoreboard
         m_scob_new->update_fu_status_flags(fu->getFU_ID());
@@ -239,6 +251,7 @@ void ScoreboardSimulator::write_back(FunctionalUnit* fu)
         //reset the register result to undefined
         m_scob_new->set_reg_result(fus.dest, FU_UNDEFINED);
         m_scob_new->reset_fu_status(fu->getFU_ID());
+        fu->flush();
     }
 }
 

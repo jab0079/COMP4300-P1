@@ -2,7 +2,8 @@
 .text
 
 #main:
-    li $5, 0x07 #7
+    li $0, 0x00 # zero register always zero
+    li $5, 0x02 #2
     li $f0, 0x00 #0
     li $f1, 0x0A #10
     li $f3, 0x64 #100
@@ -13,9 +14,14 @@
     fadd $f0, $f0, $f1
     fadd $f0, $f0, $f3
     fadd $f0, $f0, $f4
-    bge  $5, $0, 0xFFFFFFFB #-5
+    bge  $5, $0, 0xFFFFFFF8 #-8
     nop
-    nop
+    nop 
+    nop 
 
-    li $2, 0x02
+    li $2, 0x02 # pc points here on branch execute
+    nop
+    nop
+    nop
     syscall
+    

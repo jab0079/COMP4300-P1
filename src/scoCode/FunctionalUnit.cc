@@ -38,6 +38,7 @@ void FunctionalUnit::issue(const Instruction& i)
 {
     SAFE_DELETE(m_instruction);
     m_instruction = i.clone();
+    m_stagesLeft = m_numstages;
 }
 
 void FunctionalUnit::read_operands()
@@ -64,7 +65,6 @@ void FunctionalUnit::write_back()
 {
     if (m_instruction != 0x0)
         m_instruction->write_back();
-    SAFE_DELETE(m_instruction);
 }
 
 void FunctionalUnit::setFU_ID(FU_ID fu_type)
@@ -77,3 +77,9 @@ u_int32_t FunctionalUnit::getInstr_id() const
         return m_instruction->getInstr_id(); 
     return -1;
 }
+
+void FunctionalUnit::flush()
+{
+    SAFE_DELETE(m_instruction);
+}
+

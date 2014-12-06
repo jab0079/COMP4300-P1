@@ -19,7 +19,22 @@
 #include "Instruction.hh"
 
 Instruction::Instruction(ScoreboardSimulator* simu, inst the_instruction)
-: sim(simu), m_instruction(the_instruction)
+: sim(simu), 
+m_dest(-1),
+m_rsrc1(-1),
+m_rsrc2(-1),
+m_mdr(-1),
+m_mdr_fp(-1),
+m_aluout(-1),
+m_opA(-1),
+m_opB(-1),
+m_value(-1),
+m_aluout_fp(-1),
+m_opA_fp(-1),
+m_opB_fp(-1),
+m_instr_id(-1),
+m_instruction(the_instruction),
+m_opcode(-1)
 {
     //decode opcode for ease of usage
     //(not technically decoded here, we just the instruction

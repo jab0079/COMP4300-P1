@@ -67,8 +67,8 @@ class Scoreboard
         virtual bool check_FU_busy(FU_ID fu_id);
         virtual bool check_WAW(u_int8_t r_dest);
         virtual bool check_WAR(FU_ID fu_id, u_int8_t r_dest);
-        virtual bool check_reg_result(u_int8_t r_dest_num);
-        
+        virtual bool check_reg_result(u_int8_t r_dest_num, const FU_ID& fu_id);
+        virtual bool check_range(u_int8_t r_num) const;
         virtual void update_fu_status_flags(const FU_ID& fu_id);
         virtual void reset_fu_status(const FU_ID& fu_id);
         

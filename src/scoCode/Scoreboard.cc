@@ -73,33 +73,33 @@ void Scoreboard::print_scoreboard()
   
   std::cout << "SCOREBOARD----------------------------\n" 
             << "Instruction Status--------------------\n" 
-            << "Instr_ID\tCurr_Status\tISSUE\tREAD_OP\tEXE_COMP\tWRITE_RES" << std::endl;
+            << "Inst_ID\tCurStat\tISSUE\tREAD_OP\tEXE_CMP\tWRITE_RES" << std::endl;
   for (i = 0; i < instr_status.size(); i++)
   {
     InstructionStatus instr_stat = instr_status.at(i);
     std::cout << instr_stat.instr_id << "\t"
-    << instr_stat.curr_status << "\t"
-    << instr_stat.issue << "\t"
-    << instr_stat.read_op << "\t"
-    << instr_stat.exe_complete << "\t"
-    << instr_stat.write_result <<"\t" << std::endl;
+    << (int)instr_stat.curr_status << "\t"
+    << (int)instr_stat.issue << "\t"
+    << (int)instr_stat.read_op << "\t"
+    << (int)instr_stat.exe_complete << "\t"
+    << (int)instr_stat.write_result <<"\t" << std::endl;
   }
 
   std::cout << "\n\nFU Status--------------------\n" 
-            << "FU_ID\tBUSY\tInstr_ID\tR_DEST\tR_SRC1\tR_SRC2\tFU_SRC1\tFU_SRC2\tSRC1_RDY?\tSRC2_RDY?" << std::endl;
+            << "FU_ID\tBUSY\tInstID\tR_DEST\tR_SRC1\tR_SRC2\tFU_SRC1\tFU_SRC2\tSRC1?\tSRC2?" << std::endl;
   for (i = 0; i < FU_COUNT; i++)
   {
     FunctionalUnitStatus fu_stat = fu_status[i];
     std::cout << i << "\t"
-    << fu_stat.busy << "\t"
-    << fu_stat.instr_id << "\t"
-    << fu_stat.dest << "\t"
-    << fu_stat.src1 << "\t"
-    << fu_stat.src2 << "\t"
-    << fu_stat.fu_src1 << "\t"
-    << fu_stat.fu_src2 << "\t"
-    << fu_stat.src1_rdy << "\t"
-    << fu_stat.src2_rdy << "\t" << std::endl;
+    << (int)fu_stat.busy << "\t"
+    << (int)fu_stat.instr_id << "\t"
+    << (int)fu_stat.dest << "\t"
+    << (int)fu_stat.src1 << "\t"
+    << (int)fu_stat.src2 << "\t"
+    << (int)fu_stat.fu_src1 << "\t"
+    << (int)fu_stat.fu_src2 << "\t"
+    << (int)fu_stat.src1_rdy << "\t"
+    << (int)fu_stat.src2_rdy << "\t" << std::endl;
   }
   
   std::cout << "\n\nRegister Result Status--------------------\n" 
@@ -140,7 +140,7 @@ bool Scoreboard::check_FU_busy(FU_ID fu_id)
 bool Scoreboard::check_WAW(u_int8_t r_dest)
 {
   // check if any other funct unit has the same r_dest
-  if (reg_status[r_dest] != FU_UNDEFINED)
+  if (check_range(r_dest) && reg_status[r_dest] != FU_UNDEFINED)
     return true;
   
   // otherwise return false for no hazard
@@ -154,7 +154,7 @@ bool Scoreboard::check_WAR(FU_ID fu_id, u_int8_t r_dest)
   for(i = 0; i < FU_COUNT; i++)
   {
     if (fu_status[i].src1 == r_dest || fu_status[i].src2 == r_dest)
-      if (i != fu_id)
+      if (i != fu_id && check_range(r_dest))
         return true;
   }
   
@@ -162,26 +162,40 @@ bool Scoreboard::check_WAR(FU_ID fu_id, u_int8_t r_dest)
   return false;
 }
 
-bool Scoreboard::check_reg_result(u_int8_t r_dest_num)
+//returns true if the register is not being used
+bool Scoreboard::check_reg_result(u_int8_t r_dest_num, const FU_ID& fu_id)
 {
-  // if reg_status not set, return true since reg is available
-  if (reg_status[r_dest_num] == FU_UNDEFINED)
-    return true;
-  
-  // otherwise it is being used by a fu, so return false
-  return false;
+    //if invalid destination register, return true
+    if (!check_range(r_dest_num)) return true;
+    
+    // if reg_status not set, return true since reg is available
+    if (reg_status[r_dest_num] == FU_UNDEFINED
+        || reg_status[r_dest_num] == fu_id)
+        return true;
+    
+    // otherwise it is being used by a fu, so return false
+    return false;
 }
 
+bool Scoreboard::check_range(u_int8_t r_num) const
+{
+    if (r_num >= 0 && r_num < (REGISTER_COUNT + FLOATING_POINT_REGISTERS))
+        return true;
+    
+    return false;
+}
+
+        
 void Scoreboard::update_fu_status_flags(const FU_ID& fu_id)
 {
   FunctionalUnitStatus fu_stat = fu_status[fu_id];
 
   // check src reg results & set fu if not ready
-  fu_stat.src1_rdy = check_reg_result(fu_stat.src1);
+  fu_stat.src1_rdy = check_reg_result(fu_stat.src1, fu_id);
   if (!fu_stat.src1_rdy)
     fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
     
-  fu_stat.src2_rdy = check_reg_result(fu_stat.src2);
+  fu_stat.src2_rdy = check_reg_result(fu_stat.src2, fu_id);
   if (!fu_stat.src2_rdy)
     fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
   
@@ -250,15 +264,16 @@ void Scoreboard::set_fu_status(const FU_ID& fu_id, const Instruction& instr)
 
 void Scoreboard::set_reg_result(const u_int8_t& r_dest_num, const FU_ID& fu_id)
 {
-  reg_status[r_dest_num] = fu_id;
+    if (check_range(r_dest_num))
+        reg_status[r_dest_num] = fu_id;
 }
 
 
 InstructionStatus Scoreboard::get_instr_status(const u_int32_t& inst_id) const
 {
     InstructionStatus blank;
-    if (inst_id >= 0 && inst_id <= instr_status.size())
-        return instr_status[inst_id];
+    if (inst_id >= 0 && inst_id < instr_status.size())
+        return instr_status.at(inst_id);
     return blank;
 }
 
@@ -272,8 +287,9 @@ FunctionalUnitStatus Scoreboard::get_fu_status(const FU_ID& fu_id) const
 
 FU_ID Scoreboard::get_reg_result(const u_int8_t& r_dest_num) const
 {
-    if (r_dest_num >= 0 && r_dest_num <= REGISTER_COUNT + FLOATING_POINT_REGISTERS)
+    if (check_range(r_dest_num))
         return reg_status[r_dest_num];
+    return FU_UNDEFINED;
 }
 
 
