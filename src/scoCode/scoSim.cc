@@ -80,10 +80,10 @@ static Instruction* create_instruction(ScoreboardSimulator* simu, inst& instruct
 ScoreboardSimulator::ScoreboardSimulator(MemSys* mem) 
 : Simulator(mem), m_usermode(false), m_fetch_buffer(0x0)
 {
-    m_integer_fu = new FunctionalUnit(FU_INTEGER, 2);
-    m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER, 2);
-    m_fpmult_fu = new FunctionalUnit(FU_FP_MULT, 6);
-    m_mem_fu = new FunctionalUnit(FU_MEMORY, 1);
+    m_integer_fu = new FunctionalUnit(FU_INTEGER, SCOB_FU_STAGES[FU_INTEGER]);
+    m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER, SCOB_FU_STAGES[FU_FP_ADDER]);
+    m_fpmult_fu = new FunctionalUnit(FU_FP_MULT, SCOB_FU_STAGES[FU_FP_MULT]);
+    m_mem_fu = new FunctionalUnit(FU_MEMORY, SCOB_FU_STAGES[FU_MEMORY]);
     m_scob_new = new Scoreboard();
     m_scob_old = new Scoreboard();
 }

@@ -149,14 +149,19 @@ bool Scoreboard::check_WAW(u_int8_t r_dest)
 
 bool Scoreboard::check_WAR(FU_ID fu_id, u_int8_t r_dest)
 {
-  // check if any other funct unit has the same r_dest as a src reg
-  u_int32_t i;
-  for(i = 0; i < FU_COUNT; i++)
-  {
-    if (fu_status[i].src1 == r_dest || fu_status[i].src2 == r_dest)
-      if (i != fu_id && check_range(r_dest))
-        return true;
-  }
+    // check if any other funct unit has the same r_dest as a src reg
+    u_int32_t i;
+    for(i = 0; i < FU_COUNT; i++)
+    {
+        if (fu_status[i].src1 == r_dest || fu_status[i].src2 == r_dest)
+        { //if source reg is equal to either operands
+            InstructionStatus is = get_instr_status(fu_status[i].instr_id);
+            if (is.curr_status == SCO_ISSUE
+                && check_range(r_dest)
+            ) //if the instruction has not read operands, and in range
+                return true;
+        }
+    }
   
   // otherwise return false for no hazard
   return false;
