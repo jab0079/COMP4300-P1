@@ -222,25 +222,27 @@ void Scoreboard::reset_fu_status(const FU_ID& fu_id)
 
 void Scoreboard::set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle)
 {
-  switch(new_status)
-  {
-    case SCO_ISSUE:
-      instr_status.at(id).issue = cycle;
-      break;
-    case SCO_READ_OP:
-      instr_status.at(id).read_op = cycle;
-      break;
-    case SCO_EXE_COMPLETE:
-      instr_status.at(id).exe_complete = cycle;
-      break;
-    case SCO_WRITE_RESULT:
-      instr_status.at(id).write_result = cycle;
-      break;
-    default:
-      break;
-  }
-  
-  instr_status.at(id).curr_status = new_status;
+    if (id >= 0 && id < this->instr_status.size())
+    {
+        switch(new_status)
+        {
+            case SCO_ISSUE:
+            instr_status.at(id).issue = cycle;
+            break;
+            case SCO_READ_OP:
+            instr_status.at(id).read_op = cycle;
+            break;
+            case SCO_EXE_COMPLETE:
+            instr_status.at(id).exe_complete = cycle;
+            break;
+            case SCO_WRITE_RESULT:
+            instr_status.at(id).write_result = cycle;
+            break;
+            default:
+            break;
+        }
+        instr_status.at(id).curr_status = new_status;
+    }
 }
 
 void Scoreboard::set_fu_status(const FU_ID& fu_id, const Instruction& instr)
@@ -271,18 +273,34 @@ void Scoreboard::set_reg_result(const u_int8_t& r_dest_num, const FU_ID& fu_id)
 
 InstructionStatus Scoreboard::get_instr_status(const u_int32_t& inst_id) const
 {
-    InstructionStatus blank;
     if (inst_id >= 0 && inst_id < instr_status.size())
         return instr_status.at(inst_id);
-    return blank;
+    InstructionStatus undef;
+    undef.curr_status = SCO_UNDEFINED;
+    undef.exe_complete = -1;
+    undef.instr_id = -1;
+    undef.issue = -1;
+    undef.read_op = -1;
+    undef.write_result = -1;
+    return undef;
 }
 
 FunctionalUnitStatus Scoreboard::get_fu_status(const FU_ID& fu_id) const
 {
-    FunctionalUnitStatus blank;
     if (fu_id >= 0 && fu_id < FU_COUNT)
         return fu_status[fu_id];
-    return blank;
+    
+    FunctionalUnitStatus undef;
+    undef.busy = 0;
+    undef.dest = -1;
+    undef.fu_src1 = FU_UNDEFINED;
+    undef.fu_src2 = FU_UNDEFINED;
+    undef.instr_id = -1;
+    undef.src1 = -1;
+    undef.src2 = -1;
+    undef.src1_rdy = true;
+    undef.src2_rdy = true;
+    return undef;
 }
 
 FU_ID Scoreboard::get_reg_result(const u_int8_t& r_dest_num) const

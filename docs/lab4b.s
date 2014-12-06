@@ -14,7 +14,7 @@
     fadd $f0, $f0, $f1
     fadd $f0, $f0, $f3
     fadd $f0, $f0, $f4
-    bge  $5, $0, 0xFFFFFFF8 #-8
+    bge  $5, $0, 0xFFFFFFF8 #-8, three nops after
     nop
     nop 
     nop 
@@ -23,5 +23,5 @@
     nop
     nop
     nop
-    syscall
+    syscall # 3 nops before
     

@@ -109,7 +109,11 @@ void ScoreboardSimulator::run()
         m_scob_old->print_scoreboard();
         
         this->issue();
-        this->read_operands();
+        
+        read_operands(m_integer_fu);
+        read_operands(m_fpadd_fu);
+        read_operands(m_fpmult_fu);
+        read_operands(m_mem_fu);
         
         execute(m_integer_fu);
         execute(m_fpadd_fu);
@@ -194,26 +198,18 @@ void ScoreboardSimulator::issue()
     }   
 }
 
-void ScoreboardSimulator::read_operands()
-{
-    read_operands_helper(m_integer_fu);
-    read_operands_helper(m_fpadd_fu);
-    read_operands_helper(m_fpmult_fu);
-    read_operands_helper(m_mem_fu);
-}
-
-void ScoreboardSimulator::read_operands_helper(FunctionalUnit* fu)
+void ScoreboardSimulator::read_operands(FunctionalUnit* fu)
 {
     FunctionalUnitStatus fus = m_scob_old->get_fu_status(fu->getFU_ID());
-    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id());
-    if (fus.busy && is.curr_status == SCO_ISSUE)
+    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id_issued());
+    if (is.curr_status == SCO_ISSUE)
     {
         //Have the functional unit update it's status in scoreboard
         m_scob_new->update_fu_status_flags(fu->getFU_ID());
         if (fus.src1_rdy && fus.src2_rdy)
         {
-            fu->read_operands();
-            m_scob_new->set_instr_status(fu->getInstr_id(), 
+            u_int32_t id = fu->read_operands();
+            m_scob_new->set_instr_status(id, 
                                     SCO_READ_OP, 
                                     this->getCycleCount());
         }
@@ -222,36 +218,38 @@ void ScoreboardSimulator::read_operands_helper(FunctionalUnit* fu)
 
 void ScoreboardSimulator::execute(FunctionalUnit* fu)
 {
-    FunctionalUnitStatus fus = m_scob_old->get_fu_status(fu->getFU_ID());
-    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id());
-    if (fus.busy && is.curr_status == SCO_READ_OP)
+//     FunctionalUnitStatus fus = m_scob_old->get_fu_status(fu->getFU_ID());
+    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id_executebuffer());
+    u_int32_t finished_id = -1;
+    if (is.curr_status == SCO_READ_OP)
     {
-        //if the functional unit is done executing...
-        if(fu->execute())
-        {
-            m_scob_new->set_instr_status(fu->getInstr_id(), 
-                                        SCO_EXE_COMPLETE, 
-                                        this->getCycleCount());
-        }
+        finished_id = fu->execute(true); //push execute buffer
     }
+    else
+    {
+        finished_id = fu->execute(false); //don't push execute buffer
+    }
+    m_scob_new->set_instr_status(finished_id, 
+                                SCO_EXE_COMPLETE, 
+                                this->getCycleCount());
 }
 
 void ScoreboardSimulator::write_back(FunctionalUnit* fu)
 {
     FunctionalUnitStatus fus = m_scob_old->get_fu_status(fu->getFU_ID());
-    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id());
-    if (fus.busy && is.curr_status == SCO_EXE_COMPLETE
-        && !m_scob_old->check_WAR(fu->getFU_ID(), fus.dest))
+    InstructionStatus is = m_scob_old->get_instr_status(fu->getInstr_id_writeback());
+    if (fus.busy && is.curr_status == SCO_EXE_COMPLETE)
     {
-        fu->write_back();
+        u_int32_t id = -1;
+        if (!m_scob_old->check_WAR(fu->getFU_ID(), fus.dest))
+            id = fu->write_back();
         //set the instruction status
-        m_scob_new->set_instr_status(fu->getInstr_id(), 
+        m_scob_new->set_instr_status(id,
                                     SCO_WRITE_RESULT, 
                                     this->getCycleCount());
         //reset the register result to undefined
         m_scob_new->set_reg_result(fus.dest, FU_UNDEFINED);
         m_scob_new->reset_fu_status(fu->getFU_ID());
-        fu->flush();
     }
 }
 

@@ -23,6 +23,7 @@
  * 
  */
 #include <iostream>
+#include <queue>
 #include "Instruction.hh"
 
 class Instruction;
@@ -35,22 +36,30 @@ class FunctionalUnit
         virtual ~FunctionalUnit();
         
         virtual void issue(const Instruction& i);
-        virtual void read_operands();
-        virtual bool execute();
-        virtual void write_back();
-        virtual void flush();
+        virtual u_int32_t read_operands();
+        virtual u_int32_t execute(bool pushExecuteBuffer);
+        virtual u_int32_t write_back();
+        
         virtual void setFU_ID(FU_ID fu_type);
         virtual FU_ID getFU_ID() const;
+        
         virtual u_int32_t getInstr_id() const;
+        virtual u_int32_t getInstr_id_issued() const;
+        virtual u_int32_t getInstr_id_executebuffer() const;
+        virtual u_int32_t getInstr_id_writeback() const;
         
     protected:
         
     private:
         
         FU_ID m_id;
-        Instruction* m_instruction;
+        Instruction* m_issued_inst;
         u_int32_t m_stagesLeft;
         u_int32_t m_numstages;
+        Instruction* m_execute_buffer;
+        std::queue<Instruction*> m_stage_queue;
+        Instruction* m_write_back;
+        
         
 };
 

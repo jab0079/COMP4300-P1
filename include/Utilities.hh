@@ -105,6 +105,7 @@ enum SCO_CYCLE
     SCO_READ_OP,
     SCO_EXE_COMPLETE,
     SCO_WRITE_RESULT,
+    SCO_UNDEFINED
 };
 
 static const u_int8_t GPR_INST_SET_VALS[] =
