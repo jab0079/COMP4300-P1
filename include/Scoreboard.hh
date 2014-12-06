@@ -56,6 +56,7 @@ class Scoreboard
         
         //Constructors / Destructor -------------------------------------------
         Scoreboard();
+        Scoreboard(const bool isPipelined);
         Scoreboard(const Scoreboard& other);
         virtual ~Scoreboard();
         
@@ -72,14 +73,23 @@ class Scoreboard
         virtual void update_fu_status_flags(const FU_ID& fu_id);
         virtual void reset_fu_status(const FU_ID& fu_id);
         
+        virtual void propagate_piped_fu_status();
+        
         // Gets and Sets-------------------------------------------------------
         virtual void set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle);
         virtual void set_fu_status(const FU_ID& fu_id, const Instruction& instr);
         virtual void set_reg_result(const u_int8_t& r_dest_num, const FU_ID& fu_id);
+        virtual void set_fu_count(const u_int32_t& new_fu_count);
+        virtual void set_isPipelined(const bool& isPiped);
+        
         
         virtual InstructionStatus get_instr_status(const u_int32_t& inst_id) const;
         virtual FunctionalUnitStatus get_fu_status(const FU_ID& fu_id) const;
         virtual FU_ID get_reg_result(const u_int8_t& r_dest_num) const;
+        virtual u_int32_t get_fu_count() const;
+        virtual bool get_isPipelined() const;
+        
+        virtual u_int32_t get_piped_fu_id_offset(FU_ID fu_id) const;
         
     protected:
         
@@ -87,8 +97,11 @@ class Scoreboard
         //std::vector<FunctionalUnit*> funct_units;
       
         std::vector<InstructionStatus> instr_status;
-        FunctionalUnitStatus fu_status[FU_COUNT];
+        std::vector<FunctionalUnitStatus> fu_status;
         FU_ID reg_status[REGISTER_COUNT + FLOATING_POINT_REGISTERS];
+        
+        u_int32_t fu_count;
+        bool isPipelined;
         
 };
 

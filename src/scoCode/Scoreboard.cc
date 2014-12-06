@@ -18,37 +18,78 @@
 
 #include "Scoreboard.hh"
 
-Scoreboard::Scoreboard()
+Scoreboard::Scoreboard(const bool isPiped)
 {
-  // initialize fu_status & reg_status 
-  u_int32_t i;
-  for(i = 0; i < FU_COUNT; i++)
-  {
-    FunctionalUnitStatus fu_stat;
-    fu_stat.busy = false;
-    fu_stat.src1_rdy = true;
-    fu_stat.src2_rdy = true;
-    fu_stat.instr_id = -1;
-    fu_stat.dest = -1;
-    fu_stat.src1 = -1;
-    fu_stat.src2 = -1;
-    fu_stat.fu_src1 = FU_UNDEFINED;
-    fu_stat.fu_src2 = FU_UNDEFINED;
-    
-    fu_status[i] = fu_stat;
-  }
+  set_isPipelined(isPiped);
   
-  for(i = 0; i < REGISTER_COUNT + FLOATING_POINT_REGISTERS; i++)
+  if (isPipelined)
   {
-    reg_status[i] = FU_UNDEFINED;
+    u_int32_t i, new_fu_count = 0;
+    for(i = 0; i < FU_COUNT; i++)
+    {
+      new_fu_count += SCOB_FU_STAGES[i] + 2;
+    }
+    set_fu_count(new_fu_count);
+    
+    // initialize fu_status & reg_status 
+    
+    for(i = 0; i < get_fu_count(); i++)
+    {
+      FunctionalUnitStatus fu_stat;
+      fu_stat.busy = false;
+      fu_stat.src1_rdy = true;
+      fu_stat.src2_rdy = true;
+      fu_stat.instr_id = -1;
+      fu_stat.dest = -1;
+      fu_stat.src1 = -1;
+      fu_stat.src2 = -1;
+      fu_stat.fu_src1 = FU_UNDEFINED;
+      fu_stat.fu_src2 = FU_UNDEFINED;
+      
+      fu_status.push_back(fu_stat);
+    }
+    for(i = 0; i < REGISTER_COUNT + FLOATING_POINT_REGISTERS; i++)
+    {
+      reg_status[i] = FU_UNDEFINED;
+    }
+  }
+  else
+  {
+    set_fu_count(FU_COUNT);
+    
+    // initialize fu_status & reg_status 
+    u_int32_t i;
+    for(i = 0; i < get_fu_count(); i++)
+    {
+      FunctionalUnitStatus fu_stat;
+      fu_stat.busy = false;
+      fu_stat.src1_rdy = true;
+      fu_stat.src2_rdy = true;
+      fu_stat.instr_id = -1;
+      fu_stat.dest = -1;
+      fu_stat.src1 = -1;
+      fu_stat.src2 = -1;
+      fu_stat.fu_src1 = FU_UNDEFINED;
+      fu_stat.fu_src2 = FU_UNDEFINED;
+      
+      fu_status.push_back(fu_stat);
+    }
+    for(i = 0; i < REGISTER_COUNT + FLOATING_POINT_REGISTERS; i++)
+    {
+      reg_status[i] = FU_UNDEFINED;
+    }
   }
 }
+  
 
 Scoreboard::Scoreboard(const Scoreboard& other)
 {
-    for(u_int32_t i = 0; i < FU_COUNT; i++)
+    set_isPipelined(other.get_isPipelined());
+    set_fu_count(other.get_fu_count());
+  
+    for(u_int32_t i = 0; i < other.fu_status.size(); i++)
     {
-        fu_status[i] = other.fu_status[i];
+        fu_status.push_back(other.fu_status.at(i));
     }
 
     for(u_int32_t i = 0; i < REGISTER_COUNT + FLOATING_POINT_REGISTERS; i++)
@@ -87,9 +128,9 @@ void Scoreboard::print_scoreboard()
 
   std::cout << "\n\nFU Status--------------------\n" 
             << "FU_ID\tBUSY\tInstID\tR_DEST\tR_SRC1\tR_SRC2\tFU_SRC1\tFU_SRC2\tSRC1?\tSRC2?" << std::endl;
-  for (i = 0; i < FU_COUNT; i++)
+  for (i = 0; i < fu_status.size(); i++)
   {
-    FunctionalUnitStatus fu_stat = fu_status[i];
+    FunctionalUnitStatus fu_stat = fu_status.at(i);
     std::cout << i << "\t"
     << (int)fu_stat.busy << "\t"
     << (int)fu_stat.instr_id << "\t"
@@ -134,8 +175,15 @@ void Scoreboard::add_instr_status(const u_int32_t& id, const int32_t& cycle)
 
 bool Scoreboard::check_FU_busy(FU_ID fu_id)
 {
-  return fu_status[fu_id].busy;
-}
+  if (isPipelined)
+  { 
+    return fu_status.at(get_piped_fu_id_offset(fu_id)).busy;
+  }
+  else
+  {
+    return fu_status.at(fu_id).busy;
+  }
+} 
 
 bool Scoreboard::check_WAW(u_int8_t r_dest)
 {
@@ -151,11 +199,11 @@ bool Scoreboard::check_WAR(FU_ID fu_id, u_int8_t r_dest)
 {
     // check if any other funct unit has the same r_dest as a src reg
     u_int32_t i;
-    for(i = 0; i < FU_COUNT; i++)
+    for(i = 0; i < fu_status.size(); i++)
     {
-        if (fu_status[i].src1 == r_dest || fu_status[i].src2 == r_dest)
+        if (fu_status.at(i).src1 == r_dest || fu_status.at(i).src2 == r_dest)
         { //if source reg is equal to either operands
-            InstructionStatus is = get_instr_status(fu_status[i].instr_id);
+            InstructionStatus is = get_instr_status(fu_status.at(i).instr_id);
             if (is.curr_status == SCO_ISSUE
                 && check_range(r_dest)
             ) //if the instruction has not read operands, and in range
@@ -193,37 +241,100 @@ bool Scoreboard::check_range(u_int8_t r_num) const
         
 void Scoreboard::update_fu_status_flags(const FU_ID& fu_id)
 {
-  FunctionalUnitStatus fu_stat = fu_status[fu_id];
+  if (isPipelined)
+  {
+    FunctionalUnitStatus fu_stat = fu_status.at(get_piped_fu_id_offset(fu_id));
 
-  // check src reg results & set fu if not ready
-  fu_stat.src1_rdy = check_reg_result(fu_stat.src1, fu_id);
-  if (!fu_stat.src1_rdy)
-    fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
+    // check src reg results & set fu if not ready
+    fu_stat.src1_rdy = check_reg_result(fu_stat.src1, fu_id);
+    if (!fu_stat.src1_rdy)
+      fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
+      
+    fu_stat.src2_rdy = check_reg_result(fu_stat.src2, fu_id);
+    if (!fu_stat.src2_rdy)
+      fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
     
-  fu_stat.src2_rdy = check_reg_result(fu_stat.src2, fu_id);
-  if (!fu_stat.src2_rdy)
-    fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
-  
-  fu_status[fu_id] = fu_stat;
+    fu_status.at(get_piped_fu_id_offset(fu_id)) = fu_stat;
+  }
+  else
+  {
+    FunctionalUnitStatus fu_stat = fu_status.at(fu_id);
+
+    // check src reg results & set fu if not ready
+    fu_stat.src1_rdy = check_reg_result(fu_stat.src1, fu_id);
+    if (!fu_stat.src1_rdy)
+      fu_stat.fu_src1 = get_reg_result(fu_stat.src1);
+      
+    fu_stat.src2_rdy = check_reg_result(fu_stat.src2, fu_id);
+    if (!fu_stat.src2_rdy)
+      fu_stat.fu_src2 = get_reg_result(fu_stat.src2);
+    
+    fu_status.at(fu_id) = fu_stat;
+  }
+
 }
 
 void Scoreboard::reset_fu_status(const FU_ID& fu_id)
 {
-  FunctionalUnitStatus fu_stat = fu_status[fu_id];
+  if (isPipelined)
+  {
+    FunctionalUnitStatus fu_stat = fu_status.at(get_piped_fu_id_offset(fu_id));
+    
+    fu_stat.busy = false;
+    fu_stat.src1_rdy = true;
+    fu_stat.src2_rdy = true;
+    fu_stat.instr_id = -1;
+    fu_stat.dest = -1;
+    fu_stat.src1 = -1;
+    fu_stat.src2 = -1;
+    fu_stat.fu_src1 = FU_UNDEFINED;
+    fu_stat.fu_src2 = FU_UNDEFINED;
+    
+    fu_status.at(get_piped_fu_id_offset(fu_id)) = fu_stat;
+  }
+  else
+  {
+    FunctionalUnitStatus fu_stat = fu_status.at(fu_id);
   
-  fu_stat.busy = false;
-  fu_stat.src1_rdy = true;
-  fu_stat.src2_rdy = true;
-  fu_stat.instr_id = -1;
-  fu_stat.dest = -1;
-  fu_stat.src1 = -1;
-  fu_stat.src2 = -1;
-  fu_stat.fu_src1 = FU_UNDEFINED;
-  fu_stat.fu_src2 = FU_UNDEFINED;
-  
-  fu_status[fu_id] = fu_stat;
+    fu_stat.busy = false;
+    fu_stat.src1_rdy = true;
+    fu_stat.src2_rdy = true;
+    fu_stat.instr_id = -1;
+    fu_stat.dest = -1;
+    fu_stat.src1 = -1;
+    fu_stat.src2 = -1;
+    fu_stat.fu_src1 = FU_UNDEFINED;
+    fu_stat.fu_src2 = FU_UNDEFINED;
+    
+    fu_status.at(fu_id) = fu_stat;
+  }
 }
 
+void Scoreboard::propagate_piped_fu_status()
+{
+  FunctionalUnitStatus undef;
+  undef.busy = 0;
+  undef.dest = -1;
+  undef.fu_src1 = FU_UNDEFINED;
+  undef.fu_src2 = FU_UNDEFINED;
+  undef.instr_id = -1;
+  undef.src1 = -1;
+  undef.src2 = -1;
+  undef.src1_rdy = true;
+  undef.src2_rdy = true;
+  
+  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_INTEGER), undef);
+  fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_FP_ADDER));
+  
+  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_FP_ADDER), undef);
+  fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_FP_MULT));
+  
+  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_FP_MULT), undef);
+  fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_MEMORY));
+  
+  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_MEMORY), undef);
+  fu_status.pop_back();
+}
 
 void Scoreboard::set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle)
 {
@@ -252,21 +363,44 @@ void Scoreboard::set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_stat
 
 void Scoreboard::set_fu_status(const FU_ID& fu_id, const Instruction& instr)
 {
-  FunctionalUnitStatus fu_stat = fu_status[fu_id];
+  if (isPipelined)
+  {
+    FunctionalUnitStatus fu_stat = fu_status.at(get_piped_fu_id_offset(fu_id));
+    
+    // get opcode & check if corresponding fu is busy
+    fu_stat.instr_id = instr.getInstr_id();
+    fu_stat.busy = true;
+    
+    // set dest & src reg numbers
+    fu_stat.dest = instr.getDestinationRegister();
+    fu_stat.src1 = instr.getSourceRegister1();
+    fu_stat.src2 = instr.getSourceRegister2();
+    
+    // update fu src reg flags
+    update_fu_status_flags(fu_id);
+    
+    fu_status.at(get_piped_fu_id_offset(fu_id)) = fu_stat;
+  }
+  else
+  {
+    FunctionalUnitStatus fu_stat = fu_status.at(fu_id);
   
-  // get opcode & check if corresponding fu is busy
-  fu_stat.instr_id = instr.getInstr_id();
-  fu_stat.busy = true;
+    // get opcode & check if corresponding fu is busy
+    fu_stat.instr_id = instr.getInstr_id();
+    fu_stat.busy = true;
+    
+    // set dest & src reg numbers
+    fu_stat.dest = instr.getDestinationRegister();
+    fu_stat.src1 = instr.getSourceRegister1();
+    fu_stat.src2 = instr.getSourceRegister2();
+    
+    // update fu src reg flags
+    update_fu_status_flags(fu_id);
+    
+    fu_status.at(fu_id) = fu_stat;
+  }
   
-  // set dest & src reg numbers
-  fu_stat.dest = instr.getDestinationRegister();
-  fu_stat.src1 = instr.getSourceRegister1();
-  fu_stat.src2 = instr.getSourceRegister2();
   
-  // update fu src reg flags
-  update_fu_status_flags(fu_id);
-  
-  fu_status[fu_id] = fu_stat;
 }
 
 void Scoreboard::set_reg_result(const u_int8_t& r_dest_num, const FU_ID& fu_id)
@@ -292,8 +426,16 @@ InstructionStatus Scoreboard::get_instr_status(const u_int32_t& inst_id) const
 
 FunctionalUnitStatus Scoreboard::get_fu_status(const FU_ID& fu_id) const
 {
-    if (fu_id >= 0 && fu_id < FU_COUNT)
-        return fu_status[fu_id];
+    if (isPipelined)
+    {
+      if (fu_id >= 0 && fu_id < fu_status.size())
+        return fu_status.at(get_piped_fu_id_offset(fu_id));
+    }
+    else
+    {
+      if (fu_id >= 0 && fu_id < fu_status.size())
+        return fu_status.at(fu_id);
+    }
     
     FunctionalUnitStatus undef;
     undef.busy = 0;
@@ -315,5 +457,26 @@ FU_ID Scoreboard::get_reg_result(const u_int8_t& r_dest_num) const
     return FU_UNDEFINED;
 }
 
+u_int32_t Scoreboard::get_piped_fu_id_offset(FU_ID fu_id) const
+{
+  u_int32_t new_fu_id = 0;
+  switch(fu_id)
+  {
+    case FU_MEMORY:
+      new_fu_id += SCOB_FU_STAGES[FU_FP_MULT] + 2;
+    case FU_FP_MULT:
+      new_fu_id += SCOB_FU_STAGES[FU_FP_ADDER] + 2;
+    case FU_FP_ADDER:
+      new_fu_id += SCOB_FU_STAGES[FU_INTEGER] + 2;
+    case FU_INTEGER:
+      break;
+    default:
+      break;
+  }
+  return new_fu_id;
+} 
 
-
+void Scoreboard::set_fu_count(const u_int32_t& new_fu_count) { fu_count = new_fu_count; }
+void Scoreboard::set_isPipelined(const bool& isPiped) { isPipelined = isPiped; }
+u_int32_t Scoreboard::get_fu_count() const { return fu_count; }
+bool Scoreboard::get_isPipelined() const { return isPipelined; }

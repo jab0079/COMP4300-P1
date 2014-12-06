@@ -84,8 +84,8 @@ ScoreboardSimulator::ScoreboardSimulator(MemSys* mem, bool pipelined)
     m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER, SCOB_FU_STAGES[FU_FP_ADDER]);
     m_fpmult_fu = new FunctionalUnit(FU_FP_MULT, SCOB_FU_STAGES[FU_FP_MULT]);
     m_mem_fu = new FunctionalUnit(FU_MEMORY, SCOB_FU_STAGES[FU_MEMORY]);
-    m_scob_new = new Scoreboard();
-    m_scob_old = new Scoreboard();
+    m_scob_new = new Scoreboard(false);  //bool for isPipelined?
+    m_scob_old = new Scoreboard(false);
 }
 
 ScoreboardSimulator::~ScoreboardSimulator()
