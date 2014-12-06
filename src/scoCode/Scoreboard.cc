@@ -25,10 +25,11 @@ Scoreboard::Scoreboard(const bool isPiped)
   if (isPipelined)
   {
     u_int32_t i, new_fu_count = 0;
-    for(i = 0; i < FU_COUNT; i++)
+    for(i = 0; i < FU_COUNT - 1; i++) //add 2 extra stages for FUs other than FU_MEMORY
     {
       new_fu_count += SCOB_FU_STAGES[i] + 2;
     }
+    new_fu_count++;
     set_fu_count(new_fu_count);
     
     // initialize fu_status & reg_status 
@@ -337,8 +338,6 @@ void Scoreboard::propagate_piped_fu_status(const FU_ID& fu_id)
       fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_MEMORY));
       break;
     case FU_MEMORY:
-      fu_status.pop_back();
-      break;
     default:
       break;
   }
