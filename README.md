@@ -1,4 +1,4 @@
-COMP4300 - Computer Architecture - Project 3
+COMP4300 - Computer Architecture - Project 4
 
 ===============================================================================
 
@@ -13,19 +13,19 @@ Authors --------------------------------------------------------------------
 Synopsis--------------------------------------------------------------------
     
 	This project extended the previous General Purpose Register (GPR) 
-	multi-cycle machine into a scalar piped architecture with 5 stages. 
-	Along with simulating these units, this project also emulates a 
-	memory unit and a loading unit. The memory unit is a centralized 
-	array-based segmented memory. The loader loads the accompanied
-	source files into the memory unit to be used by the simulator.
-	All loaded items from the source files by the loader are loaded
-	in binary representation, following the binary encoding scheme
-	shown below. The pipeline machine implements interlocks between
-	the 5 MIPS stages to recognize and resolve data hazards through 
-	forwarding or using NOPs.
+	multi-cycle machine with a scalar piped architecture into a 
+	Scoreboard-based controller. Instead of the single pipeline of the
+	previous simulator, the scoreboard manages four independent functional
+	units (FUs). The Scoreboard takes care of any potential hazards as well.
+	For this project, the Scoreboard can be set to either reserve the entire
+	Functional Unit for each instruction or only the very first stage.
+	Each instruction has 4 stages: Issue, Fetch Operands, Execution, and Write 
+	Back. Each specific instruction is encapsulated in its own object that is 
+	derived from the Instruction class. They take in a Simulator object as 
+	a context to manipulate. From here the FUs can use these Instructions 
+	to change properties of the Simulator without having to know the specific 		implementation details.
 
-
-	GENERAL PURPOSE REGISTER MACHINE INSTRUCTION SET (Modified for the Pipeline) 
+	GENERAL PURPOSE REGISTER MACHINE INSTRUCTION SET (from previous project) 
 		
 		ADD  -  | 0x01 | 5-bit dest | 5-bit src1 | 5-bit src2 | 9-bit unused |
 		ADDI -  | 0x02 | 5-bit dest | 5-bit src1 | 14-bit immediate value... |
@@ -40,6 +40,14 @@ Synopsis--------------------------------------------------------------------
 		NOP  -  | 0x0B | 24-bits usused .................................... |
 		SYSCALL | 0x0C | 24-bits usused .................................... |
  
+	ADDITIONAL FLOATING POINT REGISTERS (new)
+
+		FADD -  | 0x0D | 5-bit dest | 5-bit src1 | 5-bit src2 | 9-bit unused |
+		FMUL -  | 0x0E | 5-bit dest | 5-bit src1 | 5-bit src2 | 9-bit unused |
+		FSUB -  | 0x0F | 5-bit dest | 5-bit src1 | 5-bit src2 | 9-bit unused |
+		LD   -  | 0x10 | 5-bit dest | 19-bit relative offset ............... |
+		SD   -  | 0x11 | 5-bit dest | 19-bit relative offset ............... |
+
 Compilation --------------------------------------------------------------------------
 	
 	Included with this project are a hierarchy of Makefiles that
@@ -74,6 +82,8 @@ Source Tree --------------------------------------------------------------------
 	src/gprCode - contains all source files for the gprSim
 
 	src/pipeCode - contains all source files for the pipeSim
+
+	src/scoCode - contains all source files for the scoSim
     
 	src/utils     - contains all utility source files 
 			            used by all executables
@@ -81,8 +91,10 @@ Source Tree --------------------------------------------------------------------
 Testing -----------------------------------------------------------------------
   
   The sample code can be ran using the executables in the bin/ directory
-  by passing the path name as a command line argument. 
-	For example: "./pipeSim ../docs/lab3c.s"
+  by passing the path name as a command line argument and "N" or "P" to indicate
+  not-pipelined or pipelined, respectively. 
+	For example: 	"./scoSim ../docs/lab4a.s N" or
+		   	"./scoSim ../docs/lab4c.s P"
 
   Below are explanations on the output that comes out of each
   executable.
@@ -111,25 +123,15 @@ Testing -----------------------------------------------------------------------
 
 	The program cleans up memory and closes.
 
-	lab3a.s Results
-	Instruction Count: 140
-	Cycle Count: 143
-	NOP Count: 75
+	Results from lab4c.s (not-pipelined)
+	Instruction Count: 1331
+	Cycle Count: 4703
+	NOP Count: 306
 
+	Results from lab4c.s (pipelined)
+	Instruction Count: 1331
+	Cycle Count: 1674
+	NOP Count: 306
 
-	lab3b.s Results (using "racecar") 
-	cout => Y (i.e., it is a palindrome)
-	Instruction Count: 140
-	Cycle Count: 143
-	NOP Count: 75
-	
-
-	lab3c.s Results 
-	cout => 32768
-	Instruction Count: 61
-	Cycle Count: 63
-	NOP Count: 10
-	
-	
 
 ---------------------------------------------------------------------
