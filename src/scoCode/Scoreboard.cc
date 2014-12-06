@@ -310,7 +310,7 @@ void Scoreboard::reset_fu_status(const FU_ID& fu_id)
   }
 }
 
-void Scoreboard::propagate_piped_fu_status()
+void Scoreboard::propagate_piped_fu_status(const FU_ID& fu_id)
 {
   FunctionalUnitStatus undef;
   undef.busy = 0;
@@ -323,17 +323,25 @@ void Scoreboard::propagate_piped_fu_status()
   undef.src1_rdy = true;
   undef.src2_rdy = true;
   
-  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_INTEGER), undef);
-  fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_FP_ADDER));
+  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(fu_id), undef);
   
-  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_FP_ADDER), undef);
-  fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_FP_MULT));
-  
-  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_FP_MULT), undef);
-  fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_MEMORY));
-  
-  fu_status.insert(fu_status.begin() + get_piped_fu_id_offset(FU_MEMORY), undef);
-  fu_status.pop_back();
+  switch (fu_id)
+  {
+    case FU_INTEGER:
+      fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_FP_ADDER));
+      break;
+    case FU_FP_ADDER:
+      fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_FP_MULT));
+      break;
+    case FU_FP_MULT:
+      fu_status.erase(fu_status.begin() + get_piped_fu_id_offset(FU_MEMORY));
+      break;
+    case FU_MEMORY:
+      fu_status.pop_back();
+      break;
+    default:
+      break;
+  }
 }
 
 void Scoreboard::set_instr_status(const u_int32_t& id, const SCO_CYCLE& new_status, const int32_t& cycle)
