@@ -50,8 +50,13 @@ int main(int argc, char* argv[])
     memory->outputSegment(USER_DATA);
     memory->outputSegment(USER_TEXT);
     
+    bool pipelined = false;
+    std::string pipearg(argv[2]);
+    if (pipearg.compare("P") == 0)
+        pipelined = true;
+    
     //Create simulator with memory system
-    Simulator* scob = new ScoreboardSimulator(memory);
+    Simulator* scob = new ScoreboardSimulator(memory, pipelined);
     
     //Set up the program counter...
     scob->setProgramCounter(setpc);

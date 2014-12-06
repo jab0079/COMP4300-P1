@@ -77,8 +77,8 @@ static Instruction* create_instruction(ScoreboardSimulator* simu, inst& instruct
         return 0x0;
 }
 
-ScoreboardSimulator::ScoreboardSimulator(MemSys* mem) 
-: Simulator(mem), m_usermode(false), m_fetch_buffer(0x0)
+ScoreboardSimulator::ScoreboardSimulator(MemSys* mem, bool pipelined) 
+: Simulator(mem), m_usermode(false), m_pipelined(pipelined), m_fetch_buffer(0x0)
 {
     m_integer_fu = new FunctionalUnit(FU_INTEGER, SCOB_FU_STAGES[FU_INTEGER]);
     m_fpadd_fu = new FunctionalUnit(FU_FP_ADDER, SCOB_FU_STAGES[FU_FP_ADDER]);
@@ -106,7 +106,7 @@ void ScoreboardSimulator::run()
     m_usermode = true;
     while (m_usermode)
     {
-        m_scob_old->print_scoreboard();
+//         m_scob_old->print_scoreboard();
         
         this->issue();
         

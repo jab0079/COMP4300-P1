@@ -101,6 +101,7 @@ u_int32_t FunctionalUnit::write_back()
     u_int32_t id = -1;
     if (m_write_back != 0x0)
     {
+        m_write_back->memory();
         m_write_back->write_back();
         id = m_write_back->getInstr_id();
         SAFE_DELETE(m_write_back);

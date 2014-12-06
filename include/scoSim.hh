@@ -34,7 +34,7 @@ class Scoreboard;
 class ScoreboardSimulator : public Simulator
 {
     public:
-        ScoreboardSimulator(MemSys* mem);
+        ScoreboardSimulator(MemSys* mem, bool pipelined);
         virtual ~ScoreboardSimulator();
         
         virtual void run();
@@ -75,6 +75,7 @@ class ScoreboardSimulator : public Simulator
         FunctionalUnit* m_mem_fu;
         
         bool m_usermode;
+        bool m_pipelined;
         Instruction* m_fetch_buffer;
 
 };

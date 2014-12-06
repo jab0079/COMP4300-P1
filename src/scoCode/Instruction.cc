@@ -80,7 +80,7 @@ int32_t Instruction::decodeInstr(const u_int32_t& instr, const u_int8_t& num_bit
     for (int i = num_bits - 1; i < 32; i++)     // Sign extend msb
         val.set(i, val32[num_bits - 1]);
     
-    return val.to_ulong();
+    return (int32_t)val.to_ulong();
 }
 
 u_int8_t Instruction::getDestinationRegister() const

@@ -79,21 +79,25 @@ addr Loader::load(const std::string& file_path, const INST_SET& set)
             int colon = line.find(":");
             std::string address = line.substr(0,colon);
             addr address_i = strHexToAddr(address);
-            //parse value
-            std::string value = line.substr(colon+1,line.length());
-            std::stringstream s(value);
-            u_int32_t value_i;
-            s >> value_i;
-            
             //check address
             if (address_i >= MemSys::BaseUserDataSegmentAddress 
                 && address_i < (MemSys::BaseUserDataSegmentAddress+MemSys::UserDataSegmentSize))
-            { //write if ok
-                m_memory->write(address_i, &value_i, sizeof(u_int32_t));
-            }
-            else
             {
-                //fail gracefully...
+                //parse value
+                std::string value = line.substr(colon+1,line.length());
+                std::stringstream s(value);
+                if (value.find("."))
+                { //we have a float
+                    float value_i;
+                    s >> value_i;
+                    m_memory->write(address_i, &value_i, sizeof(float));
+                }
+                else
+                {
+                    u_int32_t value_i;
+                    s >> value_i;
+                    m_memory->write(address_i, &value_i, sizeof(u_int32_t));
+                }
             }
         }
         else if (userText)
@@ -311,11 +315,11 @@ inst Loader::parseInstructionSCOB(const std::string& inst_str)
         //FSUB Rdest, Rsrc1, Rsrc2
         //[8-bit op][5-bit dest][5-bit src1][5-bit src2][9-bit usused]
         return parse3Reg(SCOB_INST_SET_VALS[SCOB_FSUB], inst_str);
-    else if (inst_token.compare("L.D") == 0)
+    else if (inst_token.compare("LD") == 0)
         //L.D Rdest, offset(Rsrc1)
         //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
         return parseRegisterOffset(SCOB_INST_SET_VALS[SCOB_LD], inst_str);
-    else if (inst_token.compare("S.D") == 0)
+    else if (inst_token.compare("SD") == 0)
         //S.D Rdest, offset(Rsrc1)
         //[8-bit op][5-bit Rdest][5-bit Rsrc1][14-bit offset]
         return parseRegisterOffset(SCOB_INST_SET_VALS[SCOB_SD], inst_str);
@@ -412,7 +416,7 @@ inst Loader::parseRegisterOffset(const u_int8_t& opcode, const std::string& inst
     int off_val;
     s >> off_val;
     inst_str_modified += rsrc1_str + "," + int_to_hex(off_val);
-    return parse2Reg1Val(SCOB_INST_SET_VALS[SCOB_LB], inst_str_modified);
+    return parse2Reg1Val(opcode, inst_str_modified);
 }
 
 //inst_str will be modified!

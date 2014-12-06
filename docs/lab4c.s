@@ -6,11 +6,14 @@
 0x00200008:0.80 
 0x0020000A:-0.57
 0x0020000C:-0.92
+0x0020000F:0
+0x00200011:0
 
 .text
 
 #main:
-    li $15, 0x64        # $1: count = 100
+    li $15, 0x64       # $1: count = 100
+    li $14, 0x00
     la $1, 0x00200004   # load address of 0.00
     la $2, 0x00200006   # load address of 1.65
     la $3, 0x00200008   # load address of 0.80
@@ -25,11 +28,6 @@
     ld $f8, ($5)        # $f8: Y2 = -0.92
 
 #loop:
-    # while count > 0 execute loop, 
-    beqz  $15, 0x0B # otherwise branch to exit: pc += 11
-    nop
-    nop 
-    nop
     subi $15, $15, 0x01   # decrement count by 1
     
     # $f3: X0 = kx * X1 - X2
@@ -47,10 +45,16 @@
     fadd $f8, $f0, $f7
     # Y1 = Y0
     fadd $f7, $f0, $f6
+    
+    # while count > 0 execute loop, 
+    bge $15, $14, 0xFFFFFFF3 # otherwise branch to exit: pc -= 13
+    nop
+    nop 
+    nop
 
     # store X0 & Y0: simulates tone output
-    sd $f3, 0x0020000F      # pick any (fixed) addr you like?
-    sd $f6, 0x00200011         
+#    sd $f3, 0x0020000F      # pick any (fixed) addr you like?
+#    sd $f6, 0x00200011         
 
 #exit:
     li $2, 0x02 # pc points here on branch execute
@@ -58,3 +62,5 @@
     nop
     nop
     syscall
+    
+    

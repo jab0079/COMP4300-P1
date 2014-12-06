@@ -40,7 +40,7 @@ void Inst_BEQZ::decode()
     // Get source 1 register number
     m_rsrc1 = (curr_inst & 0x00F80000) >> 19;
     // Get signed label offset value and calculate newpc
-    m_value = decodeInstr(curr_inst, 19);
+    m_value = (int32_t)decodeInstr(curr_inst, 19);
 
 }
 
